@@ -20,20 +20,6 @@
     <description><![CDATA[<p>Git 是一个非常强大的版本控制工具，是程序员必须要掌握的技能。</p>
 <p>这里记录常用的命令技巧和碰到的一些问题。</p>]]></description>
 </item><item>
-    <title>Hexo SEO 续</title>
-    <link>http://example.org/posts/2019-05-28-hexo-seo2/</link>
-    <pubDate>Tue, 28 May 2019 21:19:18 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2019-05-28-hexo-seo2/</guid>
-    <description><![CDATA[<p>之前对我的博客做了简单的 SEO，但是发现只有谷歌会自动爬取，百度并没有爬到博客的内容，于是我就谷歌了一下，得到的结论是 <code>Github</code> 禁止百度爬虫的访问。</p>]]></description>
-</item><item>
-    <title>Hexo SEO</title>
-    <link>http://example.org/posts/2019-05-18-hexo-seo/</link>
-    <pubDate>Sat, 18 May 2019 15:06:42 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2019-05-18-hexo-seo/</guid>
-    <description><![CDATA[<p>尝试给自己的博客做一下 SEO。</p>]]></description>
-</item><item>
     <title>关于 CSRF</title>
     <link>http://example.org/posts/2018-07-25-csrf/</link>
     <pubDate>Wed, 25 Jul 2018 09:55:13 &#43;0000</pubDate>
