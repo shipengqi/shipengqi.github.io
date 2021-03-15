@@ -4,7 +4,14 @@
         <link>http://example.org/categories/others/</link>
         <description>Others - 分类 - Learining and coding</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
-            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Fri, 31 Jan 2020 17:29:19 &#43;0000</lastBuildDate><atom:link href="http://example.org/categories/others/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Tue, 03 Nov 2020 13:48:12 &#43;0800</lastBuildDate><atom:link href="http://example.org/categories/others/" rel="self" type="application/rss+xml" /><item>
+    <title>OAuth 2.0 Getting Started</title>
+    <link>http://example.org/posts/2020-11-03-oauth2-getting-started/</link>
+    <pubDate>Tue, 03 Nov 2020 13:48:12 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-11-03-oauth2-getting-started/</guid>
+    <description><![CDATA[OAuth 2.0 是一种授权协议。 OAuth 2.0 有什么用？ OAuth 2.0 就是保证第三方（软件）只有在获得授权之后，才能进一步访问授权者的数据。 OAuth 2.0 的体系里面有 4 种角色，分别是]]></description>
+</item><item>
     <title>Git 的一些使用技巧</title>
     <link>http://example.org/posts/2020-01-31-git-usage/</link>
     <pubDate>Fri, 31 Jan 2020 17:29:19 &#43;0000</pubDate>
@@ -12,6 +19,20 @@
     <guid>http://example.org/posts/2020-01-31-git-usage/</guid>
     <description><![CDATA[<p>Git 是一个非常强大的版本控制工具，是程序员必须要掌握的技能。</p>
 <p>这里记录常用的命令技巧和碰到的一些问题。</p>]]></description>
+</item><item>
+    <title>Hexo SEO 续</title>
+    <link>http://example.org/posts/2019-05-28-hexo-seo2/</link>
+    <pubDate>Tue, 28 May 2019 21:19:18 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-05-28-hexo-seo2/</guid>
+    <description><![CDATA[<p>之前对我的博客做了简单的 SEO，但是发现只有谷歌会自动爬取，百度并没有爬到博客的内容，于是我就谷歌了一下，得到的结论是 <code>Github</code> 禁止百度爬虫的访问。</p>]]></description>
+</item><item>
+    <title>Hexo SEO</title>
+    <link>http://example.org/posts/2019-05-18-hexo-seo/</link>
+    <pubDate>Sat, 18 May 2019 15:06:42 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-05-18-hexo-seo/</guid>
+    <description><![CDATA[<p>尝试给自己的博客做一下 SEO。</p>]]></description>
 </item><item>
     <title>关于 CSRF</title>
     <link>http://example.org/posts/2018-07-25-csrf/</link>

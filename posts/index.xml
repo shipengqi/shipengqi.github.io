@@ -4,7 +4,21 @@
         <link>http://example.org/posts/</link>
         <description>所有文章 | Learining and coding</description>
         <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
-            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Wed, 11 Mar 2020 13:54:13 &#43;0000</lastBuildDate><atom:link href="http://example.org/posts/" rel="self" type="application/rss+xml" /><item>
+            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Tue, 03 Nov 2020 13:48:12 &#43;0800</lastBuildDate><atom:link href="http://example.org/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>OAuth 2.0 Getting Started</title>
+    <link>http://example.org/posts/2020-11-03-oauth2-getting-started/</link>
+    <pubDate>Tue, 03 Nov 2020 13:48:12 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-11-03-oauth2-getting-started/</guid>
+    <description><![CDATA[OAuth 2.0 是一种授权协议。 OAuth 2.0 有什么用？ OAuth 2.0 就是保证第三方（软件）只有在获得授权之后，才能进一步访问授权者的数据。 OAuth 2.0 的体系里面有 4 种角色，分别是]]></description>
+</item><item>
+    <title>Golang Remote Debug with Delve</title>
+    <link>http://example.org/posts/2020-04-09-go-remote-debug/</link>
+    <pubDate>Thu, 09 Apr 2020 17:55:23 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-04-09-go-remote-debug/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
     <title>Go Code Review Comments（翻译）</title>
     <link>http://example.org/posts/2020-03-11-go-code-review-comments/</link>
     <pubDate>Wed, 11 Mar 2020 13:54:13 &#43;0000</pubDate>
@@ -13,19 +27,19 @@
     <description><![CDATA[<p>本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
 考 <a href="https://github.com/uber-go/guide" target="_blank" rel="noopener noreffer">The Uber Go Style Guide</a> 。</p>]]></description>
 </item><item>
-    <title>CentOS 上使用 kubeadm 安装 kubernetes</title>
-    <link>http://example.org/posts/2020-02-12-kubeadm/</link>
-    <pubDate>Fri, 28 Feb 2020 19:18:55 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2020-02-12-kubeadm/</guid>
-    <description><![CDATA[<p>使用 kubeadm 安装 kubernetes 集群。</p>]]></description>
-</item><item>
     <title>Go 如何做性能分析</title>
     <link>http://example.org/posts/2020-02-28-go-profile/</link>
     <pubDate>Fri, 28 Feb 2020 19:18:55 &#43;0000</pubDate>
     <author>作者</author>
     <guid>http://example.org/posts/2020-02-28-go-profile/</guid>
     <description><![CDATA[<p>Go 提供了 pprof 工具，可以用来做性能分析。pprof 可以读取分析样本的集合，并生成报告以可视化并帮助分析数据。</p>]]></description>
+</item><item>
+    <title>CentOS 上使用 kubeadm 安装 kubernetes</title>
+    <link>http://example.org/posts/2020-02-12-kubeadm/</link>
+    <pubDate>Wed, 12 Feb 2020 19:18:55 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-02-12-kubeadm/</guid>
+    <description><![CDATA[<p>使用 kubeadm 安装 kubernetes 集群。</p>]]></description>
 </item><item>
     <title>Git 的一些使用技巧</title>
     <link>http://example.org/posts/2020-01-31-git-usage/</link>
@@ -63,19 +77,5 @@
     <author>作者</author>
     <guid>http://example.org/posts/2019-11-12-go-http-resouce-code-analysis/</guid>
     <description><![CDATA[<p>Go 的标准库 <code>net/http</code> 用来处理 HTTP 协议，包括 HTTP server 和 HTTP client。这里主要分析 HTTP server 部分。</p>]]></description>
-</item><item>
-    <title>使用 lerna 管理 npm packages</title>
-    <link>http://example.org/posts/2019-10-31-node-lerna-usage/</link>
-    <pubDate>Thu, 31 Oct 2019 14:55:55 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2019-10-31-node-lerna-usage/</guid>
-    <description><![CDATA[<p><a href="https://github.com/lerna/lerna" target="_blank" rel="noopener noreffer">lerna</a> 是一个基于 git 和 npm 的多包管理工具。</p>]]></description>
-</item><item>
-    <title>make</title>
-    <link>http://example.org/posts/2019-10-23-make/</link>
-    <pubDate>Wed, 23 Oct 2019 17:50:39 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2019-10-23-make/</guid>
-    <description><![CDATA[<p><code>make</code> 是构建大型项目的首选方案。</p>]]></description>
 </item></channel>
 </rss>
