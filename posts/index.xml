@@ -1,0 +1,81 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>所有文章 - Echo</title>
+        <link>http://example.org/posts/</link>
+        <description>所有文章 | Echo</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
+            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Mon, 02 May 2022 14:28:31 &#43;0800</lastBuildDate><atom:link href="http://example.org/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>Regex</title>
+    <link>http://example.org/posts/2020-05-20-regex/</link>
+    <pubDate>Mon, 02 May 2022 14:28:31 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-05-20-regex/</guid>
+    <description><![CDATA[正则表达式的三种功能：校验数据、查找文本、对文本进行切割和替换等操作。 元字符 元字符就是指那些在正则表达式中具有特殊意义的专用字符，正则就是由]]></description>
+</item><item>
+    <title>OAuth 2.0 Getting Started</title>
+    <link>http://example.org/posts/2020-11-03-oauth2-getting-started/</link>
+    <pubDate>Tue, 03 Nov 2020 13:48:12 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-11-03-oauth2-getting-started/</guid>
+    <description><![CDATA[OAuth 2.0 是一种授权协议。 OAuth 2.0 有什么用？ OAuth 2.0 就是保证第三方（软件）只有在获得授权之后，才能进一步访问授权者的数据。 OAuth 2.0 的体系里面有 4 种角色，分别是]]></description>
+</item><item>
+    <title>Golang Remote Debug with Delve</title>
+    <link>http://example.org/posts/2020-04-09-go-remote-debug/</link>
+    <pubDate>Thu, 09 Apr 2020 17:55:23 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-04-09-go-remote-debug/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Go Code Review Comments（翻译）</title>
+    <link>http://example.org/posts/2020-03-11-go-code-review-comments/</link>
+    <pubDate>Wed, 11 Mar 2020 13:54:13 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-03-11-go-code-review-comments/</guid>
+    <description><![CDATA[<p>本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
+考 <a href="https://github.com/uber-go/guide" target="_blank" rel="noopener noreffer">The Uber Go Style Guide</a> 。</p>]]></description>
+</item><item>
+    <title>Go 如何做性能分析</title>
+    <link>http://example.org/posts/2020-02-28-go-profile/</link>
+    <pubDate>Fri, 28 Feb 2020 19:18:55 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-02-28-go-profile/</guid>
+    <description><![CDATA[<p>Go 提供了 pprof 工具，可以用来做性能分析。pprof 可以读取分析样本的集合，并生成报告以可视化并帮助分析数据。</p>]]></description>
+</item><item>
+    <title>CentOS 上使用 kubeadm 安装 kubernetes</title>
+    <link>http://example.org/posts/2020-02-12-kubeadm/</link>
+    <pubDate>Wed, 12 Feb 2020 19:18:55 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-02-12-kubeadm/</guid>
+    <description><![CDATA[<p>使用 kubeadm 安装 kubernetes 集群。</p>]]></description>
+</item><item>
+    <title>Git 的一些使用技巧</title>
+    <link>http://example.org/posts/2020-01-31-git-usage/</link>
+    <pubDate>Fri, 31 Jan 2020 17:29:19 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-01-31-git-usage/</guid>
+    <description><![CDATA[<p>Git 是一个非常强大的版本控制工具，是程序员必须要掌握的技能。</p>
+<p>这里记录常用的命令技巧和碰到的一些问题。</p>]]></description>
+</item><item>
+    <title>Go project-layout（翻译）</title>
+    <link>http://example.org/posts/2020-01-17-project-layout-cn/</link>
+    <pubDate>Fri, 17 Jan 2020 16:56:17 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-01-17-project-layout-cn/</guid>
+    <description><![CDATA[<p>标准的 Go 项目布局，<a href="https://github.com/golang-standards/project-layout" target="_blank" rel="noopener noreffer">project-layout</a> 翻译。</p>]]></description>
+</item><item>
+    <title>Node 如何做性能分析</title>
+    <link>http://example.org/posts/2019-12-07-node-profile/</link>
+    <pubDate>Sat, 07 Dec 2019 12:57:31 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-12-07-node-profile/</guid>
+    <description><![CDATA[<p>Node.js 的性能分析工具 <a href="https://github.com/node-inspector/v8-profiler" target="_blank" rel="noopener noreffer">v8-profiler</a> 可以采集性能分析样本。</p>]]></description>
+</item><item>
+    <title>Gin 框架源码分析</title>
+    <link>http://example.org/posts/2019-11-21-gin-resource-code-analysis/</link>
+    <pubDate>Thu, 21 Nov 2019 17:22:16 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-11-21-gin-resource-code-analysis/</guid>
+    <description><![CDATA[<p><a href="https://github.com/gin-gonic/gin" target="_blank" rel="noopener noreffer">Gin</a> 是基于 Golang 实现的的一个 web 框架。Gin 是一个类似于 <a href="https://github.com/go-martini/martini" target="_blank" rel="noopener noreffer">martini</a>
+但拥有更好性能的 API 框架, 由于 <a href="https://github.com/julienschmidt/httprouter" target="_blank" rel="noopener noreffer">httprouter</a>，速度提高了近 40 倍。</p>]]></description>
+</item></channel>
+</rss>

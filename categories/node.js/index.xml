@@ -1,0 +1,81 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Node.js - 分类 - Echo</title>
+        <link>http://example.org/categories/node.js/</link>
+        <description>Node.js - 分类 - Echo</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
+            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Sat, 07 Dec 2019 12:57:31 &#43;0000</lastBuildDate><atom:link href="http://example.org/categories/node.js/" rel="self" type="application/rss+xml" /><item>
+    <title>Node 如何做性能分析</title>
+    <link>http://example.org/posts/2019-12-07-node-profile/</link>
+    <pubDate>Sat, 07 Dec 2019 12:57:31 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-12-07-node-profile/</guid>
+    <description><![CDATA[<p>Node.js 的性能分析工具 <a href="https://github.com/node-inspector/v8-profiler" target="_blank" rel="noopener noreffer">v8-profiler</a> 可以采集性能分析样本。</p>]]></description>
+</item><item>
+    <title>使用 lerna 管理 npm packages</title>
+    <link>http://example.org/posts/2019-10-31-node-lerna-usage/</link>
+    <pubDate>Thu, 31 Oct 2019 14:55:55 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-10-31-node-lerna-usage/</guid>
+    <description><![CDATA[<p><a href="https://github.com/lerna/lerna" target="_blank" rel="noopener noreffer">lerna</a> 是一个基于 git 和 npm 的多包管理工具。</p>]]></description>
+</item><item>
+    <title>koa2 框架源码分析</title>
+    <link>http://example.org/posts/2019-06-10-koa2-resource-code-analysis/</link>
+    <pubDate>Mon, 10 Jun 2019 14:05:18 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-06-10-koa2-resource-code-analysis/</guid>
+    <description><![CDATA[<p><a href="https://github.com/koajs/koa" target="_blank" rel="noopener noreffer">koa2</a> 是基于 Node.js 实现的一个 web 框架。非常简洁，轻量，所有的功能都以插件的形式实现，开发者可以
+按需引入。</p>]]></description>
+</item><item>
+    <title>Node.js 实现浏览器终端</title>
+    <link>http://example.org/posts/2018-07-03-web-terminal/</link>
+    <pubDate>Tue, 03 Jul 2018 12:57:58 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-07-03-web-terminal/</guid>
+    <description><![CDATA[<p>最近要实现一个 web terminal，调研了几个开源的包，最后选择了 <a href="http://cloudcmd.io/" target="_blank" rel="noopener noreffer">Cloud Commander</a>。</p>]]></description>
+</item><item>
+    <title>Axios 使用</title>
+    <link>http://example.org/posts/2018-06-01-axios-use/</link>
+    <pubDate>Fri, 01 Jun 2018 16:26:47 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-06-01-axios-use/</guid>
+    <description><![CDATA[<p><code>Axios</code> 是一个基于 <code>promise</code> 的 HTTP 库，同时支持浏览器和 Node.js，可以用来替代 ajax 请求。</p>]]></description>
+</item><item>
+    <title>Node.js 生成 API 文档</title>
+    <link>http://example.org/posts/2018-03-28-nodejs-jsdoc/</link>
+    <pubDate>Wed, 28 Mar 2018 14:22:02 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-03-28-nodejs-jsdoc/</guid>
+    <description><![CDATA[<p><a href="http://usejsdoc.org/" target="_blank" rel="noopener noreffer">JSDoc</a> 是一个根据 Javascript 文件中的代码注释，生成 API 文档的工具。</p>]]></description>
+</item><item>
+    <title>Node.js 实现文件监听</title>
+    <link>http://example.org/posts/2018-03-20-nodejs-file-watch/</link>
+    <pubDate>Tue, 20 Mar 2018 15:18:14 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-03-20-nodejs-file-watch/</guid>
+    <description><![CDATA[<p>Node.js，实现文件监听，可以使用 <a href="https://nodejs.org/api/fs.html#fs_fs_watch_filename_options_listener" target="_blank" rel="noopener noreffer">fs.watch</a> 和
+<a href="https://nodejs.org/api/fs.html#fs_fs_watchfile_filename_options_listener" target="_blank" rel="noopener noreffer">fs.watchFile</a> 。</p>
+<p>也可以通过第三方库 <a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreffer">chokidar</a> 来实现。</p>]]></description>
+</item><item>
+    <title>关于 exports 和 module.exports</title>
+    <link>http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/</link>
+    <pubDate>Sat, 17 Mar 2018 10:09:13 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/</guid>
+    <description><![CDATA[<p><code>exports</code> 变量是在模块的文件级别作用域内有效的，它在<strong>模块被执行前</strong>被赋予 <code>module.exports</code>。</p>]]></description>
+</item><item>
+    <title>Node.js 中的异常处理</title>
+    <link>http://example.org/posts/2018-03-07-nodejs-exception-catch/</link>
+    <pubDate>Wed, 07 Mar 2018 10:10:48 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-03-07-nodejs-exception-catch/</guid>
+    <description><![CDATA[<p>Node 中的异常处理是一个应该注意的点。</p>]]></description>
+</item><item>
+    <title>Node.js 定时器与事件循环</title>
+    <link>http://example.org/posts/2018-02-11-nodejs-settimeout-nexttick/</link>
+    <pubDate>Sun, 11 Feb 2018 12:40:44 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2018-02-11-nodejs-settimeout-nexttick/</guid>
+    <description><![CDATA[<p>Node.js 提供了四个定时器，分别是：<code>setTimeout()</code>，<code>setInterval()</code>，<code>setImmediate()</code>，<code>process.nextTick()</code>。</p>]]></description>
+</item></channel>
+</rss>

@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>koa2 框架源码分析 - Echo</title><meta name="Description" content=""><meta property="og:title" content="koa2 框架源码分析" />
+<meta property="og:description" content="koa2 是基于 Node.js 实现的一个 web 框架。非常简洁，轻量，所有的功能都以插件的形式实现，开发者可以
+按需引入。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/2019-06-10-koa2-resource-code-analysis/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-06-10T14:05:18+00:00" />
+<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://example.org/logo.png"/>
+
+<meta name="twitter:title" content="koa2 框架源码分析"/>
+<meta name="twitter:description" content="koa2 是基于 Node.js 实现的一个 web 框架。非常简洁，轻量，所有的功能都以插件的形式实现，开发者可以
+按需引入。"/>
+<meta name="application-name" content="Echo">
+<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2019-06-10-koa2-resource-code-analysis/" /><link rel="prev" href="http://example.org/posts/2019-03-06-http-tools/" /><link rel="next" href="http://example.org/posts/2019-07-24-go-mod-migrate/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "koa2 框架源码分析",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/2019-06-10-koa2-resource-code-analysis\/"
+        },"genre": "posts","wordcount":  3880 ,
+        "url": "http:\/\/example.org\/posts\/2019-06-10-koa2-resource-code-analysis\/","datePublished": "2019-06-10T14:05:18+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
+            "@type": "Organization",
+            "name": "shipengqi"},"author": {
+                "@type": "Person",
+                "name": "shipengqi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">koa2 框架源码分析</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-06-10">2019-06-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3880 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 8 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#applicationjs">application.js</a></li>
+    <li><a href="#contextjs">context.js</a></li>
+    <li><a href="#requestjsresponsejs">request.js、response.js</a></li>
+    <li><a href="#错误处理">错误处理</a></li>
+    <li><a href="#koa-router">koa-router</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><a href="https://github.com/koajs/koa" target="_blank" rel="noopener noreffer">koa2</a> 是基于 Node.js 实现的一个 web 框架。非常简洁，轻量，所有的功能都以插件的形式实现，开发者可以
+按需引入。</p>
+<p>我们从一个官方示例开始，来看看 koa 的实现原理：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;koa&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kr">async</span> <span class="nx">ctx</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s1">&#39;Hello World&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">);</span>
+</span></span></code></pre></div><p>koa 的源码主要有四个文件，分别是 <code>application.js</code>、<code>context.js</code>、<code>request.js</code>、<code>response.js</code>。</p>
+<p><code>application.js</code> 是 koa 的入口文件，<code>app.use</code> 和 <code>app.listen</code> 的实现就在这个文件中。</p>
+<h2 id="applicationjs">application.js</h2>
+<p><code>new Koa()</code> 创建了一个 Application 实例，Application 的构造函数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">Emitter</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;events&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">Application</span> <span class="kr">extends</span> <span class="nx">Emitter</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">constructor</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">super</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">proxy</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">proxy</span> <span class="o">||</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">subdomainOffset</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">subdomainOffset</span> <span class="o">||</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">proxyIpHeader</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">proxyIpHeader</span> <span class="o">||</span> <span class="s1">&#39;X-Forwarded-For&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">maxIpsCount</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">maxIpsCount</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">env</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">env</span> <span class="o">||</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">||</span> <span class="s1">&#39;development&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">keys</span><span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">keys</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">keys</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">middleware</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">context</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">this</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">response</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">inspect</span><span class="p">.</span><span class="nx">custom</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="k">this</span><span class="p">[</span><span class="nx">util</span><span class="p">.</span><span class="nx">inspect</span><span class="p">.</span><span class="nx">custom</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">inspect</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Application 类继承了 events，这样 app 就有了事件监听的能力。构造函数还为实例添加了一系列的属性，比如经常会用到的 <code>middleware</code>、
+<code>context</code>、<code>request</code>、<code>response</code> 等。</p>
+<p>Application 还暴露了一些常用的方法，比如 <code>listen</code>、<code>use</code> 等等。</p>
+<p>我们从 <code>listen</code> 方法开始分析：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">listen</span><span class="p">(...</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;listen&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">callback</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(...</span><span class="nx">args</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>listen</code> 方法其实就是对 <code>http.createServer</code> 进行了一个简单的封装。这里启动的 http server。如果要启用 https，就不能使用 <code>listen</code>
+方法了，可以直接使用 https 包来创建：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">https</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;https&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;koa&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="nx">https</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="nx">app</span><span class="p">.</span><span class="nx">callback</span><span class="p">()).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3001</span><span class="p">);</span>
+</span></span></code></pre></div><p><code>listen</code> 方法中应该关注 <code>callback</code> 的实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">callback</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">compose</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">middleware</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">listenerCount</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">))</span> <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">onerror</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">handleRequest</span> <span class="o">=</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">createContext</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">handleRequest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">handleRequest</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>compose(this.middleware)</code> 是引用的插件 <code>koa-compose</code> 的方法。
+<code>middlleware</code> 是一个数组，存放的是通过 <code>app.use</code> 添加的中间件。</p>
+<p><code>app.use</code> 如何添加中间件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">use</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 检查传入的中间件是否是函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">fn</span> <span class="o">!==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;middleware must be a function!&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">isGeneratorFunction</span><span class="p">(</span><span class="nx">fn</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// 检查是否是 generator 函数，为了兼容 koa1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">deprecate</span><span class="p">(</span><span class="s1">&#39;Support for generators will be removed in v3. &#39;</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="s1">&#39;See the documentation for examples of how to convert old middleware &#39;</span> <span class="o">+</span>
+</span></span><span class="line"><span class="cl">                <span class="s1">&#39;https://github.com/koajs/koa/blob/master/docs/migration.md&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">fn</span> <span class="o">=</span> <span class="nx">convert</span><span class="p">(</span><span class="nx">fn</span><span class="p">);</span> <span class="c1">// 将 koa1 中的 generator 函数转为 Promise 函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;use %s&#39;</span><span class="p">,</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">_name</span> <span class="o">||</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">name</span> <span class="o">||</span> <span class="s1">&#39;-&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">middleware</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">fn</span><span class="p">);</span> <span class="c1">// 把中间件添加到 middleware 数组
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="k">this</span><span class="p">;</span> <span class="c1">// 返回 this，链式调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></div><p><code>compose</code> 方法是 koa 中间件机制最重要的部分：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Compose `middleware` returning
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * a fully valid middleware comprised
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * of all those which are passed.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> *
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @param {Array} middleware
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @return {Function}
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * @api public
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">compose</span> <span class="p">(</span><span class="nx">middleware</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 检查传入的中间件数组，是否是一个真的数组
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">middleware</span><span class="p">))</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Middleware stack must be an array!&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">fn</span> <span class="k">of</span> <span class="nx">middleware</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 检查数组中的元素是否是函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">fn</span> <span class="o">!==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s1">&#39;Middleware must be composed of functions!&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * @param {Object} context
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * @return {Promise}
+</span></span></span><span class="line"><span class="cl"><span class="cm">   * @api public
+</span></span></span><span class="line"><span class="cl"><span class="cm">   */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 这里返回一个函数，koa 的 ctx 和 next 作为参数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// last called middleware #
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">dispatch</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">dispatch</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">index</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;next() called multiple times&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span>
+</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">middleware</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">middleware</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">next</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fn</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">      <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">fn</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">dispatch</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>compose</code> 返回了一个函数， 先不管函数里面怎么执行，接着回到 Application 的<code>callback</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">callback</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">compose</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">middleware</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">listenerCount</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">))</span> <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">onerror</span><span class="p">);</span> <span class="c1">//  listenerCount 是继承与 event 对象的方法。判断是否监听了 error 事件,
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                                                                      <span class="c1">// 如果没有，添加 error 事件监听
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">handleRequest</span> <span class="o">=</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="c1">// req 和 res 作为参数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="kr">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">createContext</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">);</span> <span class="c1">// 使用原生 request 和 response 对象创建 koa 的 Context 对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">handleRequest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span> <span class="c1">// 处理请求，传入 compose 返回的 fn 函数，串行执行中间件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">handleRequest</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>callback</code> 方法返回了一个 <code>handleRequest</code> 函数，这是 <code>http.createServer</code> 接收的回调函数。<code>handleRequest</code> 方法被加入到 <code>request</code>
+事件中。当服务器接收到 http 请求时，<code>request</code> 事件被触发，然后调用 <code>handleRequest</code> 方法。</p>
+<p><code>handleRequest</code> 方法又调用了 <code>this.handleRequest(ctx, fn)</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">handleRequest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">fnMiddleware</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">404</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">onerror</span> <span class="o">=</span> <span class="nx">err</span> <span class="p">=&gt;</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">onerror</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span> <span class="c1">// koa 默认的错误处理回调函数，处理异常结束
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">handleResponse</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">respond</span><span class="p">(</span><span class="nx">ctx</span><span class="p">);</span> <span class="c1">// 处理 response 的回调函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">onFinished</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">onerror</span><span class="p">);</span> <span class="c1">// 监听 http response 的结束事件，执行 onerror 回调函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">fnMiddleware</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">handleResponse</span><span class="p">).</span><span class="k">catch</span><span class="p">(</span><span class="nx">onerror</span><span class="p">);</span> <span class="c1">// 执行中间件，
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></div><p><code>fnMiddleware</code> 就是这里 <code>const fn = compose(this.middleware);</code> 的 <code>fn</code>，再看 fn 的实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// last called middleware #
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1">// 防止 next 多次调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">dispatch</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">// 递归调用中间件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">function</span> <span class="nx">dispatch</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">index</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;next() called multiple times&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span> <span class="c1">// 从 0 开始，递归调用时加 1
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="kd">let</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">middleware</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">middleware</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="nx">fn</span> <span class="o">=</span> <span class="nx">next</span> <span class="c1">// 注意 fnMiddleware(ctx).then(handleResponse).catch(onerror) 调用时，
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                                               <span class="c1">// 没有传入 next，所以，这里执行完最后一个中间件后，fn 被赋值了 undefined
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fn</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">()</span> <span class="c1">// 立即返回处于 Promise.resolve 状态实例，继续执行后面的逻辑
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// 用 Promise 包裹中间件，方便 await 调用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="c1">// dispatch.bind(null, i + 1) 是下一个中间件，被当做 next 参数，传入了当前中间件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="c1">// 这就是在中间件执行 next() 的时候就会进入下一个中间件的原理
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">fn</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">dispatch</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)));</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>上面的代码就是 koa 中间件洋葱模型的实现。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/koa2-analysis/onion.png"
+        data-srcset="/images/koa2-analysis/onion.png, /images/koa2-analysis/onion.png 1.5x, /images/koa2-analysis/onion.png 2x"
+        data-sizes="auto"
+        alt="/images/koa2-analysis/onion.png"
+        title="/images/koa2-analysis/onion.png" /></p>
+<p>洋葱模型是中间件的一种串行机制，并且是支持异步，第一个中间件中执行 <code>next()</code>，则会进入下一个中间件。</p>
+<p>官方的中间件示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// logger
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kr">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">rt</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;X-Response-Time&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">method</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">url</span><span class="si">}</span><span class="sb"> - </span><span class="si">${</span><span class="nx">rt</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// x-response-time
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="kr">async</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">await</span> <span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">ms</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">start</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">ctx</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;X-Response-Time&#39;</span><span class="p">,</span> <span class="sb">`</span><span class="si">${</span><span class="nx">ms</span><span class="si">}</span><span class="sb">ms`</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>上面示例中 logger 中间件，调用了 <code>await next();</code> 进入了 <code>x-response-time</code> 中间件中，<code>next()</code> （这里的 <code>next</code> 就是 <code>x-response-time</code> 中间件）执行完，
+则继续执行下面的代码，获取 <code>X-Response-Time</code> 并打印日志。</p>
+<h2 id="contextjs">context.js</h2>
+<p>Context 包含了两个部分：</p>
+<ul>
+<li>自身属性，框架内部使用</li>
+<li>通过 delegates 库，代理了 request, response 对象上的属性。</li>
+</ul>
+<p><code>application.js</code> 的 <code>createContext</code> 方法创建 ctx 对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">createContext</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">context</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">context</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">request</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">response</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">context</span><span class="p">.</span><span class="nx">app</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">app</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">app</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">context</span><span class="p">.</span><span class="nx">req</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">req</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">req</span> <span class="o">=</span> <span class="nx">req</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">context</span><span class="p">.</span><span class="nx">res</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">res</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">res</span> <span class="o">=</span> <span class="nx">res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">request</span><span class="p">.</span><span class="nx">ctx</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">ctx</span> <span class="o">=</span> <span class="nx">context</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">request</span><span class="p">.</span><span class="nx">response</span> <span class="o">=</span> <span class="nx">response</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">response</span><span class="p">.</span><span class="nx">request</span> <span class="o">=</span> <span class="nx">request</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">context</span><span class="p">.</span><span class="nx">originalUrl</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">originalUrl</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">context</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">context</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Response delegation.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">delegate</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="s1">&#39;response&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;attachment&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;redirect&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;vary&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;has&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;set&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;append&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;flushHeaders&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;lastModified&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;etag&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;headerSent&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;writable&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * Request delegation.
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">delegate</span><span class="p">(</span><span class="nx">proto</span><span class="p">,</span> <span class="s1">&#39;request&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;acceptsLanguages&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;acceptsEncodings&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;acceptsCharsets&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;accepts&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">method</span><span class="p">(</span><span class="s1">&#39;is&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;querystring&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;idempotent&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;socket&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;search&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;method&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;query&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;url&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">access</span><span class="p">(</span><span class="s1">&#39;accept&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;origin&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;subdomains&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;protocol&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;host&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;hostname&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;URL&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;header&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;headers&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;secure&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;stale&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;fresh&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;ips&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">getter</span><span class="p">(</span><span class="s1">&#39;ip&#39;</span><span class="p">);</span>
+</span></span></code></pre></div><p>上面的代码通过 <a href="https://github.com/tj/node-delegates" target="_blank" rel="noopener noreffer"><code>delegate</code></a> 代理了 <code>ctx.request</code> 和 <code>ctx.response</code> 两个对象上的属性。
+也就是说，你可以直接通过访问 <code>ctx.status</code> 来得到 <code>ctx.repsponse.status</code> 的值。</p>
+<h2 id="requestjsresponsejs">request.js、response.js</h2>
+<p>这两部分就是对原生的 http 模块 request、response 对象进行了封装，在对象属性上添加了 setter 和 getter。暴露了一些新的方法。</p>
+<h2 id="错误处理">错误处理</h2>
+<p>koa 有两个 onerror 方法，一个是 Application 的，监听整个应用的 error 事件。一个是 Context 对象的 onerror，监听处理 http request
+和 response 时的 error 事件。</p>
+<p><code>application.js</code> 的 <code>onerror</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">onerror</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 判断是否是 Error 类型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">err</span> <span class="k">instanceof</span> <span class="nb">Error</span><span class="p">))</span> <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;non-error thrown: %j&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 忽略 404 错误
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="mi">404</span> <span class="o">==</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">||</span> <span class="nx">err</span><span class="p">.</span><span class="nx">expose</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 如果有静默设置, 则忽略
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">silent</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 打印 error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">stack</span> <span class="o">||</span> <span class="nx">err</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^/gm</span><span class="p">,</span> <span class="s1">&#39;  &#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>application.js</code> 的 <code>callback</code> 方法中有段代码：<code>if (!this.listenerCount('error')) this.on('error', this.onerror);</code>，如果开
+发者没有调用 <code>app.on('error', func)</code>监听 error 事件，那么就会在这里添加默认的 <code>onerror</code> 回调来监听 error 事件。</p>
+<p><code>context.js</code> 的 <code>onerror</code>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">onerror</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// don&#39;t do anything if there is no error.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// this allows you to pass `this.onerror`
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// to node-style callbacks.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="kc">null</span> <span class="o">==</span> <span class="nx">err</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 将错误转化 Error 类型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">err</span> <span class="k">instanceof</span> <span class="nb">Error</span><span class="p">))</span> <span class="nx">err</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">util</span><span class="p">.</span><span class="nx">format</span><span class="p">(</span><span class="s1">&#39;non-error thrown: %j&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">headerSent</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">headerSent</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">writable</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">headerSent</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">headerSent</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// delegate
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 触发 koa app 对象的 error 事件, application 上的 onerror 函数会执行
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">this</span><span class="p">.</span><span class="nx">app</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="nx">err</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// nothing we can do here other
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// than delegate to the app-level
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// handler and log.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// 如果响应头部已经发送(或者 socket 不可写), 退出函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">headerSent</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 获取原生 http response 对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="p">{</span> <span class="nx">res</span> <span class="p">}</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// first unset all headers
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="cm">/* istanbul ignore else */</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">res</span><span class="p">.</span><span class="nx">getHeaderNames</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">res</span><span class="p">.</span><span class="nx">getHeaderNames</span><span class="p">().</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">name</span> <span class="p">=&gt;</span> <span class="nx">res</span><span class="p">.</span><span class="nx">removeHeader</span><span class="p">(</span><span class="nx">name</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">res</span><span class="p">.</span><span class="nx">_headers</span> <span class="o">=</span> <span class="p">{};</span> <span class="c1">// Node &lt; 7.7
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// then set those specified
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">err</span><span class="p">.</span><span class="nx">headers</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// force text/plain
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 出错后响应类型为 text/plain
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="s1">&#39;text&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// ENOENT support
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 对 ENOENT 错误进行处理, ENOENT 的错误 message 是文件或者路径不存在, 所以状态码应该是 404
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;ENOENT&#39;</span> <span class="o">==</span> <span class="nx">err</span><span class="p">.</span><span class="nx">code</span><span class="p">)</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">404</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// default to 500
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>     <span class="c1">// 默认状态码为 500
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;number&#39;</span> <span class="o">!=</span> <span class="k">typeof</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">||</span> <span class="o">!</span><span class="nx">statuses</span><span class="p">[</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span><span class="p">])</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// respond
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kr">const</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">statuses</span><span class="p">[</span><span class="nx">err</span><span class="p">.</span><span class="nx">status</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">expose</span> <span class="o">?</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span> <span class="o">:</span> <span class="nx">code</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 设置响应状态码
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">this</span><span class="p">.</span><span class="nx">status</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">status</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">     <span class="c1">// 设置响应 body 长度
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">this</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="nx">Buffer</span><span class="p">.</span><span class="nx">byteLength</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 响应结束
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>application.js</code> 的 <code>handleRequest</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">handleRequest</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">fnMiddleware</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">404</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">onerror</span> <span class="o">=</span> <span class="nx">err</span> <span class="p">=&gt;</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">onerror</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">handleResponse</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="nx">respond</span><span class="p">(</span><span class="nx">ctx</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">onFinished</span><span class="p">(</span><span class="nx">res</span><span class="p">,</span> <span class="nx">onerror</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">fnMiddleware</span><span class="p">(</span><span class="nx">ctx</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="nx">handleResponse</span><span class="p">).</span><span class="k">catch</span><span class="p">(</span><span class="nx">onerror</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>在 <code>onFinish</code> 函数中会调用 <code>context</code> 的 <code>onerror</code> 方法，来处理响应中的 error 事件。</p>
+<h2 id="koa-router">koa-router</h2>
+<p>koa 本身并没有实现 router 的功能。需要引入插件。我们通过的 <a href="https://github.com/ZijianHe/koa-router" target="_blank" rel="noopener noreffer">koa-router</a> 的官方示例，来分析
+一下路由是如何注册并执行的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">Koa</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;koa&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">Router</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;koa-router&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Koa</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Router</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// use middleware only with given path
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">router</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">&#39;/users&#39;</span><span class="p">,</span> <span class="nx">userAuth</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// or with an array of paths
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">router</span><span class="p">.</span><span class="nx">use</span><span class="p">([</span><span class="s1">&#39;/users&#39;</span><span class="p">,</span> <span class="s1">&#39;/admin&#39;</span><span class="p">],</span> <span class="nx">userAuth</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">router</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// ctx.router available
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">app</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">routes</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">.</span><span class="nx">allowedMethods</span><span class="p">());</span>
+</span></span></code></pre></div><p>koa-router 实现路由的核心文件是 <code>router.js</code>。<code>router.js</code> 也是入口文件。</p>
+<p>Router 的构造函数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Router</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">Router</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">new</span> <span class="nx">Router</span><span class="p">(</span><span class="nx">opts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">methods</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">methods</span> <span class="o">||</span> <span class="p">[</span> <span class="c1">// 路由方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s1">&#39;HEAD&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;OPTIONS&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;PATCH&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;DELETE&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">stack</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// 存放注册的路由对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
+</span></span></code></pre></div><p><code>router.js</code> 中定义 <code>router.get</code> 或者 <code>router.post</code> 等方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 遍历所有的 method
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">methods</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl"> <span class="c1">// 添加原型方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">Router</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">middleware</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">middleware</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 处理参数，第一个参数可以是路由 name，也可以是路由的 path
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">path</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span> <span class="o">||</span> <span class="nx">path</span> <span class="k">instanceof</span> <span class="nb">RegExp</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">middleware</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">middleware</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">path</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 注册路由，这里的第二个参数是一个数组，是为了 all 方法注册时使用
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">this</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="p">[</span><span class="nx">method</span><span class="p">],</span> <span class="nx">middleware</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">name</span><span class="o">:</span> <span class="nx">name</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><p>所以调用 <code>router.get</code> 等方法（包括 <code>router.all</code> 和 <code>router.use</code>）注册路由是其实是调用了 <code>register</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">Router</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">register</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">methods</span><span class="p">,</span> <span class="nx">middleware</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">stack</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">stack</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// support array of paths
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 如果 path 是一个数组，遍历所有 path，分别为每一个 path 注册路由
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">path</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">router</span><span class="p">.</span><span class="nx">register</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">router</span><span class="p">,</span> <span class="nx">p</span><span class="p">,</span> <span class="nx">methods</span><span class="p">,</span> <span class="nx">middleware</span><span class="p">,</span> <span class="nx">opts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// create route
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// 创建路由对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">route</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Layer</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">methods</span><span class="p">,</span> <span class="nx">middleware</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">end</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">end</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">?</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">end</span> <span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">name</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">sensitive</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">sensitive</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">sensitive</span> <span class="o">||</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">strict</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">strict</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">strict</span> <span class="o">||</span> <span class="kc">false</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">prefix</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">prefix</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">prefix</span> <span class="o">||</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ignoreCaptures</span><span class="o">:</span> <span class="nx">opts</span><span class="p">.</span><span class="nx">ignoreCaptures</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 添加路由前缀
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">prefix</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">route</span><span class="p">.</span><span class="nx">setPrefix</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">prefix</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// add parameter middleware
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="c1">// // 设置 param 前置处理函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">param</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">route</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="nx">param</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">[</span><span class="nx">param</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 存储路由对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">stack</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">route</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">route</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p>注册完路由，必须通过 <code>app.use(router.routes())</code> 方法将所有的路由，添加到 koa 的中间件，<code>router.routes()</code> 方法做了什么：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">Router</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">routes</span> <span class="o">=</span> <span class="nx">Router</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">middleware</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 有点似曾相识，类似 compose 的实现
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="kd">var</span> <span class="nx">dispatch</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">dispatch</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;%s %s&#39;</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">method</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">routerPath</span> <span class="o">||</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">routerPath</span> <span class="o">||</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 匹配路由
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">method</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">layerChain</span><span class="p">,</span> <span class="nx">layer</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 将匹配的路由缓存到 context 对象
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">matched</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">ctx</span><span class="p">.</span><span class="nx">matched</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">ctx</span><span class="p">.</span><span class="nx">matched</span><span class="p">,</span> <span class="nx">matched</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">ctx</span><span class="p">.</span><span class="nx">matched</span> <span class="o">=</span> <span class="nx">matched</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">ctx</span><span class="p">.</span><span class="nx">router</span> <span class="o">=</span> <span class="nx">router</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">matched</span><span class="p">.</span><span class="nx">route</span><span class="p">)</span> <span class="k">return</span> <span class="nx">next</span><span class="p">();</span> <span class="c1">// // 未匹配到路由，执行下一个中间件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">matchedLayers</span> <span class="o">=</span> <span class="nx">matched</span><span class="p">.</span><span class="nx">pathAndMethod</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">mostSpecificLayer</span> <span class="o">=</span> <span class="nx">matchedLayers</span><span class="p">[</span><span class="nx">matchedLayers</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">ctx</span><span class="p">.</span><span class="nx">_matchedRoute</span> <span class="o">=</span> <span class="nx">mostSpecificLayer</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">mostSpecificLayer</span><span class="p">.</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">ctx</span><span class="p">.</span><span class="nx">_matchedRouteName</span> <span class="o">=</span> <span class="nx">mostSpecificLayer</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 路由的前置处理中间件 将 params、路由别名以及捕获数组属性挂载到 context 上下文对象中
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">layerChain</span> <span class="o">=</span> <span class="nx">matchedLayers</span><span class="p">.</span><span class="nx">reduce</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">memo</span><span class="p">,</span> <span class="nx">layer</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 将所有的 layer 封装成了 koa 的中间件函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="nx">memo</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ctx</span><span class="p">.</span><span class="nx">captures</span> <span class="o">=</span> <span class="nx">layer</span><span class="p">.</span><span class="nx">captures</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">captures</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span> <span class="o">=</span> <span class="nx">layer</span><span class="p">.</span><span class="nx">params</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">captures</span><span class="p">,</span> <span class="nx">ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">ctx</span><span class="p">.</span><span class="nx">routerName</span> <span class="o">=</span> <span class="nx">layer</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// 进入下一个路由中间件
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">return</span> <span class="nx">next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">      <span class="p">});</span>
+</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">memo</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">layer</span><span class="p">.</span><span class="nx">stack</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span> <span class="p">[]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 返回了 compose 函数，这个函数也同样式依赖 `koa-compose`
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 将所有匹配的路由 和 路由中间件的数组传入，并执行 compose 返回的函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 注意 koa 是在 `application.js` 的 `callback` 方法中执行 compose 返回的函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 这里利用 compose 函数，又实现了一个洋葱模型
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="nx">compose</span><span class="p">(</span><span class="nx">layerChain</span><span class="p">)(</span><span class="nx">ctx</span><span class="p">,</span> <span class="nx">next</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">dispatch</span><span class="p">.</span><span class="nx">router</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">dispatch</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p><code>routes</code> 方法返回了 <code>dispatch</code> 函数。<code>dispatch</code> 函数被注册到了 koa 的中间件，那么按照 koa 中间件的执行机制，<code>dispatch</code> 函数
+最终会在某个 koa 中间件中执行 <code>next</code> 时被执行。</p>
+<p><code>router.match</code> 的实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">Router</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">match</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">layers</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">stack</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">layer</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">path</span><span class="o">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">pathAndMethod</span><span class="o">:</span> <span class="p">[],</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">route</span><span class="o">:</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 遍历所有存放的路由数组
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">layers</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">layer</span> <span class="o">=</span> <span class="nx">layers</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;test %s %s&#39;</span><span class="p">,</span> <span class="nx">layer</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span> <span class="nx">layer</span><span class="p">.</span><span class="nx">regexp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// 调用路由对象 layer 的 math 函数，就是一个正则匹配
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 将匹配到的 layer 放到 matched.path 数组
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">layer</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="nx">path</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">matched</span><span class="p">.</span><span class="nx">path</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">layer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// layer 的 methods 数组存放的是注册的路由方法
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// 如果 layer.methods.length === 0 该 layer 为路由级别的中间件，即 route.use 方法注册的路由函数
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="c1">// ~layer.methods.indexOf(method) -1 按位取反是 00000000，所以这个是判断路由方法被匹配到
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">if</span> <span class="p">(</span><span class="nx">layer</span><span class="p">.</span><span class="nx">methods</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">||</span> <span class="o">~</span><span class="nx">layer</span><span class="p">.</span><span class="nx">methods</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">method</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">matched</span><span class="p">.</span><span class="nx">pathAndMethod</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">layer</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">       <span class="c1">// 当路由的路径和路由方法都被满足时，才算是路由被匹配到，将 matched.route 置为 true
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="nx">layer</span><span class="p">.</span><span class="nx">methods</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="nx">matched</span><span class="p">.</span><span class="nx">route</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">matched</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Layer</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="nx">methods</span><span class="p">,</span> <span class="nx">middleware</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">opts</span> <span class="o">=</span> <span class="nx">opts</span> <span class="o">||</span> <span class="p">{};</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">name</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">methods</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">paramNames</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">stack</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">middleware</span><span class="p">)</span> <span class="o">?</span> <span class="nx">middleware</span> <span class="o">:</span> <span class="p">[</span><span class="nx">middleware</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">methods</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">methods</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">methods</span><span class="p">[</span><span class="nx">l</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;GET&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="nx">methods</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="s1">&#39;HEAD&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// ensure middleware is a function
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">this</span><span class="p">.</span><span class="nx">stack</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">fn</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">!==</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">methods</span><span class="p">.</span><span class="nx">toString</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&#34; `&#34;</span> <span class="o">+</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">name</span> <span class="o">||</span> <span class="nx">path</span><span class="p">)</span> <span class="o">+</span><span class="s2">&#34;`: `middleware` &#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="o">+</span> <span class="s2">&#34;must be a function, not `&#34;</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="s2">&#34;`&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="k">this</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">path</span> <span class="o">=</span> <span class="nx">path</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">regexp</span> <span class="o">=</span> <span class="nx">pathToRegExp</span><span class="p">(</span><span class="nx">path</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">paramNames</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">debug</span><span class="p">(</span><span class="s1">&#39;defined route %s %s&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">methods</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">opts</span><span class="p">.</span><span class="nx">prefix</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">path</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/2019-06-10-koa2-resource-code-analysis/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/2019-03-06-http-tools/" class="prev" rel="prev" title="Linux 下使用 AB 进行压力测试"><i class="fas fa-angle-left fa-fw"></i>Linux 下使用 AB 进行压力测试</a>
+            <a href="/posts/2019-07-24-go-mod-migrate/" class="next" rel="next" title="Go 项目迁移到 mod">Go 项目迁移到 mod<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

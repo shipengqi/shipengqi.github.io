@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>使用 lerna 管理 npm packages - Echo</title><meta name="Description" content=""><meta property="og:title" content="使用 lerna 管理 npm packages" />
+<meta property="og:description" content="lerna 是一个基于 git 和 npm 的多包管理工具。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/2019-10-31-node-lerna-usage/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-10-31T14:55:55+00:00" />
+<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://example.org/logo.png"/>
+
+<meta name="twitter:title" content="使用 lerna 管理 npm packages"/>
+<meta name="twitter:description" content="lerna 是一个基于 git 和 npm 的多包管理工具。"/>
+<meta name="application-name" content="Echo">
+<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2019-10-31-node-lerna-usage/" /><link rel="prev" href="http://example.org/posts/2019-10-23-make/" /><link rel="next" href="http://example.org/posts/2019-11-12-go-http-resouce-code-analysis/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "使用 lerna 管理 npm packages",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/2019-10-31-node-lerna-usage\/"
+        },"genre": "posts","wordcount":  635 ,
+        "url": "http:\/\/example.org\/posts\/2019-10-31-node-lerna-usage\/","datePublished": "2019-10-31T14:55:55+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
+            "@type": "Organization",
+            "name": "shipengqi"},"author": {
+                "@type": "Person",
+                "name": "shipengqi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">使用 lerna 管理 npm packages</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-10-31">2019-10-31</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 635 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#为什么需要-lerna">为什么需要 lerna</a></li>
+    <li><a href="#使用">使用</a>
+      <ul>
+        <li><a href="#全局安装-lerna">全局安装 lerna</a></li>
+        <li><a href="#初始化一个-lerna-工程">初始化一个 lerna 工程</a></li>
+      </ul>
+    </li>
+    <li><a href="#两种工作模式">两种工作模式</a>
+      <ul>
+        <li><a href="#fixedlocked-mode">Fixed/Locked mode</a></li>
+        <li><a href="#independent-mode">Independent mode</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><a href="https://github.com/lerna/lerna" target="_blank" rel="noopener noreffer">lerna</a> 是一个基于 git 和 npm 的多包管理工具。</p>
+<h2 id="为什么需要-lerna">为什么需要 lerna</h2>
+<ol>
+<li>解决多个 packages 之间的依赖关系。</li>
+</ol>
+<p>比如，现在有两个 packages，分别是 <code>package-1</code> 和 <code>package-2</code>。
+<code>package-1</code> 的 <code>package.json</code> 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;package-1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;scripts&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;start&#34;</span><span class="p">:</span> <span class="s2">&#34;hexo s -p 8081&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;dependencies&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;package-2&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><code>package-2</code> 的 <code>package.json</code> 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;package-2&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;dependencies&#34;</span><span class="p">:</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>可以看出 <code>package-2</code> 是 <code>package-1</code> 的依赖包。如果 <code>package-2</code> 要 publish <code>1.0.1</code>。那么 <code>package-1</code> 也要修改依赖的 <code>package-2</code> 的
+版本，并且 publish。</p>
+<p>如果互相依赖的 package 很多，工作量就会变得很大。</p>
+<ol start="2">
+<li>通过 git 检测文件改动，自动发布。</li>
+<li>根据 git 提交记录，自动生成 <code>CHANGELOG</code>。</li>
+</ol>
+<h2 id="使用">使用</h2>
+<h3 id="全局安装-lerna">全局安装 lerna</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm install lerna -g
+</span></span></code></pre></div><h3 id="初始化一个-lerna-工程">初始化一个 lerna 工程</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># 创建 lerna 工程目录 lerna-demo</span>
+</span></span><span class="line"><span class="cl">mkdir lerna-demo
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> lerna-demo
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化</span>
+</span></span><span class="line"><span class="cl">lerna init
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 在 packages 目录下添加 package</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> packages
+</span></span><span class="line"><span class="cl">mkdir package-1 package-2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化 package</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> package-1
+</span></span><span class="line"><span class="cl">npm init -y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> package-2
+</span></span><span class="line"><span class="cl">npm init -y
+</span></span></code></pre></div><p>最后，项目结构像下面这样：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">lerna-demo/
+</span></span><span class="line"><span class="cl">  package.json
+</span></span><span class="line"><span class="cl">  lerna.json <span class="c1"># 配置文件</span>
+</span></span><span class="line"><span class="cl">  packages/  <span class="c1"># package 目录</span>
+</span></span><span class="line"><span class="cl">    package-1/
+</span></span><span class="line"><span class="cl">      package.json
+</span></span><span class="line"><span class="cl">    package-2/
+</span></span><span class="line"><span class="cl">      package.json
+</span></span></code></pre></div><p>安装 packages 依赖：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="c1"># 在 lerna 根目录（lerna-demo）下执行</span>
+</span></span><span class="line"><span class="cl">lerna bootstrap
+</span></span></code></pre></div><p><code>lerna bootstrap</code> 会安装 packages 下所有 packages 的依赖。</p>
+<h2 id="两种工作模式">两种工作模式</h2>
+<h3 id="fixedlocked-mode">Fixed/Locked mode</h3>
+<p>Fixed/Locked mode 是默认的模式。这种模式下，packages 下的所有包共用一个版本号 (version)，会自动将所有的包绑定到一个版本号上(该版本号
+就是 <code>lerna.json</code> 中的 <code>version</code> 字段)，所以任意一个包发生了更新，这个共用的版本号就会发生改变。这种模式下，每次发布 packages，都是全量
+发布，无论是否修改。</p>
+<h3 id="independent-mode">Independent mode</h3>
+<p>在 Independent mode 下，lerna 会配合 Git，检查文件变动，只发布有改动的 packages。如果要使用 Independent mode，使用
+<code>lerna init --independent</code> 来初始化项目。</p>
+<p>Independent mode 允许每一个包有一个独立的版本号，在使用 <code>lerna publish</code> 命令时，可以为每个包制定具体的操作，同时可以只更新某一个包的版本号。</p>
+<p>更多 lerna 使用可以查看 <a href="https://lerna.js.org/" target="_blank" rel="noopener noreffer">官方文档</a> 。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/2019-10-31-node-lerna-usage/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/2019-10-23-make/" class="prev" rel="prev" title="make"><i class="fas fa-angle-left fa-fw"></i>make</a>
+            <a href="/posts/2019-11-12-go-http-resouce-code-analysis/" class="next" rel="next" title="Go http 库 server 源码分析">Go http 库 server 源码分析<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>make - Echo</title><meta name="Description" content=""><meta property="og:title" content="make" />
+<meta property="og:description" content="make 是构建大型项目的首选方案。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/2019-10-23-make/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-10-23T17:50:39+00:00" />
+<meta property="article:modified_time" content="2021-12-02T15:12:56+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://example.org/logo.png"/>
+
+<meta name="twitter:title" content="make"/>
+<meta name="twitter:description" content="make 是构建大型项目的首选方案。"/>
+<meta name="application-name" content="Echo">
+<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2019-10-23-make/" /><link rel="prev" href="http://example.org/posts/2019-09-18-go-color/" /><link rel="next" href="http://example.org/posts/2019-10-31-node-lerna-usage/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "make",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/2019-10-23-make\/"
+        },"genre": "posts","wordcount":  2155 ,
+        "url": "http:\/\/example.org\/posts\/2019-10-23-make\/","datePublished": "2019-10-23T17:50:39+00:00","dateModified": "2021-12-02T15:12:56+08:00","publisher": {
+            "@type": "Organization",
+            "name": "shipengqi"},"author": {
+                "@type": "Person",
+                "name": "shipengqi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">make</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-10-23">2019-10-23</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2155 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 5 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#makefile">Makefile</a>
+      <ul>
+        <li><a href="#target">target</a></li>
+        <li><a href="#prerequisites">prerequisites</a></li>
+        <li><a href="#command">command</a></li>
+        <li><a href="#语法">语法</a></li>
+        <li><a href="#include">include</a></li>
+      </ul>
+    </li>
+    <li><a href="#构建-go-项目">构建 Go 项目</a></li>
+    <li><a href="#参考链接">参考链接</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p><code>make</code> 是构建大型项目的首选方案。</p>
+<h2 id="makefile">Makefile</h2>
+<p>Makefile 基本格式:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">target ... </span><span class="o">:</span> <span class="n">prerequisites</span> ...
+</span></span><span class="line"><span class="cl">    <span class="nb">command</span>
+</span></span><span class="line"><span class="cl">    ...
+</span></span></code></pre></div><ul>
+<li><code>target</code> - 目标，目标通常是文件名，Make 命令所要构建的对象。</li>
+<li><code>prerequisites</code> - 前置条件，通常是一组文件名，之间用空格分隔。</li>
+<li><code>command</code> - 命令，生成目标所需要执行的命令，由一行或多行的 shell 命令组成，是构建 <code>target</code> 的具体指令。</li>
+</ul>
+<blockquote>
+<p><strong>Makefile 中的命令必须以 <code>[tab]</code> 开头</strong>。</p>
+</blockquote>
+<h3 id="target">target</h3>
+<p>一个 target 构成一条规则。target 可以是一个文件名，也可以是多个文件名，之间用空格分隔。</p>
+<p>运行 make 时没有指定目标，默认会执行 Makefile 文件的第一个目标。</p>
+<h4 id="伪目标">伪目标</h4>
+<p>当 target 是某个操作的名字时，被称为<strong>伪目标</strong>（phony target）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">clean</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> rm -f apiserver
+</span></span></code></pre></div><p><code>clean</code> 就是伪目标，做一些清理操作。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">make clean
+</span></span></code></pre></div><p>如果当前目录中，存在一个文件叫做 <code>clean</code>，那么 <code>clean</code> 操作不会执行。因为 Make 任务 <code>clean</code> 已经存在，不需要重新构建。</p>
+<p>这个时候可以声明 <code>clean</code> 是&quot;伪目标&quot;：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">clean</span>
+</span></span><span class="line"><span class="cl"><span class="nf">clean</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    rm -f apiserver
+</span></span></code></pre></div><p>声明&quot;伪目标&quot;之后， make 就不会检查 <code>clean</code> 文件是否存在。</p>
+<p><code>.PHONY:</code> 后面可以声明一个或多个伪目标，之间用空格分隔。</p>
+<h3 id="prerequisites">prerequisites</h3>
+<p>prerequisites 指定了 target 是否重新构建的判断标准：只要有一个前置文件不存在，或者有过更新，target 就需要重新构建。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">buildimg</span>
+</span></span><span class="line"><span class="cl"><span class="nf">buildimg</span><span class="o">:</span> <span class="n">apisevergo</span>
+</span></span><span class="line"><span class="cl">    cp apisevergo /apisevergo
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">apisevergo</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    ./build_binary.sh
+</span></span></code></pre></div><p>上面的示例，<code>buildimg</code> 的前置条件是 <code>apisevergo</code>。如果 <code>apisevergo</code> 已经存在，那么 <code>make buildimg</code> 可以正常运行，
+<strong>否则必须再写一条规则，来生成 <code>apisevergo</code></strong>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">make buildimg
+</span></span><span class="line"><span class="cl">make buildimg
+</span></span></code></pre></div><p>上面连续执行两次 <code>make buildimg</code>。第一次执行会先生成 <code>apisevergo</code>，然后再执行 <code>cp apisevergo /apisevergo</code>。
+第二次执行，make 发现 apisevergo 存在而且没有变动，就不会执行任何操作。</p>
+<h3 id="command">command</h3>
+<p>command 是构建 target 的具体指令，它的运行结果通常就是生成目标文件。</p>
+<p>命令必须以 <code>[tab]</code> 开头，可以用内置变量 <code>.RECIPEPREFIX</code> 声明，来使用其他键。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">.RECIPEPREFIX</span> <span class="o">=</span> &gt;
+</span></span><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"><span class="err">&gt;</span> <span class="err">echo</span> <span class="err">Hello,</span> <span class="err">world</span>
+</span></span></code></pre></div><p><code>.RECIPEPREFIX</code>指定了 <code>&gt;</code> 替代 <code>tab</code> 键。</p>
+<p><strong>每行命令在一个单独的 shell 中执行。也就是说 shell 之间没有继承关系</strong>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">var-lost</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">export</span> <span class="nv">foo</span><span class="o">=</span>bar
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;foo=[</span><span class="nv">$$</span><span class="s2">foo]&#34;</span>
+</span></span></code></pre></div><p>执行 <code>var-lost</code> 取不到 <code>foo</code> 的值。因为两行命令在两个不同的进程执行。有三种解决办法：</p>
+<ol>
+<li>将两行命令写在一行，中间用分号分隔。</li>
+<li>在换行符前加反斜杠转义。</li>
+<li>使用 <code>.ONESHELL</code></li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c"># 1
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">var-kept</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">export</span> <span class="nv">foo</span><span class="o">=</span>bar<span class="p">;</span> <span class="nb">echo</span> <span class="s2">&#34;foo=[</span><span class="nv">$$</span><span class="s2">foo]&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># 2
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">var-kept2</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">export</span> <span class="nv">foo</span><span class="o">=</span>bar<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="nb">echo</span> <span class="s2">&#34;foo=[</span><span class="nv">$$</span><span class="s2">foo]&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># 3
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">.ONESHELL</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"><span class="nf">var-kept3</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">export</span> <span class="nv">foo</span><span class="o">=</span>bar<span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">echo</span> <span class="s2">&#34;foo=[</span><span class="nv">$$</span><span class="s2">foo]&#34;</span>
+</span></span></code></pre></div><h3 id="语法">语法</h3>
+<p><code>#</code> 表示注释。
+<code>@</code> 放在行首，表示不打印此行。默认情况下会打印每条命令。</p>
+<h4 id="通配符">通配符</h4>
+<p>通配符（wildcard）用来指定一组符合条件的文件名。与 Bash 一致，主要有星号 <code>*</code>、<code>?</code>、<code>[...]</code>。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c"># *.log 表示所有后缀名为 log 的文件。
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">clean</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    rm -f *.log
+</span></span></code></pre></div><h4 id="匹配符">匹配符</h4>
+<p>可以对文件名，进行类似正则运算的匹配，主要用到的匹配符是 <code>%</code>。可以将大量同类型的文件，只用一条规则就完成构建。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nf">%.o</span><span class="o">:</span> %.<span class="n">c</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># 等同于
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">f1.o</span><span class="o">:</span> <span class="n">f</span>1.<span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="nf">f2.o</span><span class="o">:</span> <span class="n">f</span>2.<span class="n">c</span>
+</span></span></code></pre></div><h4 id="变量和赋值符">变量和赋值符</h4>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c"># 使用等号自定义变量
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">txt</span> <span class="o">=</span> Hello World
+</span></span><span class="line"><span class="cl"><span class="nf">test</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    @echo <span class="k">$(</span>txt<span class="k">)</span> <span class="c1"># 调用自定义变量需要放在 `$( )` 之中</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">test</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    @echo <span class="nv">$$</span>HOME <span class="c1"># 调用 shell 变量时，变量前需要多加一个 `$`，这样才会对对 `$` 符号转义</span>
+</span></span></code></pre></div><p><strong>赋值</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">VARIABLE</span> <span class="o">=</span> value
+</span></span><span class="line"><span class="cl"><span class="c"># 在执行时扩展，允许递归扩展。
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">VARIABLE</span> <span class="o">:=</span> value
+</span></span><span class="line"><span class="cl"><span class="c"># 在定义时扩展。
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">VARIABLE</span> <span class="o">?=</span> value
+</span></span><span class="line"><span class="cl"><span class="c"># 只有在该变量为空时才设置值。
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">VARIABLE</span> <span class="o">+=</span> value
+</span></span><span class="line"><span class="cl"><span class="c"># 将值追加到变量的尾端。
+</span></span></span></code></pre></div><p><strong>内置变量</strong>
+内置变量，如 <code>$(CC)</code> 指向当前使用的编译器，<code>$(MAKE)</code> 指向当前使用的 make 工具。
+<a href="https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html" target="_blank" rel="noopener noreffer">内置变量</a></p>
+<p><strong>自动变量</strong>
+make 的自动变量与当前规则有关。</p>
+<ul>
+<li><code>$@</code> - 指代当前构建的那个目标。比如，<code>make foo</code> 的 <code>$@</code> 就指代 <code>foo</code>。</li>
+<li><code>$&lt;</code> - 指代第一个前置条件。比如，<code>t: p1 p2</code>，那么 <code>$&lt;</code> 就指代 <code>p1</code>。</li>
+<li><code>$?</code> - 指代比目标更新的所有前置条件，之间以空格分隔。比如，<code>t: p1 p2</code>，<code>p2</code> 的时间戳比 <code>t</code> 新，<code>$?</code> 就指代 <code>p2</code>。</li>
+<li><code>$^</code> - 指代所有前置条件，之间以空格分隔。比如，<code>t: p1 p2</code>，<code>$?</code> 就指代 <code>p1 p2</code>。</li>
+<li><code>$*</code> - 指代匹配符 <code>%</code> 匹配的部分， 比如 <code>%</code> 匹配 <code>f1.txt</code> 中的 <code>f1</code>，<code>$*</code> 就表示 <code>f1</code>。</li>
+<li><code>$(@D)</code> 和 <code>$(@F)</code> - 分别指向 <code>$@</code> 的目录名和文件名。比如，<code>$@</code> 是 <code>src/input.c</code>，那么 <code>$(@D)</code> 为 <code>src</code> ，<code>$(@F)</code> 的
+值为 <code>input.c</code>。</li>
+<li><code>$(&lt;D)</code> 和 <code>$(&lt;F)</code> - 分别指向 <code>$&lt;</code> 的目录名和文件名。</li>
+</ul>
+<p><strong>控制语句</strong>
+控制语句使用 Bash 语法。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">ifeq</span> <span class="err">(</span><span class="k">$(</span><span class="nv">CC</span><span class="k">)</span><span class="err">,gcc)</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">libs</span><span class="o">=</span><span class="k">$(</span>libs_for_gcc<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">else</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">libs</span><span class="o">=</span><span class="k">$(</span>normal_libs<span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="err">endif</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">LIST</span> <span class="o">=</span> one two three
+</span></span><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> i in <span class="k">$(</span>LIST<span class="k">)</span><span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="nb">echo</span> <span class="nv">$$</span>i<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="k">done</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># 等同于
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> i in one two three<span class="p">;</span> <span class="k">do</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="nb">echo</span> <span class="nv">$i</span><span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="k">done</span>
+</span></span></code></pre></div><p><strong>函数</strong>
+函数格式：<code>$(function arguments)</code> 或者 <code>${function arguments}</code>。</p>
+<p>常用内置函数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="c"># shell 函数用来执行 shell 命令
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="nv">srcfiles</span> <span class="o">:=</span> <span class="k">$(</span>shell <span class="nb">echo</span> src/<span class="o">{</span>00..99<span class="o">}</span>.txt<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># wildcard 函数替换 Bash 的通配符
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nv">srcfiles</span> <span class="o">:=</span> <span class="k">$(</span>wildcard src/*.txt<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c"># subst 函数用来文本替换
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="k">$(</span><span class="nv">subst</span> <span class="nv">from</span>,<span class="nv">to</span>,<span class="nv">text</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">$(</span><span class="nv">subst</span> <span class="nv">ee</span>,<span class="nv">EE</span>,<span class="nv">feet</span> <span class="nv">on</span> <span class="nv">the</span> <span class="nv">street</span><span class="k">)</span> <span class="c"># &#34;feet on the street&#34;替换成&#34;fEEt on the strEEt&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="c"># patsubst 函数用于模式匹配的替换
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="k">$(</span><span class="nv">patsubst</span> <span class="nv">pattern</span>,<span class="nv">replacement</span>,<span class="nv">text</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">$(</span><span class="nv">patsubst</span> %.<span class="nv">c</span>,%.<span class="nv">o</span>,<span class="nv">x</span>.<span class="nv">c</span>.<span class="nv">c</span> <span class="nv">bar</span>.<span class="nv">c</span><span class="k">)</span>    <span class="c"># 将文件名&#34;x.c.c bar.c&#34;，替换成&#34;x.c.o bar.o&#34;
+</span></span></span><span class="line"><span class="cl"><span class="c"></span>
+</span></span><span class="line"><span class="cl"><span class="c"># 替换后缀名
+</span></span></span><span class="line"><span class="cl"><span class="c"># 替换后缀名函数的写法是：变量名 + 冒号 + 后缀名替换规则
+</span></span></span><span class="line"><span class="cl"><span class="c"></span><span class="nf">min</span><span class="o">:</span> <span class="k">$(</span><span class="nv">OUTPUT</span>:.<span class="nv">js</span>=.<span class="nv">min</span>.<span class="nv">js</span><span class="k">)</span>         <span class="c"># 将变量 OUTPUT 中的后缀名 .js 全部替换成 .min.js 。
+</span></span></span></code></pre></div><h3 id="include">include</h3>
+<p><code>include</code> 可以引用其他 makefile。<code>include</code> 不能以 <code>[tab]</code> 开头。</p>
+<p>makefile 入口文件，引用 build 目录下的 makefile。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="err">include</span> <span class="err">build/Makefile</span>
+</span></span></code></pre></div><h2 id="构建-go-项目">构建 Go 项目</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-makefile" data-lang="makefile"><span class="line"><span class="cl"><span class="nv">SHELL</span> <span class="o">:=</span> /bin/bash
+</span></span><span class="line"><span class="cl"><span class="nv">BASEDIR</span> <span class="o">:=</span> <span class="k">$(</span>shell <span class="nb">pwd</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">BACKENDDIR</span> <span class="o">:=</span> <span class="k">$(</span>BASEDIR<span class="k">)</span>/backend
+</span></span><span class="line"><span class="cl"><span class="nv">PROXY</span> <span class="o">=</span> http://web-proxy.net:8080
+</span></span><span class="line"><span class="cl"><span class="nv">BINARY_NAME</span> <span class="o">=</span> installer
+</span></span><span class="line"><span class="cl"><span class="nv">IMAGE_NAME</span> <span class="o">=</span> installer
+</span></span><span class="line"><span class="cl"><span class="nv">VERSION</span> <span class="o">=</span> 0.1.2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">all</span> <span class="n">build</span> <span class="n">image</span> <span class="n">build</span>-<span class="n">fips</span> <span class="n">proxy</span> <span class="n">module</span> <span class="n">lint</span> <span class="n">golint</span> <span class="n">govet</span> <span class="n">test</span> <span class="n">benchmark</span> <span class="n">clean</span> <span class="n">help</span>
+</span></span><span class="line"><span class="cl"><span class="nf">all</span><span class="o">:</span> <span class="n">proxy</span> <span class="n">build</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.ONESHELL</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"><span class="nf">build</span><span class="o">:</span> <span class="n">module</span> <span class="n">lint</span> <span class="n">govet</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;build binary: </span><span class="k">$(</span>BINARY_NAME<span class="k">)</span><span class="s2"> ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @cd <span class="k">$(</span>BACKENDDIR<span class="k">)</span>
+</span></span><span class="line"><span class="cl"> @go build -o <span class="k">$(</span>BINARY_NAME<span class="k">)</span> ./app/main.go
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;build </span><span class="k">$(</span>BINARY_NAME<span class="k">)</span><span class="s2"> completed.&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">image</span><span class="o">:</span> <span class="n">build</span>-<span class="n">fips</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;build image: </span><span class="k">$(</span>IMAGE_NAME<span class="k">)</span><span class="s2">:</span><span class="k">$(</span>VERSION<span class="k">)</span><span class="s2"> ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @docker build --rm --no-cache <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --label com.sample.image-version<span class="o">=</span><span class="k">$(</span>VERSION<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --label com.sample.image-name<span class="o">=</span><span class="k">$(</span>IMAGE_NAME<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --label com.sample.itom.<span class="k">$(</span>IMAGE_NAME<span class="k">)</span><span class="o">=</span><span class="k">$(</span>VERSION<span class="k">)</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --label <span class="nv">vendor</span><span class="o">=</span><span class="s2">&#34;Example plc&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -t localhost:5000/<span class="k">$(</span>IMAGE_NAME<span class="k">)</span>:<span class="k">$(</span>VERSION<span class="k">)</span> <span class="k">$(</span>BASEDIR<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">build-fips</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;docker build binary: </span><span class="k">$(</span>BINARY_NAME<span class="k">)</span><span class="s2"> ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @docker run --rm -v <span class="k">$(</span>BACKENDDIR<span class="k">)</span>/app:/backend/app <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -v <span class="k">$(</span>BACKENDDIR<span class="k">)</span>/library:/backend/library <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -v <span class="k">$(</span>BACKENDDIR<span class="k">)</span>/build:/backend/build <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -v <span class="k">$(</span>BACKENDDIR<span class="k">)</span>/build/build.sh:/backend/build.sh <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> -w /backend <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> example.swinfra.net/golang-fips:1.0.0 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> sh build.sh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">proxy</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;set http proxy ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @export <span class="nv">http_proxy</span><span class="o">=</span><span class="k">$(</span>PROXY<span class="k">)</span>
+</span></span><span class="line"><span class="cl"> @export <span class="nv">https_proxy</span><span class="o">=</span><span class="k">$(</span>PROXY<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.ONESHELL</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"><span class="nf">module</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;download dependencies ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @cd <span class="k">$(</span>BACKENDDIR<span class="k">)</span>
+</span></span><span class="line"><span class="cl"> @go mod tidy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">lint</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;run go lint ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @golint <span class="k">$(</span>BACKENDDIR<span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">golint</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;install golint ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @go get -u golang.org/x/lint/golint
+</span></span><span class="line"><span class="cl"> @go install golang.org/x/lint/golint
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.ONESHELL</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"><span class="nf">govet</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;run go vet ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @cd <span class="k">$(</span>BACKENDDIR<span class="k">)</span>
+</span></span><span class="line"><span class="cl"> @go vet ./app/main.go
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">test</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;run go test ..&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">benchmark</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;run go test benchmark ..&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">clean</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;clean ..&#34;</span>
+</span></span><span class="line"><span class="cl"> @rm -rf <span class="k">$(</span>BACKENDDIR<span class="k">)</span>/build/<span class="k">$(</span>BINARY_NAME<span class="k">)</span>
+</span></span><span class="line"><span class="cl"> @rm -rf <span class="k">$(</span>BINARY_NAME<span class="k">)</span>
+</span></span><span class="line"><span class="cl"> @docker system prune
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">.PHONY</span><span class="o">:</span> <span class="n">show</span>
+</span></span><span class="line"><span class="cl"><span class="nf">show</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;</span><span class="k">$(</span>BASEDIR<span class="k">)</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nf">help</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;make              - compile the source code&#34;</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;make image        - build image, please make sure the docker is installed&#34;</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;make build-fips   - compile the source code with golang-fips image&#34;</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;make lint         - run go lint&#34;</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;make vet          - run go vet&#34;</span>
+</span></span><span class="line"><span class="cl"> @echo <span class="s2">&#34;make clean        - remove binary file and prune image&#34;</span>
+</span></span></code></pre></div><p><code>build.sh</code> 的内容：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="cp">#!/bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Proxy</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span>http://web-proxy.net:8080
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">https_proxy</span><span class="o">=</span>http://web-proxy.net:8080
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Enable go module</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">GO111MODULE</span><span class="o">=</span>on
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Install tools</span>
+</span></span><span class="line"><span class="cl">apk --update add gcc git musl-dev
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Download dependencies, remove unused dependencies</span>
+</span></span><span class="line"><span class="cl">go mod tidy
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Fix clinet-go unsupport go.mod</span>
+</span></span><span class="line"><span class="cl">go get k8s.io/client-go@kubernetes-1.15.0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Fix github.com/ugorji/go import issue</span>
+</span></span><span class="line"><span class="cl">go get github.com/ugorji/go@v1.1.2-0.20180831062425-e253f1f20942
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Build the renewCert</span>
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;Build apiservergo ...&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> go build -a -o installer ./app/main.go
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;Build apiservergo completed.&#34;</span>
+</span></span></code></pre></div><h2 id="参考链接">参考链接</h2>
+<ul>
+<li><a href="http://www.ruanyifeng.com/blog/2015/02/make.html" target="_blank" rel="noopener noreffer">Make 命令教</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2015/03/build-website-with-make.html" target="_blank" rel="noopener noreffer">使用 Make 构建网站</a></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-12-02&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/9a6be2fa680c785c04d7e7eb24984215920c775a" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 9a6be2fa680c785c04d7e7eb24984215920c775a: remove some info">
+                                    <i class="fas fa-hashtag fa-fw"></i>9a6be2f</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/2019-10-23-make/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/2019-09-18-go-color/" class="prev" rel="prev" title="Go 实现在终端输出颜色"><i class="fas fa-angle-left fa-fw"></i>Go 实现在终端输出颜色</a>
+            <a href="/posts/2019-10-31-node-lerna-usage/" class="next" rel="next" title="使用 lerna 管理 npm packages">使用 lerna 管理 npm packages<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

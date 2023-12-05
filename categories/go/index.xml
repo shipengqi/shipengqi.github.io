@@ -1,0 +1,73 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>Go - 分类 - Echo</title>
+        <link>http://example.org/categories/go/</link>
+        <description>Go - 分类 - Echo</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
+            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Thu, 09 Apr 2020 17:55:23 &#43;0800</lastBuildDate><atom:link href="http://example.org/categories/go/" rel="self" type="application/rss+xml" /><item>
+    <title>Golang Remote Debug with Delve</title>
+    <link>http://example.org/posts/2020-04-09-go-remote-debug/</link>
+    <pubDate>Thu, 09 Apr 2020 17:55:23 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-04-09-go-remote-debug/</guid>
+    <description><![CDATA[]]></description>
+</item><item>
+    <title>Go Code Review Comments（翻译）</title>
+    <link>http://example.org/posts/2020-03-11-go-code-review-comments/</link>
+    <pubDate>Wed, 11 Mar 2020 13:54:13 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-03-11-go-code-review-comments/</guid>
+    <description><![CDATA[<p>本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
+考 <a href="https://github.com/uber-go/guide" target="_blank" rel="noopener noreffer">The Uber Go Style Guide</a> 。</p>]]></description>
+</item><item>
+    <title>Go 如何做性能分析</title>
+    <link>http://example.org/posts/2020-02-28-go-profile/</link>
+    <pubDate>Fri, 28 Feb 2020 19:18:55 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-02-28-go-profile/</guid>
+    <description><![CDATA[<p>Go 提供了 pprof 工具，可以用来做性能分析。pprof 可以读取分析样本的集合，并生成报告以可视化并帮助分析数据。</p>]]></description>
+</item><item>
+    <title>Go project-layout（翻译）</title>
+    <link>http://example.org/posts/2020-01-17-project-layout-cn/</link>
+    <pubDate>Fri, 17 Jan 2020 16:56:17 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2020-01-17-project-layout-cn/</guid>
+    <description><![CDATA[<p>标准的 Go 项目布局，<a href="https://github.com/golang-standards/project-layout" target="_blank" rel="noopener noreffer">project-layout</a> 翻译。</p>]]></description>
+</item><item>
+    <title>Gin 框架源码分析</title>
+    <link>http://example.org/posts/2019-11-21-gin-resource-code-analysis/</link>
+    <pubDate>Thu, 21 Nov 2019 17:22:16 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-11-21-gin-resource-code-analysis/</guid>
+    <description><![CDATA[<p><a href="https://github.com/gin-gonic/gin" target="_blank" rel="noopener noreffer">Gin</a> 是基于 Golang 实现的的一个 web 框架。Gin 是一个类似于 <a href="https://github.com/go-martini/martini" target="_blank" rel="noopener noreffer">martini</a>
+但拥有更好性能的 API 框架, 由于 <a href="https://github.com/julienschmidt/httprouter" target="_blank" rel="noopener noreffer">httprouter</a>，速度提高了近 40 倍。</p>]]></description>
+</item><item>
+    <title>Go http 库 server 源码分析</title>
+    <link>http://example.org/posts/2019-11-12-go-http-resouce-code-analysis/</link>
+    <pubDate>Tue, 12 Nov 2019 12:41:19 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-11-12-go-http-resouce-code-analysis/</guid>
+    <description><![CDATA[<p>Go 的标准库 <code>net/http</code> 用来处理 HTTP 协议，包括 HTTP server 和 HTTP client。这里主要分析 HTTP server 部分。</p>]]></description>
+</item><item>
+    <title>Go 实现在终端输出颜色</title>
+    <link>http://example.org/posts/2019-09-18-go-color/</link>
+    <pubDate>Wed, 18 Sep 2019 14:48:47 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-09-18-go-color/</guid>
+    <description><![CDATA[通常，我们会对不同等级的日志输出不同的颜色来区分。 fmt.Printf(&#34;\033[1;31;40m%s\033[0m\n&#34;,&#34;Red.&#34;) fmt.Printf(&#34;\033[1;37;41m%s\033[0m\n&#34;,&#34;Red.&#34;) 第一行是红字黑底，第二行红底白字。 我们来解析 \033[1;31;40m%s\033[0m\n 这个字符串中的字符分别代表了什么。 \03]]></description>
+</item><item>
+    <title>记录一个 Go base64 解码的问题</title>
+    <link>http://example.org/posts/2019-09-06-go-base64/</link>
+    <pubDate>Fri, 06 Sep 2019 14:59:46 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-09-06-go-base64/</guid>
+    <description><![CDATA[<p>这里记录一个使用 Go base64 标准库解码 token 时遇到的问题。</p>]]></description>
+</item><item>
+    <title>Go 项目迁移到 mod</title>
+    <link>http://example.org/posts/2019-07-24-go-mod-migrate/</link>
+    <pubDate>Wed, 24 Jul 2019 10:03:52 &#43;0000</pubDate>
+    <author>作者</author>
+    <guid>http://example.org/posts/2019-07-24-go-mod-migrate/</guid>
+    <description><![CDATA[<p>golang 1.11 已经支持 Go Module。这是官方提倡的新的包管理，乃至项目管理机制，可以不再需要 <code>GOPATH</code> 的存在。</p>]]></description>
+</item></channel>
+</rss>

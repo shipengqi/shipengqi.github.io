@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>OAuth 2.0 Getting Started - Echo</title><meta name="Description" content=""><meta property="og:title" content="OAuth 2.0 Getting Started" />
+<meta property="og:description" content="OAuth 2.0 是一种授权协议。 OAuth 2.0 有什么用？ OAuth 2.0 就是保证第三方（软件）只有在获得授权之后，才能进一步访问授权者的数据。 OAuth 2.0 的体系里面有 4 种角色，分别是" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/2020-11-03-oauth2-getting-started/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-11-03T13:48:12+08:00" />
+<meta property="article:modified_time" content="2021-03-09T15:03:17+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://example.org/logo.png"/>
+
+<meta name="twitter:title" content="OAuth 2.0 Getting Started"/>
+<meta name="twitter:description" content="OAuth 2.0 是一种授权协议。 OAuth 2.0 有什么用？ OAuth 2.0 就是保证第三方（软件）只有在获得授权之后，才能进一步访问授权者的数据。 OAuth 2.0 的体系里面有 4 种角色，分别是"/>
+<meta name="application-name" content="Echo">
+<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2020-11-03-oauth2-getting-started/" /><link rel="prev" href="http://example.org/posts/2020-04-09-go-remote-debug/" /><link rel="next" href="http://example.org/posts/2020-05-20-regex/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "OAuth 2.0 Getting Started",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/2020-11-03-oauth2-getting-started\/"
+        },"genre": "posts","wordcount":  4819 ,
+        "url": "http:\/\/example.org\/posts\/2020-11-03-oauth2-getting-started\/","datePublished": "2020-11-03T13:48:12+08:00","dateModified": "2021-03-09T15:03:17+08:00","publisher": {
+            "@type": "Organization",
+            "name": "shipengqi"},"author": {
+                "@type": "Person",
+                "name": "shipengqi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">OAuth 2.0 Getting Started</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/others/"><i class="far fa-folder fa-fw"></i>Others</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-03">2020-11-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4819 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#oauth-20-有什么用">OAuth 2.0 有什么用？</a></li>
+    <li><a href="#oauth-20-的-4-种授权类型">OAuth 2.0 的 4 种授权类型</a>
+      <ul>
+        <li><a href="#授权码许可类型">授权码许可类型</a></li>
+      </ul>
+    </li>
+    <li><a href="#授权服务">授权服务</a>
+      <ul>
+        <li><a href="#授权服务要做些什么">授权服务要做些什么</a></li>
+        <li><a href="#授权码许可流程">授权码许可流程</a></li>
+        <li><a href="#refresh_token">refresh_token</a></li>
+      </ul>
+    </li>
+    <li><a href="#jwt">JWT</a>
+      <ul>
+        <li><a href="#令牌内检">令牌内检</a></li>
+        <li><a href="#jwt-如何使用">JWT 如何使用</a></li>
+        <li><a href="#jwt-的优缺点">JWT 的优缺点</a></li>
+        <li><a href="#token-生命周期">Token 生命周期</a></li>
+      </ul>
+    </li>
+    <li><a href="#第三方软件">第三方软件</a>
+      <ul>
+        <li><a href="#注册信息">注册信息</a></li>
+        <li><a href="#引导授权">引导授权</a></li>
+        <li><a href="#使用-access_token">使用 <code>access_token</code></a></li>
+      </ul>
+    </li>
+    <li><a href="#资源拥有者凭据许可password">资源拥有者凭据许可（Password）</a></li>
+    <li><a href="#客户端凭据许可client-credentials">客户端凭据许可（Client Credentials）</a></li>
+    <li><a href="#隐式许可implicit">隐式许可（Implicit）</a></li>
+    <li><a href="#oidc">OIDC</a>
+      <ul>
+        <li><a href="#id_token">ID_TOKEN</a></li>
+        <li><a href="#oidc-流程">OIDC 流程</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>OAuth 2.0 是一种授权协议。</p>
+<h2 id="oauth-20-有什么用">OAuth 2.0 有什么用？</h2>
+<p>OAuth 2.0 就是保证第三方（软件）只有在获得授权之后，才能进一步访问授权者的数据。</p>
+<p>OAuth 2.0 的体系里面有 4 种角色，分别是：</p>
+<ul>
+<li>资源拥有者</li>
+<li>客户端</li>
+<li>授权服务</li>
+<li>受保护资源</li>
+</ul>
+<h2 id="oauth-20-的-4-种授权类型">OAuth 2.0 的 4 种授权类型</h2>
+<ul>
+<li>授权码许可（Authorization Code），通过授权码 code 获取 <code>access_Token</code></li>
+<li>客户端凭据许可（Client Credentials），通过第三方 client 的 <code>app_id</code> 和 <code>app_secret</code> 获取 <code>access_Token</code></li>
+<li>资源拥有者凭据许可（Password），通过用户的 username 和 password 获取 <code>access_Token</code></li>
+<li>隐式许可（Implicit），通过嵌入在浏览器的第三方 client 的 <code>app_id</code> 获取 <code>access_Token</code></li>
+</ul>
+<h3 id="授权码许可类型">授权码许可类型</h3>
+<p>下图就是授权码许可的流程：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/auth-code-flow.png"
+        data-srcset="/images/oauth2.0/auth-code-flow.png, /images/oauth2.0/auth-code-flow.png 1.5x, /images/oauth2.0/auth-code-flow.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/auth-code-flow.png"
+        title="auth-code-flow" /></p>
+<p>上面的流程第 4 步，授权服务生成了授权码 code，然后重定向到了 client。经历了两次重定向，为什么不直接返回 <code>access_token</code>？</p>
+<blockquote>
+<p>原因是如果直接返回 <code>access_token</code>，就不能使用重定向的方式，<code>access_token</code> 在 URL 中<strong>会把 <code>access_token</code> 暴露在浏览器上</strong>，有被窃取的安全风险。</p>
+</blockquote>
+<p>下面是没有授权码的流程：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/auth-code-flow-without-code.png"
+        data-srcset="/images/oauth2.0/auth-code-flow-without-code.png, /images/oauth2.0/auth-code-flow-without-code.png 1.5x, /images/oauth2.0/auth-code-flow-without-code.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/auth-code-flow-without-code.png"
+        title="auth-code-flow-without-code" /></p>
+<blockquote>
+<p>由于少了一次重定向，浏览器停在了授权页面上，无法回到小兔软件的页面。</p>
+</blockquote>
+<p>这就是授权码这个间接凭证的作用。</p>
+<h2 id="授权服务">授权服务</h2>
+<p>授权服务就是负责颁发访问令牌的的服务。OAuth 2.0 的核心就是授权服务，授权服务的核心是令牌。</p>
+<h3 id="授权服务要做些什么">授权服务要做些什么</h3>
+<p>例如小兔软件要让小明去京东商家开放平台那里给它授权数据，那这里总不能你要，京东开放平台就给你。需要小兔先去平台上注册，注册完以后，平台会给小兔软件 <code>app_id</code> 和 <code>app_secret</code>
+等信息，方便之后的授权验证。</p>
+<p>同时，注册的时候，还要配置受保护资源的可访问范围。比如小兔软件能否获取小明店铺的订单信息，能否获取订单的所有字段信息等，这个权限范围就是 <strong>scope</strong>。</p>
+<p>注册完之后，授权服务的授权码许可流程：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/auth-server-work-flow.png"
+        data-srcset="/images/oauth2.0/auth-server-work-flow.png, /images/oauth2.0/auth-server-work-flow.png 1.5x, /images/oauth2.0/auth-server-work-flow.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/auth-server-work-flow.png"
+        title="auth-server-work-flow" /></p>
+<h3 id="授权码许可流程">授权码许可流程</h3>
+<p>包含两部分：<strong>准备工作</strong>和<strong>生成授权码 code</strong>。</p>
+<p>准备工作：</p>
+<ol>
+<li>验证基本信息包括对第三方软件合法性和回调地址合法性的校验。
+<ul>
+<li>在浏览器环境下，颁发 code 的请求过程都是在浏览器前段完成的，意味着有被冒充的风险。因为授权服务 必须对第三方软件的存在性做判断。</li>
+<li>回调地址也是可以被伪造的。因此也需要校验是否是已经注册的回调地址。</li>
+</ul>
+</li>
+<li>校验权限范围，比如使用微信登录第三方软件时，微信授权页面会提示第三方软件会获得你的昵称，头像，地理位置等信息。如果不想让第三方获取，可以不选择
+某一项。这就是说需要对小兔软件传过来的 scope 参数，与小兔软件在平台注册时申请的 scope 对比校验。</li>
+<li>生成授权页面，用户点击 <strong>approve</strong> 之后叫（这之前还会有登录操作），才会生成授权码 code 和 <code>access_token</code>。</li>
+</ol>
+<p>生成授权码 code：</p>
+<ol>
+<li>第二次校验权限范围，使用用户授权之后的权限 scope 和注册时的 scope 做比对。因为用户点击 approve 之前可以选择权限范围。</li>
+<li>处理请求，生成授权码 code。校验 <code>response_type</code>，有两种类型的值 <code>code</code> 和 <code>token</code>，授权码流程的 <code>response_type</code> 的值就是 code。
+授权服务将 code 与 <code>app_id</code> 和 user 进行关系映射，由于授权码 code 是临时的，所以还需要设置有效期（一般不会超过 5 分钟），并且<strong>一个授权码 code 只能被使用一次</strong>。
+<strong>将授权码 code 和 scope 绑定存储</strong>，后续颁发 <code>access_token</code> 时通过 code 获取 scope，并与 <code>access_token</code> 绑定。</li>
+<li>重定向到第三方软件，code 在重定向 URL 种。</li>
+</ol>
+<p>颁发访问令牌：</p>
+<ol>
+<li>小兔软件拿着 code 来请求，这个过程在后端完成，校验 <code>grant_type</code> 是否为 <code>authorization_code</code>，校验 <code>app_id</code> 和 <code>app_secret</code>。</li>
+<li>校验授权码 code 是否合法，取出之前存储的 code，<strong>code 值对应的 key 是 <code>app_id</code> 和 user 的组合值。确认 code 有效后，从存储中删除</strong>。</li>
+<li>生成 <code>access_token</code>，有三个原则：<strong>唯一性，不连续性，不可猜性</strong>。存储 <code>access_token</code> ，并与 <code>app_id</code> 和 user 进行关系映射。还需要和 scope 绑定，设置过期时间 <code>expires_in</code>。</li>
+</ol>
+<h3 id="refresh_token">refresh_token</h3>
+<p>颁发 <code>refresh_token</code> 和 <code>access_token</code> 是一起生成的。第三方软件会得到两个 token。</p>
+<p><code>refresh_token</code> 有什么用？</p>
+<p>在 <code>access_token</code> 失效的情况 下，为了不让用户频繁手动授权，通过 <code>refresh_token</code> 向系统重新请求生成一个新的 <code>access_token</code>。</p>
+<p>在 OAuth 2.0 规范中，<code>refresh_token</code> 是一种特殊的授权许可类型，是嵌入在授权码许可类型下的一种特殊许可类型。</p>
+<p><code>refresh_token</code> 流程主要包括如下两大步骤：</p>
+<ol>
+<li><code>grant_type</code> 值为 <code>refresh_token</code>，验证第三方软件是否存在，验证 <code>refresh_token</code>。验证 <code>refresh_token</code> 是否属于该第三方软件。</li>
+<li>重新生成 <code>access_token</code> 和 <code>refresh_token</code>。</li>
+</ol>
+<blockquote>
+<p>一个 <code>refresh_token</code> 被使用以后，授权服务需要将其废弃，并重新颁发一个 <code>refresh_token</code>。</p>
+</blockquote>
+<h2 id="jwt">JWT</h2>
+<p>JSON Web Token（JWT）是一个开放标准，就是用一种结构化封装的方式生成 token 的技术。</p>
+<p>结构化后，token 本身就可以包含一些有用的信息，可以分为三部分：</p>
+<ul>
+<li>Header，typ 表示 token 的类型，alg 表示使用的签名算法</li>
+<li>Payload，JWT 的数据体。sub 一般为资源拥有者的唯一标识，exp token 的过期时间，iat token 的颁发时间。还可以自定义声明。</li>
+<li>Signature，JWT 信息的签名。防止信息被篡改。</li>
+</ul>
+<p>三部分通过 <code>.</code> 分隔，<code>Header.Payload.Signature</code>。</p>
+<h3 id="令牌内检">令牌内检</h3>
+<p>令牌内检的意思就是，<strong>受保护资源服务</strong>要验证<strong>授权服务颁发的令牌</strong>，受保护资源服务调用授权服务的接口来检验令牌。</p>
+<h3 id="jwt-如何使用">JWT 如何使用</h3>
+<p>授权服务颁发 JWT token 给第三方软件，第三方软件拿着 token 来请求受保护资源。JWT 在公网上传输，用 base64 进行编码，同时还需要进行签名及加密处理。</p>
+<h3 id="jwt-的优缺点">JWT 的优缺点</h3>
+<p>优点：</p>
+<ol>
+<li>JWT 的核心思想就是用计算替代存储，就是时间换空间。</li>
+<li>加密。</li>
+<li>JWT token，有助于增强系统的可用性和可伸缩性。为什么这么说，因为 JWT token 本身包含了验证身份需要的信息，不需要服务端额外的存储，每次请求都是
+无状态的。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>JWT token 不会在服务端存储，所以无法改变 token 的状态。这就意味着，只要 token 没有过期，就可以一直使用。</li>
+</ol>
+<p>为了解决这个问题，通 常会有两种做法：</p>
+<ol>
+<li>将每次生成 JWT 令牌时的秘钥粒度缩小到用户级别，也就是一个用户一个秘钥。这样，当用户取消授权或者修改密码后，就可以让这个密钥一起修改。一般情况下，这
+种方案需要配套一个单独的密钥管理服务。</li>
+<li>在不提供用户主动取消授权的环境里面，如果只考虑到修改密码的情况，那么就可以把用户密码作为 JWT 的密钥。当然，这也是用户粒度级别的。这样一来，用户
+修改密码也就相当于修改了密钥。</li>
+</ol>
+<h3 id="token-生命周期">Token 生命周期</h3>
+<p>无论是JWT 结构化令牌还是普通的令牌。它们都有有效期，只不过，JWT 令牌可以把有效期的信息存储在本身的结构体中。</p>
+<p>OAuth 2.0 的令牌生命周期，通常会有三种情况：</p>
+<ol>
+<li>自然过期，这是最常见的情况。这个过程是，从授权服务创建 一个令牌开始，到第三方软件使用令牌，再到受保护资源服务验证令牌，最后再到令牌失
+效。同时，这个过程也不排除主动销毁令牌的事情发生，比如令牌被泄露，授权服务可以 做主让令牌失效。</li>
+<li>访问令牌失效之后可以使用刷新令牌请求 新的访问令牌来代替失效的访问令牌，以提升用户使用第三方软件的体验。</li>
+<li>就是让第三方软件比如小兔，主动发起令牌失效的请求，然后授 权服务收到请求之后让令牌立即失效。</li>
+</ol>
+<h2 id="第三方软件">第三方软件</h2>
+<p>如何构建第三方软件，</p>
+<p>包括 4 部分，分别是：<strong>注册信息、引导授权、使用访问令牌、使用刷新令牌</strong>。</p>
+<h3 id="注册信息">注册信息</h3>
+<p>小兔软件只有先有了身份，才可以参与到 OAuth 2.0 的流程中去。也就是说，小兔软件需要先拥有自己的 <code>app_id</code> 和 <code>app_serect</code> 等信息，同时还要填写
+自己的回调地址 <code>redirect_uri</code>、申请权限等信息。这也叫做<strong>静态注册</strong>，</p>
+<h3 id="引导授权">引导授权</h3>
+<p>当用户需要使用第三方软件，来操作其在受保护资源上的数据，就需要第三方软件来引导 授权。小兔软件需要小明的授权，只有授权服务才能允许小明这样做。所以呢，小兔软
+件需要“配合”小明做的第一件事儿，就是将小明引导至授权服务。让用户为第三方软件授权，得到了授权之后，第三方软件才可以 代表用户去访问数据。</p>
+<h3 id="使用-access_token">使用 <code>access_token</code></h3>
+<p><strong>拿到令牌后去使用令牌，才是第三方软件的最终目的</strong>。</p>
+<p>目前 OAuth 2.0 的令牌只支持一种类型，那就是 <code>bearer</code> 令牌，可以是任意字符串格式的令牌。使用 <code>access_token</code>请求的方式，有三种：</p>
+<ol>
+<li>URI Query Parameter：</li>
+</ol>
+<pre tabindex="0"><code>GET /resource?access_token=b1a64d5c-5e0c-4a70-9711-7af6568a61fb HTTP/1.1
+</code></pre><ol start="2">
+<li>POST 表单：</li>
+</ol>
+<pre tabindex="0"><code>POST /resource HTTP/1.1
+Host: server.example.com
+Content-Type: application/x-www-form-urlencoded
+
+access_token=b1a64d5c-5e0c-4a70-9711-7af6568a61fb
+</code></pre><ol start="3">
+<li>Authorization Request Header：</li>
+</ol>
+<pre tabindex="0"><code>GET /resource HTTP/1.1
+Host: server.example.com
+Authorization: Bearer b1a64d5c-5e0c-4a70-9711-7af6568a61fb
+</code></pre><p>建议是采用 Authorization 的方式来传递令牌。</p>
+<p>使用 <code>refresh_token</code> 的方式跟使用 <code>access_token</code> 是一样的。</p>
+<p><code>refresh_token</code>的使用，最需要关心的是，什么时候使用 <code>refresh_token</code>？</p>
+<p>例如，在小兔打单软件收到 <code>access_token</code> 的同时，也会收到 <code>access_token</code> 的过期时间 <code>expires_in</code>。一个设 计良好的第三方应用，应该将
+<code>expires_in</code> 值保存下来并定时检测；如果发现 <code>expires_in</code>即将过期，则需要利用 <code>refresh_token</code> 去重新请求授权服务，以便获取新的、有效的访问
+令牌。</p>
+<p>这种定时检测的方法可以提前发现 <code>access_token</code> 是否即将过期。此外，还有一种方法是“现场”发现。也就是说，比如小兔软件访问小明店铺订单的时候，
+突然收到一个 <code>access_token</code> 失 效的响应，此时小兔软件立即使用 <code>refresh_token</code> 来请求一个 <code>access_token</code>，以便继续代表小 明使用他的数据。</p>
+<blockquote>
+<p><code>refresh_token</code> 是一次性的，使用之后就会失效，但是它的有效期会比 <code>access_token</code> 要长。但是如果 <code>refresh_token</code> 也过期了怎么办？
+在这种情况下，就需要重新授权了。</p>
+</blockquote>
+<h2 id="资源拥有者凭据许可password">资源拥有者凭据许可（Password）</h2>
+<p>资源拥有者的凭据，就是用户名和密码。这是最糟糕的一种方式。为什么 OAuth 2.0 还支持这种许可类型？</p>
+<p>例如，小兔此时就是京东官方出品的一款软件，小明也是京东的用户，那么小明其实是可以使用用户名和密码来直接使用小兔这款软件的。原因很简单，那就是这里不再
+有“第三方”的概念了。</p>
+<p>小兔软件只需要使用一次用户名和密码数据来换回一个 token，进而通过 token 来访问小明店铺的数据，以后就不会再使用用户名和密码了。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/password-flow.png"
+        data-srcset="/images/oauth2.0/password-flow.png, /images/oauth2.0/password-flow.png 1.5x, /images/oauth2.0/password-flow.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/password-flow.png"
+        title="password-flow" /></p>
+<blockquote>
+<p>注意第 2 步中的 <code>grant_type</code> 的值为 <code>password</code>，告诉授权服务使用资源拥有者凭据许可凭据的方式去请求访问。</p>
+</blockquote>
+<h2 id="客户端凭据许可client-credentials">客户端凭据许可（Client Credentials）</h2>
+<p>如果小兔软件访问了一个不需要用户小明授权的数据，比如获取京东 LOGO 的图片地址，这个 LOGO 信息不属于任何一个第三方用户。在授权流程中，就不再需要
+资源拥有者这个角色了。也可以理解为“第三方软件就是资源拥有者”。</p>
+<p>这种场景下的授权，便是客户端凭据许可，第三方软件可以直接使用注册时的 <code>app_id</code> 和 <code>app_secret</code> 来换回访问令牌 token。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/client-credential-flow.png"
+        data-srcset="/images/oauth2.0/client-credential-flow.png, /images/oauth2.0/client-credential-flow.png 1.5x, /images/oauth2.0/client-credential-flow.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/client-credential-flow.png"
+        title="client-credential-flow" /></p>
+<blockquote>
+<p>第 1 步：第三方软件小兔通过后端服务向授权服务发送请求，这里 <code>grant_type</code> 的值为 <code>client_credentials</code></p>
+</blockquote>
+<h2 id="隐式许可implicit">隐式许可（Implicit）</h2>
+<p>如果小明使用的小兔打单软件应用没有后端服务，就是在浏览器里面执行的，比如纯粹的 JavaScript 应用，应该如何使用 OAuth 2.0？</p>
+<p>在这种情况下，小兔软件对于浏览器就没有任何保密的数据可以隐藏了，不需要 <code>app_secret</code> 的值，也不用再通过授权码 code。因为使用授权码的目的之一，
+就是把浏览器和第三方软件的信息做一个隔离，确保浏览器看不到 access_token。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/implicit-flow.png"
+        data-srcset="/images/oauth2.0/implicit-flow.png, /images/oauth2.0/implicit-flow.png 1.5x, /images/oauth2.0/implicit-flow.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/implicit-flow.png"
+        title="implicit-flow" /></p>
+<p><strong>隐式许可授权流程的安全性会降低很多</strong>。</p>
+<h2 id="oidc">OIDC</h2>
+<p>OIDC 是一种用户身份认证的开放标准。OIDC 是基于 OAuth 2.0 构建的身份认证框架协议。OAuth 2.0 是一种授权协议，而不是身份认证协议。</p>
+<p><strong>OIDC = 授权协议 + 身份认证</strong>，是 OAuth 2.0 的超集。</p>
+<p>OIDC 和 OAuth 2.0 的角色对应关系：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/oidc-roles.png"
+        data-srcset="/images/oauth2.0/oidc-roles.png, /images/oauth2.0/oidc-roles.png 1.5x, /images/oauth2.0/oidc-roles.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/oidc-roles.png"
+        title="oidc-roles" /></p>
+<p>OIDC 标准框架中的三个角色：</p>
+<ul>
+<li>EU（End User），终端用户</li>
+<li>RP（Relying Party），认证服务的依赖方，就是 OAuth 2.0 中的第三方软件。</li>
+<li>OP（OpenID Provider），身份认证服务提供方</li>
+</ul>
+<p>OIDC 的通信流程：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/oauth2.0/oidc-flow.png"
+        data-srcset="/images/oauth2.0/oidc-flow.png, /images/oauth2.0/oidc-flow.png 1.5x, /images/oauth2.0/oidc-flow.png 2x"
+        data-sizes="auto"
+        alt="/images/oauth2.0/oidc-flow.png"
+        title="oidc-flow" /></p>
+<p>OIDC 的授权码流程和 OAuth 2.0 授权码流程几乎一样，唯一的区别就是多了一个 <code>ID_TOKEN</code>。</p>
+<h3 id="id_token">ID_TOKEN</h3>
+<p>OIDC 对 OAuth 2.0 最主要的扩展就是提供了 <code>id_token</code>。</p>
+<p><code>id_token</code> 和 <code>access_token</code> 是一起返回的。但是 <code>access_token</code> 是不需要被第三方软件解析的。而 <code>id_token</code> 需要被第三方软件解析，从而获取
+<code>id_token</code> 中的信息。</p>
+<p><code>id_token</code> 能够标识用户，失效时间等属性来达到身份认证的目的。<code>id_token</code> 才是身份认证得关键。</p>
+<h4 id="id_token-中有什么信息">ID_TOKEN 中有什么信息？</h4>
+<p><code>id_token</code> 也是 JWT token（由一组 Cliams 构成以及其他辅助的 Cliams），一定包含下面 5 个参数：</p>
+<ul>
+<li>iss，token 的颁发者，它的值就是 OP 的 URL。</li>
+<li>sub，token 的主题，值是一个代表 EU 的全局唯一的标识符。</li>
+<li>aud，token 的目标受众，值是 RP 的 <code>app_id</code>。</li>
+<li>exp，token 的过期时间。</li>
+<li>iat，token 的颁发时间。</li>
+</ul>
+<p>在第三方软件（RP）拿到这些信息之后，就获得了身份信息（如 sub，EU 的全局唯一的标识符），然后对身份信息进行验证 至此，可以说用户身份认证就可以完成了，
+后续可以根据 UserInfo EndPoint 获取更完整的信息。</p>
+<h3 id="oidc-流程">OIDC 流程</h3>
+<p><strong><code>id_token</code> -&gt; 创建 UserInfo EndPoint -&gt; 解析 <code>id_token</code> -&gt; 记录登录状态 -&gt; 获取 UserInfo</strong>。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-03-09&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/c35cdb20eba3ccdd4ce77e3d052f30d338b2f252" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) c35cdb20eba3ccdd4ce77e3d052f30d338b2f252: Posts/OAuth2.0 getting started (#3)">
+                                    <i class="fas fa-hashtag fa-fw"></i>c35cdb2</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/2020-11-03-oauth2-getting-started/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/2020-04-09-go-remote-debug/" class="prev" rel="prev" title="Golang Remote Debug with Delve"><i class="fas fa-angle-left fa-fw"></i>Golang Remote Debug with Delve</a>
+            <a href="/posts/2020-05-20-regex/" class="next" rel="next" title="Regex">Regex<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

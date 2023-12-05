@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Node 如何做性能分析 - Echo</title><meta name="Description" content=""><meta property="og:title" content="Node 如何做性能分析" />
+<meta property="og:description" content="Node.js 的性能分析工具 v8-profiler 可以采集性能分析样本。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/2019-12-07-node-profile/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2019-12-07T12:57:31+00:00" />
+<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://example.org/logo.png"/>
+
+<meta name="twitter:title" content="Node 如何做性能分析"/>
+<meta name="twitter:description" content="Node.js 的性能分析工具 v8-profiler 可以采集性能分析样本。"/>
+<meta name="application-name" content="Echo">
+<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2019-12-07-node-profile/" /><link rel="prev" href="http://example.org/posts/2019-11-21-gin-resource-code-analysis/" /><link rel="next" href="http://example.org/posts/2020-01-17-project-layout-cn/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Node 如何做性能分析",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/2019-12-07-node-profile\/"
+        },"genre": "posts","wordcount":  1721 ,
+        "url": "http:\/\/example.org\/posts\/2019-12-07-node-profile\/","datePublished": "2019-12-07T12:57:31+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
+            "@type": "Organization",
+            "name": "shipengqi"},"author": {
+                "@type": "Person",
+                "name": "shipengqi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Node 如何做性能分析</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-12-07">2019-12-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1721 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#性能分析工具">性能分析工具</a>
+      <ul>
+        <li><a href="#v8-profiler">v8-profiler</a></li>
+        <li><a href="#webstrom-v8-profiling">webstrom v8 profiling</a></li>
+      </ul>
+    </li>
+    <li><a href="#准备工作">准备工作</a>
+      <ul>
+        <li><a href="#查看分析报告">查看分析报告</a></li>
+      </ul>
+    </li>
+    <li><a href="#内存分析工具">内存分析工具</a>
+      <ul>
+        <li><a href="#heapdump">heapdump</a></li>
+        <li><a href="#webstrom-heap-snapshot">webstrom heap snapshot</a></li>
+        <li><a href="#内存分析">内存分析</a></li>
+        <li><a href="#其他工具">其他工具</a></li>
+      </ul>
+    </li>
+    <li><a href="#线上性能分析">线上性能分析</a></li>
+    <li><a href="#参看链接">参看链接</a></li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><p>Node.js 的性能分析工具 <a href="https://github.com/node-inspector/v8-profiler" target="_blank" rel="noopener noreffer">v8-profiler</a> 可以采集性能分析样本。</p>
+<h2 id="性能分析工具">性能分析工具</h2>
+<h3 id="v8-profiler">v8-profiler</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">v8Profiler</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;v8-profiler&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">title</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">v8Profiler</span><span class="p">.</span><span class="nx">startProfiling</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">profiler</span> <span class="o">=</span> <span class="nx">v8Profiler</span><span class="p">.</span><span class="nx">stopProfiling</span><span class="p">(</span><span class="nx">title</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">profiler</span><span class="p">.</span><span class="k">delete</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">profiler</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">5000</span><span class="p">);</span>
+</span></span></code></pre></div><p>上面的示例，会采集运行 5s 内的分析样本。</p>
+<p>v8-profiler 貌似已经不再维护了，可以尝试 <a href="https://github.com/hyj1991/v8-profiler-next" target="_blank" rel="noopener noreffer">v8-profiler-next</a>。</p>
+<p>v8-profiler 生成的 profile 文件如何分析可以看 <a href="https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x03_%E5%B7%A5%E5%85%B7%E7%AF%87_%E6%AD%A3%E7%A1%AE%E6%89%93%E5%BC%80%20Chrome%20devtools.md" target="_blank" rel="noopener noreffer">这里</a>。</p>
+<h3 id="webstrom-v8-profiling">webstrom v8 profiling</h3>
+<p>也可以使用 webstrom 的 v8 profiling：</p>
+<p>选择 <strong>Edit Configuration</strong>，切换到 <strong>V8 Profiling</strong>，选中 <strong>Record CPU profiling info</strong> ，然后运行代码，就可以了。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/webstrom-v8-profile.png"
+        data-srcset="/images/node-profile/webstrom-v8-profile.png, /images/node-profile/webstrom-v8-profile.png 1.5x, /images/node-profile/webstrom-v8-profile.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/webstrom-v8-profile.png"
+        title="/images/node-profile/webstrom-v8-profile.png" /></p>
+<p><strong>Log folder</strong> 可以指定生成分析样本文件的目录，样本文件的命名格式是 <code>isolate-&lt;session number&gt;</code>。</p>
+<p>我使用的就是 webstrom 的 v8 profiling。</p>
+<h2 id="准备工作">准备工作</h2>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">run</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">App</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">bindAny</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="mi">18</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">((</span><span class="nx">$age</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$next</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;app middleware1&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">((</span><span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$age</span><span class="p">,</span> <span class="nx">$next</span><span class="p">,</span> <span class="nx">$address</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;app middleware2&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="nx">$address</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/users/:name&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">$age</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$next</span><span class="p">,</span> <span class="nx">$address</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;users/name middleware1&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="nx">$address</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;user1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">$age</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$next</span><span class="p">,</span> <span class="nx">$address</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;users/name middleware2&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="nx">$address</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="nx">read</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s1">&#39;hello, &#39;</span> <span class="o">+</span> <span class="nx">$ctx</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;/users/&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">$age</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$next</span><span class="p">,</span> <span class="nx">$address</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;users middleware1&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="nx">$address</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s1">&#39;user1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">},</span> <span class="p">(</span><span class="nx">$age</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$next</span><span class="p">,</span> <span class="nx">$address</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;users middleware2&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">$ctx</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$ctx</span><span class="p">.</span><span class="nx">body</span> <span class="o">=</span> <span class="s1">&#39;hello, &#39;</span> <span class="o">+</span> <span class="nx">$ctx</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">use</span><span class="p">((</span><span class="nx">$address</span><span class="p">,</span> <span class="nx">$ctx</span><span class="p">,</span> <span class="nx">$next</span><span class="p">,</span> <span class="nx">$age</span><span class="p">,</span> <span class="nx">$getAddress</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;app middleware3&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;age&#39;</span> <span class="o">+</span> <span class="nx">$age</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="nx">$address</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;getAddress&#39;</span><span class="p">,</span> <span class="nx">$getAddress</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">$next</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">bindAny</span><span class="p">(</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="s1">&#39;shanghai&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">bindFunction</span><span class="p">(</span><span class="s1">&#39;getAddress&#39;</span><span class="p">,</span> <span class="nx">$address</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">$address</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">app</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">read</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="s1">&#39;test.log&#39;</span><span class="p">,</span> <span class="sb">`test`</span><span class="p">,</span> <span class="p">{</span><span class="nx">flag</span><span class="o">:</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="nx">encoding</span><span class="o">:</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span><span class="nx">mode</span><span class="o">:</span><span class="s1">&#39;0666&#39;</span><span class="p">},()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">resolve</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="p">})</span>
+</span></span><span class="line"><span class="cl">  <span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="nx">run</span><span class="p">();</span>
+</span></span></code></pre></div><p>使用 AB 进行压力测试：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="o">[</span>root@SGDLITVM0905 ~<span class="o">]</span><span class="c1"># ab -n 10000 -c 100 http://10.5.41.247:8080/users/pooky</span>
+</span></span><span class="line"><span class="cl">This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">1430300</span> $&gt;
+</span></span><span class="line"><span class="cl">Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+</span></span><span class="line"><span class="cl">Licensed to The Apache Software Foundation, http://www.apache.org/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Benchmarking 10.5.41.247 <span class="o">(</span>be patient<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Completed <span class="m">1000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">2000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">3000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">4000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">5000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">6000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">7000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">8000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">9000</span> requests
+</span></span><span class="line"><span class="cl">Completed <span class="m">10000</span> requests
+</span></span><span class="line"><span class="cl">Finished <span class="m">10000</span> requests
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Server Software:
+</span></span><span class="line"><span class="cl">Server Hostname:        10.5.41.247
+</span></span><span class="line"><span class="cl">Server Port:            <span class="m">8080</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Document Path:          /users/pooky
+</span></span><span class="line"><span class="cl">Document Length:        <span class="m">9</span> bytes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Concurrency Level:      <span class="m">100</span>
+</span></span><span class="line"><span class="cl">Time taken <span class="k">for</span> tests:   16.801 seconds
+</span></span><span class="line"><span class="cl">Complete requests:      <span class="m">10000</span>
+</span></span><span class="line"><span class="cl">Failed requests:        <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Write errors:           <span class="m">0</span>
+</span></span><span class="line"><span class="cl">Non-2xx responses:      <span class="m">10000</span>
+</span></span><span class="line"><span class="cl">Total transferred:      <span class="m">1510000</span> bytes
+</span></span><span class="line"><span class="cl">HTML transferred:       <span class="m">90000</span> bytes
+</span></span><span class="line"><span class="cl">Requests per second:    595.19 <span class="o">[</span><span class="c1">#/sec] (mean)</span>
+</span></span><span class="line"><span class="cl">Time per request:       168.014 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Time per request:       1.680 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Transfer rate:          87.77 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Connection Times <span class="o">(</span>ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
+</span></span><span class="line"><span class="cl">Connect:        <span class="m">0</span>    <span class="m">4</span>   2.4      <span class="m">3</span>      <span class="m">21</span>
+</span></span><span class="line"><span class="cl">Processing:    <span class="m">38</span>  <span class="m">163</span>  54.3    <span class="m">151</span>     <span class="m">465</span>
+</span></span><span class="line"><span class="cl">Waiting:       <span class="m">10</span>  <span class="m">135</span>  45.4    <span class="m">125</span>     <span class="m">373</span>
+</span></span><span class="line"><span class="cl">Total:         <span class="m">39</span>  <span class="m">167</span>  55.0    <span class="m">154</span>     <span class="m">474</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
+</span></span><span class="line"><span class="cl">  50%    <span class="m">154</span>
+</span></span><span class="line"><span class="cl">  66%    <span class="m">163</span>
+</span></span><span class="line"><span class="cl">  75%    <span class="m">175</span>
+</span></span><span class="line"><span class="cl">  80%    <span class="m">189</span>
+</span></span><span class="line"><span class="cl">  90%    <span class="m">230</span>
+</span></span><span class="line"><span class="cl">  95%    <span class="m">299</span>
+</span></span><span class="line"><span class="cl">  98%    <span class="m">338</span>
+</span></span><span class="line"><span class="cl">  99%    <span class="m">370</span>
+</span></span><span class="line"><span class="cl"> 100%    <span class="m">474</span> <span class="o">(</span>longest request<span class="o">)</span>
+</span></span></code></pre></div><h3 id="查看分析报告">查看分析报告</h3>
+<p>程序停止运行之后，可以得到如下结果：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/v8-profile-top-calls.png"
+        data-srcset="/images/node-profile/v8-profile-top-calls.png, /images/node-profile/v8-profile-top-calls.png 1.5x, /images/node-profile/v8-profile-top-calls.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/v8-profile-top-calls.png"
+        title="/images/node-profile/v8-profile-top-calls.png" /></p>
+<p><strong>Top Calls</strong> 按 Self 指标（函数本身代码段调用次数和执行时间）降序列出所有函数，可以看出 <code>routergroup</code> 的 <code>dispatch</code> 方法消耗调用次数最多，占用 CPU 时间最长。</p>
+<p>Total 指标表示<strong>函数本身和其调用地其它函数总共的执行时间</strong></p>
+<p><code>Bottom-UP</code> 会从外到里的列出函数的整个调用栈：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/v8-profile-bottom-up.png"
+        data-srcset="/images/node-profile/v8-profile-bottom-up.png, /images/node-profile/v8-profile-bottom-up.png 1.5x, /images/node-profile/v8-profile-bottom-up.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/v8-profile-bottom-up.png"
+        title="/images/node-profile/v8-profile-bottom-up.png" /></p>
+<p><code>Flame Chart</code> 可以帮助查看程序执行时暂停的位置，是什么引起的暂停。</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/v8-profile-flame-chart.png"
+        data-srcset="/images/node-profile/v8-profile-flame-chart.png, /images/node-profile/v8-profile-flame-chart.png 1.5x, /images/node-profile/v8-profile-flame-chart.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/v8-profile-flame-chart.png"
+        title="/images/node-profile/v8-profile-flame-chart.png" /></p>
+<p>最上方的是 timeline，可以随意选择时间段，来查看该时间段程序的执行片段。</p>
+<p>火焰图区域展示了 GC ，引擎，外部调用和程序本身的调用。这些调用对应的颜色在火焰图的上方有标注。</p>
+<p>右侧展示了函数的调用栈（从下到上），和执行时间。</p>
+<p>选中某个片段，点击左上角的 <code>+</code> 可以放大图表。</p>
+<h2 id="内存分析工具">内存分析工具</h2>
+<h3 id="heapdump">heapdump</h3>
+<p>内存分析工具可以使用 <a href="https://github.com/bnoordhuis/node-heapdump" target="_blank" rel="noopener noreffer">heapdump</a>:</p>
+<pre tabindex="0"><code class="language-javascipt" data-lang="javascipt">const heapdump = require(&#39;heapdump&#39;);
+heapdump.writeSnapshot(&#39;./test&#39; + &#39;.heapsnapshot&#39;);
+</code></pre><p>当前目录会生成内存快照 <code>test.heapsnapshot</code> 文件，后缀必须为 <code>.heapsnapshot</code> ，否则 Chrome devtools 不识别。</p>
+<p>Chrome devtools 如何分析可以看 <a href="https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x03_%E5%B7%A5%E5%85%B7%E7%AF%87_%E6%AD%A3%E7%A1%AE%E6%89%93%E5%BC%80%20Chrome%20devtools.md" target="_blank" rel="noopener noreffer">这里</a>。</p>
+<h3 id="webstrom-heap-snapshot">webstrom heap snapshot</h3>
+<p>和 CPU profiling 一样，进入 <strong>Edit Configuration</strong>，选中 <strong>Allow Taking heap snapshot</strong>。</p>
+<p>运行程序，点击 <strong>Take heap snapshot</strong>：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/v8-profile-take-heap-snapshots.png"
+        data-srcset="/images/node-profile/v8-profile-take-heap-snapshots.png, /images/node-profile/v8-profile-take-heap-snapshots.png 1.5x, /images/node-profile/v8-profile-take-heap-snapshots.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/v8-profile-take-heap-snapshots.png"
+        title="/images/node-profile/v8-profile-take-heap-snapshots.png" /></p>
+<p>webstrom 就会收集内存的 profile 信息，并保存到指定文件。</p>
+<p>如果已经有 <code>.heapsnapshot</code> 文件，也可以通过 <code>Tools | V8 Profiling - Analyze V8 Heap Snapshot</code> 来查看。</p>
+<h3 id="内存分析">内存分析</h3>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/v8-heap-profile.png"
+        data-srcset="/images/node-profile/v8-heap-profile.png, /images/node-profile/v8-heap-profile.png 1.5x, /images/node-profile/v8-heap-profile.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/v8-heap-profile.png"
+        title="/images/node-profile/v8-heap-profile.png" /></p>
+<p><strong>Summary</strong> 视图显示应用程序中按类型分组的对象。每种类型的对象数量、它们的大小以及它们占用的内存百分比。</p>
+<ul>
+<li>Constructor，表示所有通过该构造函数生成的对象</li>
+<li>Distance， 对象到达 GC 根的最短距离</li>
+<li>Shallow Size，对象本身占用的内存，也就是对象自身被创建时，在 V8 堆上分配的大小</li>
+<li>Retained Size，占用总内存，包括引用的对象所占用的内存，GC 后 V8 堆能够释放出的空间大小</li>
+</ul>
+<p><strong>支配树</strong></p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/node-profile/object-tree.png"
+        data-srcset="/images/node-profile/object-tree.png, /images/node-profile/object-tree.png 1.5x, /images/node-profile/object-tree.png 2x"
+        data-sizes="auto"
+        alt="/images/node-profile/object-tree.png"
+        title="/images/node-profile/object-tree.png" /></p>
+<p>1 为根节点（GC 根），如果要回收对象 5 ，也就是使对象 5 从 GC 根不可达，仅仅去掉对象 4 或者对象 3 对于对象 5 的引用是不够的，只有去掉对象 2 才能将对象 5 回收，所以在上面这个图中，对象 5 的直接支配者是对象 2。</p>
+<p>上面图中对象 3、对象 7 和对象 8 没有任何直接支配对象，因此其 Retained Size 等于其 Shallow Size。</p>
+<p><strong>GC 根的 Retained Size 等于堆上所有从此根出发可达对象的 Shallow Size 之和</strong>。</p>
+<p>按照上面的介绍，<strong>Retained Size 非常大的对象，就可能是泄露的对象</strong>。</p>
+<p><strong>Biggest Objects</strong> 视图显示按对象大小排序，消耗内存最多的对象。
+<strong>Containment view</strong> 视图可以用来探测堆内容，可以查看 function 内部，观察 VM 内部对象，可以看到底层的内存使用情况。</p>
+<p>实际项目中，我们应该对多个内存快照进行比对分析，如果某个对象占用的内存一直持续增加，那么就又可能是泄露了。</p>
+<h3 id="其他工具">其他工具</h3>
+<ul>
+<li><a href="https://github.com/airbnb/node-memwatch" target="_blank" rel="noopener noreffer">node-memwatch</a></li>
+<li><a href="https://github.com/nearform/node-clinic" target="_blank" rel="noopener noreffer">node-clinic</a></li>
+</ul>
+<h2 id="线上性能分析">线上性能分析</h2>
+<p>上面的方式适合在本地做性能分析和优化，线上项目如果要分析性能问题，就要提前引入 v8-profiler 和 heapdump，使用不太方便。而且除了 CPU/Memory 的问题
+，可能还会遇到其他问题。线上项目推荐使用 <a href="https://cn.aliyun.com/product/nodejs" target="_blank" rel="noopener noreffer">阿里的 Node.js 性能平台</a>。如何使用可以看<a href="https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x04_%E5%B7%A5%E5%85%B7%E7%AF%87_Node.js%20%E6%80%A7%E8%83%BD%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md" target="_blank" rel="noopener noreffer">这里</a>。</p>
+<h2 id="参看链接">参看链接</h2>
+<ul>
+<li><a href="https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference" target="_blank" rel="noopener noreffer">https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference</a></li>
+<li><a href="https://developers.google.com/web/tools/chrome-devtools/memory-problems?utm_campaign=2016q3&amp;utm_medium=redirect&amp;utm_source=dcc#retained-size" target="_blank" rel="noopener noreffer">https://developers.google.com/web/tools/chrome-devtools/memory-problems?utm_campaign=2016q3&utm_medium=redirect&utm_source=dcc#retained-size</a></li>
+<li><a href="https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x03_%E5%B7%A5%E5%85%B7%E7%AF%87_%E6%AD%A3%E7%A1%AE%E6%89%93%E5%BC%80%20Chrome%20devtools.md" target="_blank" rel="noopener noreffer">https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x03_%E5%B7%A5%E5%85%B7%E7%AF%87_%E6%AD%A3%E7%A1%AE%E6%89%93%E5%BC%80%20Chrome%20devtools.md</a></li>
+<li><a href="https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x04_%E5%B7%A5%E5%85%B7%E7%AF%87_Node.js%20%E6%80%A7%E8%83%BD%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md" target="_blank" rel="noopener noreffer">https://github.com/aliyun-node/Node.js-Troubleshooting-Guide/blob/master/0x04_%E5%B7%A5%E5%85%B7%E7%AF%87_Node.js%20%E6%80%A7%E8%83%BD%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97.md</a></li>
+<li><a href="https://juejin.im/post/5c6844b3e51d4520f0175839" target="_blank" rel="noopener noreffer">https://juejin.im/post/5c6844b3e51d4520f0175839</a></li>
+</ul></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/2019-12-07-node-profile/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/2019-11-21-gin-resource-code-analysis/" class="prev" rel="prev" title="Gin 框架源码分析"><i class="fas fa-angle-left fa-fw"></i>Gin 框架源码分析</a>
+            <a href="/posts/2020-01-17-project-layout-cn/" class="next" rel="next" title="Go project-layout（翻译）">Go project-layout（翻译）<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>

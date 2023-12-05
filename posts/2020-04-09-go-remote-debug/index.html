@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Golang Remote Debug with Delve - Echo</title><meta name="Description" content=""><meta property="og:title" content="Golang Remote Debug with Delve" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://example.org/posts/2020-04-09-go-remote-debug/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2020-04-09T17:55:23+08:00" />
+<meta property="article:modified_time" content="2023-12-03T22:13:41+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://example.org/logo.png"/>
+
+<meta name="twitter:title" content="Golang Remote Debug with Delve"/>
+<meta name="twitter:description" content=""/>
+<meta name="application-name" content="Echo">
+<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2020-04-09-go-remote-debug/" /><link rel="prev" href="http://example.org/posts/2020-03-11-go-code-review-comments/" /><link rel="next" href="http://example.org/posts/2020-11-03-oauth2-getting-started/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Golang Remote Debug with Delve",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/example.org\/posts\/2020-04-09-go-remote-debug\/"
+        },"genre": "posts","wordcount":  1012 ,
+        "url": "http:\/\/example.org\/posts\/2020-04-09-go-remote-debug\/","datePublished": "2020-04-09T17:55:23+08:00","dateModified": "2023-12-03T22:13:41+08:00","publisher": {
+            "@type": "Organization",
+            "name": "shipengqi"},"author": {
+                "@type": "Person",
+                "name": "shipengqi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="/about/"> About </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="Echo"><span class="header-title-pre"><i class='fas fa-meteor fa-fw'></i></span>Echo</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="/about/" title="">About</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Golang Remote Debug with Delve</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/go/"><i class="far fa-folder fa-fw"></i>Go</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-04-09">2020-04-09</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1012 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#delve-安装">Delve 安装</a></li>
+    <li><a href="#编译源码并开启调试模式">编译源码并开启调试模式</a></li>
+    <li><a href="#ide-配置">IDE 配置</a></li>
+    <li><a href="#问题">问题</a>
+      <ul>
+        <li><a href="#operation-not-permitted">operation not permitted</a></li>
+        <li><a href="#closed-network-connection">closed network connection</a></li>
+        <li><a href="#permission-denied">permission denied</a></li>
+        <li><a href="#kubernetes-中的-pod-状态-pending-或者-12-running">Kubernetes 中的 Pod 状态 Pending 或者 1/2 Running</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="delve-安装">Delve 安装</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ go get github.com/go-delve/delve/cmd/dlv
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># or</span>
+</span></span><span class="line"><span class="cl">$ git clone https://github.com/go-delve/delve.git <span class="nv">$GOPATH</span>/src/github.com/go-delve/delve
+</span></span><span class="line"><span class="cl">$ <span class="nb">cd</span> <span class="nv">$GOPATH</span>/src/github.com/go-delve/delve
+</span></span><span class="line"><span class="cl">$ make install
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># check</span>
+</span></span><span class="line"><span class="cl">$ dlv version
+</span></span></code></pre></div><p>如果找不到 <code>dlv</code>，检查环境变量 <code>PATH</code> 和 <code>GOPATH</code>。</p>
+<blockquote>
+<p>如果使用的是 Go Modules，执行上面的命令时，不要在你的项目目录里面。</p>
+</blockquote>
+<h2 id="编译源码并开启调试模式">编译源码并开启调试模式</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># compile</span>
+</span></span><span class="line"><span class="cl"><span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> go build -gcflags <span class="s2">&#34;all=-N -l&#34;</span> -a -o ./main ./main.go
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># start</span>
+</span></span><span class="line"><span class="cl">dlv --listen<span class="o">=</span>:2345 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --headless <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --api-version<span class="o">=</span><span class="m">2</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --accept-multiclient <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> --check-go-version<span class="o">=</span><span class="nb">false</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span> <span class="nb">exec</span> ./main
+</span></span></code></pre></div><p><code>--check-go-version</code> 的默认值是 <code>true</code>，检查 golang 的版本。在有些环境下可以设置为 <code>false</code>，比如我是将二进制文件运行在容器环境中，而我的容器
+中并没有 golang。</p>
+<blockquote>
+<p>golang 的版本要大于 1.14。</p>
+</blockquote>
+<p>如果 <code>./main</code> 后面需要参数，使用 <code>--</code> 分隔，例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dlv --listen<span class="o">=</span>:2345 --headless<span class="o">=</span><span class="nb">true</span> --api-version<span class="o">=</span><span class="m">2</span> --accept-multiclient --check-go-version<span class="o">=</span><span class="nb">false</span> <span class="nb">exec</span> ./main -- -f ./conf/debug.ini
+</span></span></code></pre></div><p>相当于：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ./main -f ./conf/debug.ini
+</span></span></code></pre></div><p>启动服务之后，输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dlv --listen<span class="o">=</span>:2345 --headless<span class="o">=</span><span class="nb">true</span> --api-version<span class="o">=</span><span class="m">2</span> --accept-multiclient --check-go-version<span class="o">=</span><span class="nb">false</span> <span class="nb">exec</span> ./main
+</span></span><span class="line"><span class="cl">API server listening at: <span class="o">[</span>::<span class="o">]</span>:2345
+</span></span></code></pre></div><p>进程会 pending 在这里，等待 remote debug 的连接。</p>
+<p>如果不需要被阻塞，可以使用 <code>--continue</code> 参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dlv --listen<span class="o">=</span>:2345 --headless<span class="o">=</span><span class="nb">true</span> --api-version<span class="o">=</span><span class="m">2</span> --accept-multiclient --check-go-version<span class="o">=</span><span class="nb">false</span> <span class="nb">exec</span> --continue ./main
+</span></span><span class="line"><span class="cl">API server listening at: <span class="o">[</span>::<span class="o">]</span>:2345
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> <span class="o">[</span>WARNING<span class="o">]</span> Running in <span class="s2">&#34;debug&#34;</span> mode. Switch to <span class="s2">&#34;release&#34;</span> mode in production.
+</span></span><span class="line"><span class="cl"> - using env:   <span class="nb">export</span> <span class="nv">GIN_MODE</span><span class="o">=</span>release
+</span></span><span class="line"><span class="cl"> - using code:  gin.SetMode<span class="o">(</span>gin.ReleaseMode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">...
+</span></span></code></pre></div><h2 id="ide-配置">IDE 配置</h2>
+<p>示例使用的 IDE 是 IDEA，在 <code>Add Configuration</code> 中配置 <code>Go Remote</code>：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/go-remote/ide-go-remote.png"
+        data-srcset="/images/go-remote/ide-go-remote.png, /images/go-remote/ide-go-remote.png 1.5x, /images/go-remote/ide-go-remote.png 2x"
+        data-sizes="auto"
+        alt="/images/go-remote/ide-go-remote.png"
+        title="ide-go-remote.png" /></p>
+<p>配置好后，点击 debug 按钮：</p>
+<p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="/images/go-remote/ide-go-start-debug.png"
+        data-srcset="/images/go-remote/ide-go-start-debug.png, /images/go-remote/ide-go-start-debug.png 1.5x, /images/go-remote/ide-go-start-debug.png 2x"
+        data-sizes="auto"
+        alt="/images/go-remote/ide-go-start-debug.png"
+        title="ide-go-start-debug.png" /></p>
+<p>连接成功之后，server 端会输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ dlv --listen<span class="o">=</span>:2345 --headless<span class="o">=</span><span class="nb">true</span> --api-version<span class="o">=</span><span class="m">2</span> --accept-multiclient --check-go-version<span class="o">=</span><span class="nb">false</span> <span class="nb">exec</span> ./main
+</span></span><span class="line"><span class="cl">API server listening at: <span class="o">[</span>::<span class="o">]</span>:2345
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> <span class="o">[</span>WARNING<span class="o">]</span> Running in <span class="s2">&#34;debug&#34;</span> mode. Switch to <span class="s2">&#34;release&#34;</span> mode in production.
+</span></span><span class="line"><span class="cl"> - using env:   <span class="nb">export</span> <span class="nv">GIN_MODE</span><span class="o">=</span>release
+</span></span><span class="line"><span class="cl"> - using code:  gin.SetMode<span class="o">(</span>gin.ReleaseMode<span class="o">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> GET    /                         --&gt; suite-installer-backend/app/http.loadRouter.func2 <span class="o">(</span><span class="m">6</span> handlers<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> GET    /healthz                  --&gt; suite-installer-backend/app/http.healthCheck <span class="o">(</span><span class="m">6</span> handlers<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> GET    /urest/v1.2/deployment/:deploymentUuid/components --&gt; suite-installer-backend/app/http.getComponents <span class="o">(</span><span class="m">7</span> handlers<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> POST   /urest/v1.2/deployment/:deploymentUuid/deployer --&gt; suite-installer-backend/app/http.startDeployer <span class="o">(</span><span class="m">7</span> handlers<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>GIN-debug<span class="o">]</span> POST   /urest/v1.2/deployment/:deploymentUuid/logs --&gt; suite-installer-backend/app/http.saveLogs <span class="o">(</span><span class="m">7</span> handlers<span class="o">)</span>
+</span></span></code></pre></div><p>之后就可以断点调试了。</p>
+<h2 id="问题">问题</h2>
+<h3 id="operation-not-permitted">operation not permitted</h3>
+<p>在 docker container 中运行，如果输出下面的错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">could not launch process: fork/exec ./main: operation not permitted
+</span></span></code></pre></div><p>可以设置 <code>--security-opt=seccomp:unconfined</code> 参数。关闭容器的 seccomp（linux 内核的一种安全机制） 限制。</p>
+<p>docker 是使用命名空间进行用户隔离，使用 cgroups 来限制容器使用的资源。使用 apparmor 限制容器对资源的访问以及使用 seccomp 限制容器的系统调用等。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ docker run -p 2345:2345 --security-opt<span class="o">=</span>seccomp:unconfined test:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 或者</span>
+</span></span><span class="line"><span class="cl">$ docker run -p 2345:2345 --security-opt<span class="o">=</span>apparmor:unconfined --cap-add<span class="o">=</span>SYS_PTRACE test:latest
+</span></span></code></pre></div><p><code>--cap-add</code> 用来添加 Linux capabilities。<code>SYS_PTRACE</code> 表示使用 ptrace(2) 追踪任意进程。</p>
+<p>参考：</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/reference/run/" target="_blank" rel="noopener noreffer">docker run reference</a></li>
+<li><a href="https://github.com/go-delve/delve/issues/515#issuecomment-214911481" target="_blank" rel="noopener noreffer">operation not permitted issue</a>。</li>
+<li><a href="https://github.com/go-delve/delve/issues/1109" target="_blank" rel="noopener noreffer">Delve debug in docker</a>。</li>
+<li><a href="https://github.com/dlsniper/webinar/blob/master/container-debug.sh#L10-L11" target="_blank" rel="noopener noreffer">container debug</a>。</li>
+</ul>
+<h3 id="closed-network-connection">closed network connection</h3>
+<p>如果使用了 <code>--continue</code> 参数，碰到了如下错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">2021-03-10T07:10:48Z error <span class="nv">layer</span><span class="o">=</span>rpc writing response:write tcp 127.0.0.1:2345-&gt;127.0.0.1:39402: use of closed network connection
+</span></span></code></pre></div><p>可能是在你的 main goroutine 中有无限循环导致，例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">// Necessary code here
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}()</span>
+</span></span></code></pre></div><p>可以改成：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">	<span class="k">go</span> <span class="kd">func</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">// Necessary code here
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}()</span>
+</span></span></code></pre></div><p>如果要实现在 main goroutine 中阻塞，可以利用 chan 来实现。</p>
+<p>参考 <a href="https://github.com/go-delve/delve/issues/2284" target="_blank" rel="noopener noreffer">closed network connection issue</a>。</p>
+<h3 id="permission-denied">permission denied</h3>
+<p>如果在 kubernetes 中，pod 启动时碰到下面的错误：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Could not create config directory: mkdir .config: permission denied.
+</span></span></code></pre></div><p>可能是因为设置了 securityContext 的问题，可以查看是否配置了 <code>runAsUser</code>，<code>runAsGroup</code> 等。</p>
+<p>另外 pod 也需要配置容器的 <code>--security-opt</code> 等参数：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">args</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- --<span class="l">security-opt=seccomp:unconfined</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- --<span class="l">security-opt=apparmor:unconfined</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- --<span class="l">cap-add=SYS_PTRACE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c"># or capabilities in container.securityContext</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">securityContext</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">capabilities</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">add</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span>- <span class="l">SYS_PTRACE</span><span class="w">
+</span></span></span></code></pre></div><h3 id="kubernetes-中的-pod-状态-pending-或者-12-running">Kubernetes 中的 Pod 状态 Pending 或者 1/2 Running</h3>
+<p>在 Kubernetes 中调试时，如果 pod 配置了 <code>readinessProbe</code>，但是没有使用 <code>--continue</code> 参数，那么容器进程阻塞，会导致 pod 的 <code>readinessProbe</code>
+总是失败，导致 Pod 的状态一直是 <code>Pending</code> 或者 <code>1/2  Running</code>。</p></div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2023-12-03&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/0358ebbeb7bc4fbbcdc1d0234d59ce6e655a96b4" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 0358ebbeb7bc4fbbcdc1d0234d59ce6e655a96b4: chore:remove resources">
+                                    <i class="fas fa-hashtag fa-fw"></i>0358ebb</a></span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"><span>
+                            <a class="link-to-markdown" href="/posts/2020-04-09-go-remote-debug/index.md" target="_blank">阅读原始文档</a>
+                        </span></div>
+            <div class="post-info-share">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/2020-03-11-go-code-review-comments/" class="prev" rel="prev" title="Go Code Review Comments（翻译）"><i class="fas fa-angle-left fa-fw"></i>Go Code Review Comments（翻译）</a>
+            <a href="/posts/2020-11-03-oauth2-getting-started/" class="next" rel="next" title="OAuth 2.0 Getting Started">OAuth 2.0 Getting Started<i class="fas fa-angle-right fa-fw"></i></a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
