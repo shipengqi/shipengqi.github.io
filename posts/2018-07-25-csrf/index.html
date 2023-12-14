@@ -1,244 +1,37 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>关于 CSRF - Echo</title><meta name="Description" content=""><meta property="og:title" content="关于 CSRF" />
-<meta property="og:description" content="最近在工作中，碰到了一个 security 的问题，产品容易被 CSRF 攻击，于是就对 CSRF 的攻击和防御原理，做了调研。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2018-07-25-csrf/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2018-07-25T09:55:13+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="关于 CSRF"/>
-<meta name="twitter:description" content="最近在工作中，碰到了一个 security 的问题，产品容易被 CSRF 攻击，于是就对 CSRF 的攻击和防御原理，做了调研。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2018-07-25-csrf/" /><link rel="prev" href="http://example.org/posts/2018-07-03-web-terminal/" /><link rel="next" href="http://example.org/posts/2018-08-22-linux-crontrab/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "关于 CSRF",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2018-07-25-csrf\/"
-        },"genre": "posts","wordcount":  1321 ,
-        "url": "http:\/\/example.org\/posts\/2018-07-25-csrf\/","datePublished": "2018-07-25T09:55:13+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">关于 CSRF</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/others/"><i class="far fa-folder fa-fw"></i>Others</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2018-07-25">2018-07-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1321 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#什么是-csrf">什么是 CSRF</a></li>
-    <li><a href="#防御策略">防御策略</a></li>
-    <li><a href="#验证-http-referer">验证 HTTP Referer</a>
-      <ul>
-        <li><a href="#referer">Referer</a></li>
-        <li><a href="#优点">优点</a></li>
-        <li><a href="#缺点">缺点</a></li>
-      </ul>
-    </li>
-    <li><a href="#csrf-token">CSRF Token</a>
-      <ul>
-        <li><a href="#优点-1">优点</a></li>
-        <li><a href="#缺点-1">缺点</a></li>
-      </ul>
-    </li>
-    <li><a href="#验证码">验证码</a></li>
-    <li><a href="#nodejs-csrf-相关的第三方库">Node.js CSRF 相关的第三方库</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>最近在工作中，碰到了一个 security 的问题，产品容易被 CSRF 攻击，于是就对 CSRF 的攻击和防御原理，做了调研。</p>
-<h2 id="什么是-csrf">什么是 CSRF</h2>
-<p>CSRF（Cross Site Request Forgery, 跨站域请求伪造）是一种网络的攻击方式，它在 2007 年曾被列为互联网 20 大安全隐患之一。
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>关于 CSRF - Echo</title><meta name=Description content><meta property="og:title" content="关于 CSRF"><meta property="og:description" content="最近在工作中，碰到了一个 security 的问题，产品容易被 CSRF 攻击，于是就对 CSRF 的攻击和防御原理，做了调研。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2018-07-25-csrf/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-07-25T09:55:13+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="关于 CSRF"><meta name=twitter:description content="最近在工作中，碰到了一个 security 的问题，产品容易被 CSRF 攻击，于是就对 CSRF 的攻击和防御原理，做了调研。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2018-07-25-csrf/><link rel=prev href=http://example.org/posts/2018-07-03-web-terminal/><link rel=next href=http://example.org/posts/2018-08-22-linux-crontrab/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"关于 CSRF","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2018-07-25-csrf\/"},"genre":"posts","wordcount":1321,"url":"http:\/\/example.org\/posts\/2018-07-25-csrf\/","datePublished":"2018-07-25T09:55:13+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">关于 CSRF</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/others/><i class="far fa-folder fa-fw"></i>Others</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-07-25>2018-07-25</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1321 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#什么是-csrf>什么是 CSRF</a></li><li><a href=#防御策略>防御策略</a></li><li><a href=#验证-http-referer>验证 HTTP Referer</a><ul><li><a href=#referer>Referer</a></li><li><a href=#优点>优点</a></li><li><a href=#缺点>缺点</a></li></ul></li><li><a href=#csrf-token>CSRF Token</a><ul><li><a href=#优点-1>优点</a></li><li><a href=#缺点-1>缺点</a></li></ul></li><li><a href=#验证码>验证码</a></li><li><a href=#nodejs-csrf-相关的第三方库>Node.js CSRF 相关的第三方库</a></li></ul></nav></div></div><div class=content id=content><p>最近在工作中，碰到了一个 security 的问题，产品容易被 CSRF 攻击，于是就对 CSRF 的攻击和防御原理，做了调研。</p><h2 id=什么是-csrf>什么是 CSRF</h2><p>CSRF（Cross Site Request Forgery, 跨站域请求伪造）是一种网络的攻击方式，它在 2007 年曾被列为互联网 20 大安全隐患之一。
 简单地说，攻击者盗用了你的身份，在你非自愿的情况下，以你的名义发送恶意的请求。（发送邮件，发消息，盗取你的账号，购买商品，虚拟货币转账）
 CSRF 攻击之所以能够成功，是因为黑客通过借助用户的 cookie 骗取服务器的信任，伪造用户的请求。要抵御 CSRF，关键在于在请求中放入黑客所不能伪造的
-信息，并且该信息不存在于 cookie 之中。</p>
-<h2 id="防御策略">防御策略</h2>
-<p>在业界常用的防御 CSRF 攻击的策略有三种：</p>
-<ul>
-<li>验证 HTTP Referer 字段</li>
-<li>CSRF Token</li>
-<li>验证码</li>
-</ul>
-<h2 id="验证-http-referer">验证 HTTP Referer</h2>
-<h3 id="referer">Referer</h3>
-<p>在 HTTP 请求的 Headers 部分 Referer 通常是像这样：</p>
-<pre tabindex="0"><code>Referer http://www.baidu.com/s?tn=98835442_hao_pg&amp;ie=utf-8&amp;f=3&amp;wd=126.com&amp;oq=126.&amp;bs=126.com&amp;rsv_bp=1&amp;inputT=5799&amp;rsp=0
+信息，并且该信息不存在于 cookie 之中。</p><h2 id=防御策略>防御策略</h2><p>在业界常用的防御 CSRF 攻击的策略有三种：</p><ul><li>验证 HTTP Referer 字段</li><li>CSRF Token</li><li>验证码</li></ul><h2 id=验证-http-referer>验证 HTTP Referer</h2><h3 id=referer>Referer</h3><p>在 HTTP 请求的 Headers 部分 Referer 通常是像这样：</p><pre tabindex=0><code>Referer http://www.baidu.com/s?tn=98835442_hao_pg&amp;ie=utf-8&amp;f=3&amp;wd=126.com&amp;oq=126.&amp;bs=126.com&amp;rsv_bp=1&amp;inputT=5799&amp;rsp=0
 </code></pre><p>Referer 主要用来让服务器判断来源页面，通常被网站用来统计用户来源，比如是从搜索页面，还是从其他网站链接过来，或是从书签访问，方便网站定位。
 Referer 有时也被用作防盗链，即下载时判断来源地址是不是在网站域名之内，否则就不能下载或显示。还可用做电子商务网站的安全，在提交信用卡等重要
 信息的页面用 Referer 来判断上一页是不是自己的网站，如果不是，可能是黑客用自己写的一个表单，来提交，为了能跳过你上一页里的 javascript 的验证
-等目的。</p>
-<h3 id="优点">优点</h3>
-<p>简单易行，不需要做过多的修改，在敏感的请求前统一加拦截器检查 Referer 就可以了。</p>
-<h3 id="缺点">缺点</h3>
-<ul>
-<li>Referer 的值是由浏览器给的，虽然使用最新的浏览器，黑客无法篡改 Referer 值，但是 HTML5 添加了一大堆有用的新值到 rel 属性上，其中有一个
-值是 <code>noreferrer</code>。当这个属性被添加上之后，用户请求该链接资源时，浏览器不设置 Referer 头。</li>
-<li>安全性依赖于浏览器来保障，并不安全，Referer 值在一些浏览器中可能被篡改，比如 IE6 或 FF2。</li>
-</ul>
-<h2 id="csrf-token">CSRF Token</h2>
-<p>要抵御 CSRF，关键在于在请求中放入黑客所不能伪造的信息，并且该信息不存在于 cookie 之中。可以在用户登陆后，服务器返回一个 Token，储存在客户
-端（可以将 token 存在 localstorage/sessionstorage 中）。</p>
-<p>在请求的时候，把 Token 当做参数放到 URL 中，或者放到 Headers 的自定义属性中。服务端（可以将 token 保存在 memcache/redis）在收到请求后，
-对 Token 进行校验。</p>
-<blockquote>
-<p>生成 token 有很多种方法，任何的随机算法都可以使用，UUID 也是一个不错的选择。</p>
-</blockquote>
-<h3 id="优点-1">优点</h3>
-<p>比验证 HTTP Referer 的方式要更安全。</p>
-<h3 id="缺点-1">缺点</h3>
-<ul>
-<li>把 Token 当做参数放到 URL 中，就难以保证 token 本身的安全。特别是在一些论坛之类支持用户自己发表内容的网站，黑客可以在上面发布自己个人网站的地址。
+等目的。</p><h3 id=优点>优点</h3><p>简单易行，不需要做过多的修改，在敏感的请求前统一加拦截器检查 Referer 就可以了。</p><h3 id=缺点>缺点</h3><ul><li>Referer 的值是由浏览器给的，虽然使用最新的浏览器，黑客无法篡改 Referer 值，但是 HTML5 添加了一大堆有用的新值到 rel 属性上，其中有一个
+值是 <code>noreferrer</code>。当这个属性被添加上之后，用户请求该链接资源时，浏览器不设置 Referer 头。</li><li>安全性依赖于浏览器来保障，并不安全，Referer 值在一些浏览器中可能被篡改，比如 IE6 或 FF2。</li></ul><h2 id=csrf-token>CSRF Token</h2><p>要抵御 CSRF，关键在于在请求中放入黑客所不能伪造的信息，并且该信息不存在于 cookie 之中。可以在用户登陆后，服务器返回一个 Token，储存在客户
+端（可以将 token 存在 localstorage/sessionstorage 中）。</p><p>在请求的时候，把 Token 当做参数放到 URL 中，或者放到 Headers 的自定义属性中。服务端（可以将 token 保存在 memcache/redis）在收到请求后，
+对 Token 进行校验。</p><blockquote><p>生成 token 有很多种方法，任何的随机算法都可以使用，UUID 也是一个不错的选择。</p></blockquote><h3 id=优点-1>优点</h3><p>比验证 HTTP Referer 的方式要更安全。</p><h3 id=缺点-1>缺点</h3><ul><li>把 Token 当做参数放到 URL 中，就难以保证 token 本身的安全。特别是在一些论坛之类支持用户自己发表内容的网站，黑客可以在上面发布自己个人网站的地址。
 由于系统也会在这个地址后面加上 token，黑客可以在自己的网站上得到这个 token，并马上就可以发动 CSRF 攻击。为了避免这一点，系统可以在添加 token 的
-时候增加一个判断，如果这个链接是链到自己本站的，就在后面添加 token，如果是通向外网则不加。</li>
-<li>把 Token 放到 Headers 的自定义属性中，不用担心 token 会透过 Referer 泄露到其他网站中去，但是有局限性，就是必须使用 Ajax 方法的请求才适用。</li>
-</ul>
-<p><strong>示例</strong></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// 从 headers 中取得 Referer 值
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span> <span class="nx">referer</span> <span class="o">=</span> <span class="nx">req</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s2">&#34;Referer&#34;</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// 判断 Referer 是否以 www.shipengqi.top 开头
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span><span class="p">((</span><span class="nx">referer</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">referer</span><span class="p">.</span><span class="nx">trim</span><span class="p">().</span><span class="nx">startsWith</span><span class="p">(</span><span class="err">“</span><span class="nx">www</span><span class="p">.</span><span class="nx">shipengqi</span><span class="p">.</span><span class="nx">top</span><span class="err">”</span><span class="p">))){</span>
-</span></span><span class="line"><span class="cl">   <span class="c1">// do someTing
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="c1">// 验证 Token
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>   <span class="nx">validateToken</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="k">else</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="c1">// error
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></div><h2 id="验证码">验证码</h2>
-<p>通过在表单中添加一个随机的数字或字母验证码的方式，强制用户和应用进行交互，来有效地遏制 CSRF 攻击。</p>
-<h2 id="nodejs-csrf-相关的第三方库">Node.js CSRF 相关的第三方库</h2>
-<ul>
-<li><a href="https://github.com/expressjs/csurf" target="_blank" rel="noopener noreffer">csurf</a> CSRF token middleware for express.</li>
-<li><a href="https://github.com/inca/alt-xsrf" target="_blank" rel="noopener noreffer">alt-xsrf</a> XSRF prevention middleware for express.</li>
-<li><a href="https://github.com/koajs/csrf" target="_blank" rel="noopener noreffer">koa-csrf</a> CSRF token middleware for Koa.</li>
-<li><a href="https://github.com/koajs/atomic-session" target="_blank" rel="noopener noreffer">koa-atomic-session</a> Atomic sessions for Koa.</li>
-<li><a href="https://github.com/pillarjs/csrf" target="_blank" rel="noopener noreffer">csrf</a> Logic behind CSRF token creation and verification.</li>
-</ul></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2018-07-25-csrf/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2018-07-03-web-terminal/" class="prev" rel="prev" title="Node.js 实现浏览器终端"><i class="fas fa-angle-left fa-fw"></i>Node.js 实现浏览器终端</a>
-            <a href="/posts/2018-08-22-linux-crontrab/" class="next" rel="next" title="Linux 定时任务">Linux 定时任务<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+时候增加一个判断，如果这个链接是链到自己本站的，就在后面添加 token，如果是通向外网则不加。</li><li>把 Token 放到 Headers 的自定义属性中，不用担心 token 会透过 Referer 泄露到其他网站中去，但是有局限性，就是必须使用 Ajax 方法的请求才适用。</li></ul><p><strong>示例</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// 从 headers 中取得 Referer 值
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>let</span> <span class=nx>referer</span> <span class=o>=</span> <span class=nx>req</span><span class=p>.</span><span class=nx>headers</span><span class=p>[</span><span class=s2>&#34;Referer&#34;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl><span class=c1>// 判断 Referer 是否以 www.shipengqi.top 开头
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>if</span><span class=p>((</span><span class=nx>referer</span> <span class=o>!==</span> <span class=kc>null</span><span class=p>)</span> <span class=o>&amp;&amp;</span> <span class=p>(</span><span class=nx>referer</span><span class=p>.</span><span class=nx>trim</span><span class=p>().</span><span class=nx>startsWith</span><span class=p>(</span><span class=err>“</span><span class=nx>www</span><span class=p>.</span><span class=nx>shipengqi</span><span class=p>.</span><span class=nx>top</span><span class=err>”</span><span class=p>))){</span>
+</span></span><span class=line><span class=cl>   <span class=c1>// do someTing
+</span></span></span><span class=line><span class=cl><span class=c1></span>   <span class=c1>// 验证 Token
+</span></span></span><span class=line><span class=cl><span class=c1></span>   <span class=nx>validateToken</span><span class=p>(</span><span class=nx>req</span><span class=p>,</span> <span class=nx>res</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>   <span class=c1>// error
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></div><h2 id=验证码>验证码</h2><p>通过在表单中添加一个随机的数字或字母验证码的方式，强制用户和应用进行交互，来有效地遏制 CSRF 攻击。</p><h2 id=nodejs-csrf-相关的第三方库>Node.js CSRF 相关的第三方库</h2><ul><li><a href=https://github.com/expressjs/csurf target=_blank rel="noopener noreffer">csurf</a> CSRF token middleware for express.</li><li><a href=https://github.com/inca/alt-xsrf target=_blank rel="noopener noreffer">alt-xsrf</a> XSRF prevention middleware for express.</li><li><a href=https://github.com/koajs/csrf target=_blank rel="noopener noreffer">koa-csrf</a> CSRF token middleware for Koa.</li><li><a href=https://github.com/koajs/atomic-session target=_blank rel="noopener noreffer">koa-atomic-session</a> Atomic sessions for Koa.</li><li><a href=https://github.com/pillarjs/csrf target=_blank rel="noopener noreffer">csrf</a> Logic behind CSRF token creation and verification.</li></ul></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2018-07-25-csrf/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2018-07-03-web-terminal/ class=prev rel=prev title="Node.js 实现浏览器终端"><i class="fas fa-angle-left fa-fw"></i>Node.js 实现浏览器终端</a>
+<a href=/posts/2018-08-22-linux-crontrab/ class=next rel=next title="Linux 定时任务">Linux 定时任务<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

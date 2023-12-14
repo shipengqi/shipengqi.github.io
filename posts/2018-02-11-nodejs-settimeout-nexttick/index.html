@@ -1,408 +1,129 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Node.js 定时器与事件循环 - Echo</title><meta name="Description" content=""><meta property="og:title" content="Node.js 定时器与事件循环" />
-<meta property="og:description" content="Node.js 提供了四个定时器，分别是：setTimeout()，setInterval()，setImmediate()，process.nextTick()。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2018-02-11-nodejs-settimeout-nexttick/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2018-02-11T12:40:44+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="Node.js 定时器与事件循环"/>
-<meta name="twitter:description" content="Node.js 提供了四个定时器，分别是：setTimeout()，setInterval()，setImmediate()，process.nextTick()。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2018-02-11-nodejs-settimeout-nexttick/" /><link rel="prev" href="http://example.org/posts/2018-01-08-vim-usage/" /><link rel="next" href="http://example.org/posts/2018-03-07-nodejs-exception-catch/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Node.js 定时器与事件循环",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2018-02-11-nodejs-settimeout-nexttick\/"
-        },"genre": "posts","wordcount":  2787 ,
-        "url": "http:\/\/example.org\/posts\/2018-02-11-nodejs-settimeout-nexttick\/","datePublished": "2018-02-11T12:40:44+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Node.js 定时器与事件循环</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2018-02-11">2018-02-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2787 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#processnexttick">process.nextTick()</a></li>
-    <li><a href="#微任务">微任务</a></li>
-    <li><a href="#事件循环的概念">事件循环的概念</a></li>
-    <li><a href="#事件循环的六个阶段">事件循环的六个阶段</a>
-      <ul>
-        <li><a href="#timers">timers</a></li>
-        <li><a href="#io-callbacks">I/O callbacks</a></li>
-        <li><a href="#idle-prepare">idle, prepare</a></li>
-        <li><a href="#poll">Poll</a></li>
-        <li><a href="#check">check</a></li>
-        <li><a href="#close-callbacks">close callbacks</a></li>
-      </ul>
-    </li>
-    <li><a href="#事件循环的示例">事件循环的示例</a></li>
-    <li><a href="#settimeout-和-setimmediate">setTimeout 和 setImmediate</a></li>
-    <li><a href="#async-函数和-promise">async 函数和 promise</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>Node.js 提供了四个定时器，分别是：<code>setTimeout()</code>，<code>setInterval()</code>，<code>setImmediate()</code>，<code>process.nextTick()</code>。</p>
-<p>它们的用法都差不多，但是在一些特殊情况下很难区分。如下面的例子：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="c1">// test.js
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl"><span class="nx">setImmediate</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl"><span class="nx">process</span><span class="p">.</span><span class="nx">nextTick</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">3</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl"><span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">().</span><span class="nx">then</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">4</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl"><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">5</span><span class="p">))();</span>
-</span></span></code></pre></div><p>输出结果是：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ node test.js
-</span></span><span class="line"><span class="cl"><span class="m">5</span>
-</span></span><span class="line"><span class="cl"><span class="m">3</span>
-</span></span><span class="line"><span class="cl"><span class="m">4</span>
-</span></span><span class="line"><span class="cl"><span class="m">1</span>
-</span></span><span class="line"><span class="cl"><span class="m">2</span>
-</span></span></code></pre></div><p>这是为什么？</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">5</span><span class="p">))();</span>
-</span></span></code></pre></div><p>这行是同步任务，所以最先输出。</p>
-<p>异步任务可以分成两种。</p>
-<ul>
-<li>追加在本轮循环的异步任务</li>
-<li>追加在次轮循环的异步任务
-所谓&quot;循环&quot;，指的是<strong>事件循环</strong>（event loop）。这是 JavaScript 引擎处理异步任务的方式，后文会详细解释。这里只要理解，本轮循环一定早于次轮循环
-执行即可。</li>
-</ul>
-<p>Node 规定，<code>process.nextTick</code> 和 <code>Promise</code> 的回调函数，追加在本轮循环，即同步任务一旦执行完成，就开始执行它们。</p>
-<p>而 <code>setTimeout</code>、<code>setInterval</code>、<code>setImmediate</code> 的回调函数，追加在次轮循环。</p>
-<h2 id="processnexttick">process.nextTick()</h2>
-<p><code>process.nextTick</code> 这个名字有点误导，它是在本轮循环执行的，而且是所有异步任务里面最快执行的。</p>
-<p>Node 执行完所有同步任务，接下来就会执行 <code>process.nextTick</code> 的任务队列。所以，第二个输出结果是 3。</p>
-<h2 id="微任务">微任务</h2>
-<p><code>Promise</code> 对象的回调函数，会进入异步任务里面的&quot;微任务&quot;（microtask）队列。</p>
-<p>微任务队列追加在 <code>process.nextTick</code> 队列的后面，也属于本轮循环。所以，下面的代码总是先输出 3，再输出 4。</p>
-<h2 id="事件循环的概念">事件循环的概念</h2>
-<p>下面开始介绍次轮循环的执行顺序，这就必须理解什么是事件循环（event loop）了。</p>
-<p>Node 的 <a href="https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/" target="_blank" rel="noopener noreffer">官方文档</a> 是这样介绍的。</p>
-<blockquote>
-<p>&ldquo;When Node.js starts, it initializes the event loop, processes the provided input script which may make async API
-calls, schedule timers, or call process.nextTick(), then begins processing the event loop.&rdquo;</p>
-</blockquote>
-<p>这段话很重要，它表达了三层意思。</p>
-<p>首先，<strong>Node 只有一个主线程，事件循环是在主线程上完成的</strong>。</p>
-<p>其次，Node 开始执行脚本时，会先进行事件循环的初始化，但是这时事件循环还没有开始，会先完成下面的事情。</p>
-<ul>
-<li>同步任务</li>
-<li>发出异步请求</li>
-<li>规划定时器生效的时间</li>
-<li>执行 <code>process.nextTick()</code> 等等</li>
-</ul>
-<p>最后，上面这些事情都干完了，事件循环就正式开始了。</p>
-<h2 id="事件循环的六个阶段">事件循环的六个阶段</h2>
-<p>事件循环会无限次地执行，一轮又一轮。只有异步任务的回调函数队列清空了，才会停止执行。</p>
-<p>每一轮的事件循环，分成六个阶段。这些阶段会依次执行。</p>
-<ul>
-<li>timers</li>
-<li>I/O callbacks</li>
-<li>idle, prepare</li>
-<li>poll</li>
-<li>check</li>
-<li>close callbacks</li>
-</ul>
-<p>每个阶段都有一个先进先出的回调函数队列。只有一个阶段的回调函数队列清空了，该执行的回调函数都执行了，事件循环才会进入下一个阶段。</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/images/nodejs-timer/1.png"
-        data-srcset="/images/nodejs-timer/1.png, /images/nodejs-timer/1.png 1.5x, /images/nodejs-timer/1.png 2x"
-        data-sizes="auto"
-        alt="/images/nodejs-timer/1.png"
-        title="/images/nodejs-timer/1.png" /></p>
-<p>下面简单介绍一下每个阶段的含义，详细介绍可以看 <a href="https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/" target="_blank" rel="noopener noreffer">官方文档</a> ，</p>
-<p>也可以参考 <a href="https://jsblog.insiderattack.net/handling-io-nodejs-event-loop-part-4-418062f917d1" target="_blank" rel="noopener noreffer">libuv 的源码解读</a> 。</p>
-<h3 id="timers">timers</h3>
-<p>这个是定时器阶段，处理 <code>setTimeout()</code> 和 <code>setInterval()</code> 的回调函数。进入这个阶段后，主线程会检查一下当前时间，是否满足定时器的条件。如
-果满足就执行回调函数，否则就离开这个阶段。</p>
-<h3 id="io-callbacks">I/O callbacks</h3>
-<p>除了以下操作的回调函数，其他的回调函数都在这个阶段执行。</p>
-<ul>
-<li><code>setTimeout()</code> 和 <code>setInterval()</code> 的回调函数</li>
-<li><code>setImmediate()</code> 的回调函数</li>
-<li>用于关闭请求的回调函数，比如 <code>socket.on('close', ...)</code></li>
-</ul>
-<h3 id="idle-prepare">idle, prepare</h3>
-<p>该阶段只供 libuv 内部调用，这里可以忽略。</p>
-<h3 id="poll">Poll</h3>
-<p>这个阶段是轮询时间，用于等待还未返回的 I/O 事件，比如服务器的回应、用户移动鼠标等等。</p>
-<p>这个阶段的时间会比较长。如果没有其他异步任务要处理（比如到期的定时器），会一直停留在这个阶段，等待 I/O 请求返回结果。</p>
-<h3 id="check">check</h3>
-<p>该阶段执行 <code>setImmediate()</code> 的回调函数。</p>
-<h3 id="close-callbacks">close callbacks</h3>
-<p>该阶段执行关闭请求的回调函数，比如 <code>socket.on('close', ...)</code>。</p>
-<h2 id="事件循环的示例">事件循环的示例</h2>
-<p>下面是来自官方文档的一个示例。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">timeoutScheduled</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 异步任务一：100ms 后执行的定时器
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">delay</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">timeoutScheduled</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">delay</span><span class="si">}</span><span class="sb">ms`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 异步任务二：文件读取后，有一个 200ms 的回调函数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;test.js&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">startCallback</span> <span class="o">=</span> <span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">()</span> <span class="o">-</span> <span class="nx">startCallback</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 什么也不做
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><p>上面代码有两个异步任务，一个是 100ms 后执行的定时器，一个是文件读取，它的回调函数需要 200ms。请问运行结果是什么？</p>
-<p><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="/images/nodejs-timer/2.jpg"
-        data-srcset="/images/nodejs-timer/2.jpg, /images/nodejs-timer/2.jpg 1.5x, /images/nodejs-timer/2.jpg 2x"
-        data-sizes="auto"
-        alt="/images/nodejs-timer/2.jpg"
-        title="/images/nodejs-timer/2.jpg" /></p>
-<p>脚本进入第一轮事件循环以后，没有到期的定时器，也没有已经可以执行的 I/O 回调函数，所以会进入 Poll 阶段，等待内核返回文件读取的结果。</p>
-<p>由于读取小文件一般不会超过 100ms，所以在定时器到期之前，Poll 阶段就会得到结果，因此就会继续往下执行。</p>
-<p>第二轮事件循环，依然没有到期的定时器，但是已经有了可以执行的 I/O 回调函数，所以会进入 I/O callbacks 阶段，执行 <code>fs.readFile</code> 的回调函数。</p>
-<p>这个回调函数需要 200ms，也就是说，在它执行到一半的时候，100ms 的定时器就会到期。但是，必须等到这个回调函数执行完，才会离开这个阶段。</p>
-<p>第三轮事件循环，已经有了到期的定时器，所以会在 timers 阶段执行定时器。最后输出结果大概是 200 多毫秒。</p>
-<h2 id="settimeout-和-setimmediate">setTimeout 和 setImmediate</h2>
-<p>由于 setTimeout 在 timers 阶段执行，而 setImmediate 在 check 阶段执行。所以，<strong>setTimeout 会先于 setImmediate 执行</strong>。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl"><span class="nx">setImmediate</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
-</span></span></code></pre></div><p>上面代码应该先输出 1，再输出 2，但是实际执行的时候，结果却是不确定，有时还会先输出 2，再输出 1。</p>
-<p>这是因为 setTimeout 的第二个参数默认为 0。但是实际上，Node 做不到 0 毫秒，最少也需要 1 毫秒，根据官方文档，第二个参数的取值范围在 1 毫秒
-到 2147483647 毫秒之间。也就是说，<code>setTimeout(f, 0)</code> 等同于 <code>setTimeout(f, 1)</code>。</p>
-<p>实际执行的时候，进入事件循环以后，有可能到了 1 毫秒，也可能还没到 1 毫秒，取决于系统当时的状况。如果没到 1 毫秒，那么 timers 阶段就会跳过，
-进入 check 阶段，先执行 <code>setImmediate</code> 的回调函数。</p>
-<p>但是，下面的代码一定是先输出 2，再输出 1。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;fs&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">&#39;test.js&#39;</span><span class="p">,</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">setTimeout</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">setImmediate</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><p>上面代码会先进入 I/O callbacks 阶段，然后是 check 阶段，最后才是 timers 阶段。因此，setImmediate 才会早于 setTimeout 执行。</p>
-<h2 id="async-函数和-promise">async 函数和 promise</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">async1</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;async1 start&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="kr">await</span> <span class="nx">async2</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;async1 end&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">async2</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">   <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span> <span class="s1">&#39;async2 end&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;script start&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;settimeout&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">},</span> <span class="mi">0</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">async1</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;promise1&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">resolve</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&#34;promise2&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;script end&#39;</span><span class="p">);</span>
-</span></span></code></pre></div><p>上面代码的执行结果是：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">script start
-</span></span><span class="line"><span class="cl">async1 start
-</span></span><span class="line"><span class="cl">async2 end
-</span></span><span class="line"><span class="cl">promise1
-</span></span><span class="line"><span class="cl">script end
-</span></span><span class="line"><span class="cl">promise2
-</span></span><span class="line"><span class="cl">async1 end
-</span></span><span class="line"><span class="cl">settimeout
-</span></span></code></pre></div><p>为什么 <code>async2</code> 会在 <code>promise1</code> 之前输出？</p>
-<p>先简单了解一下 async/await 的机制。</p>
-<p>async 其实就是将 Generator 函数和自动执行器，包装在一个函数里。关于 Generator 函数，可以参考 <a href="https://es6.ruanyifeng.com/#docs/generator" target="_blank" rel="noopener noreffer">这里</a> 。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="kd">function</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 等同于
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">spawn</span><span class="p">(</span><span class="kd">function</span><span class="o">*</span> <span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">spawn</span><span class="p">(</span><span class="nx">genF</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">gen</span> <span class="o">=</span> <span class="nx">genF</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nx">step</span><span class="p">(</span><span class="nx">nextF</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="kd">let</span> <span class="nx">next</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">      <span class="k">try</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">next</span> <span class="o">=</span> <span class="nx">nextF</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">reject</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="k">if</span><span class="p">(</span><span class="nx">next</span><span class="p">.</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nx">resolve</span><span class="p">(</span><span class="nx">next</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">      <span class="p">}</span>
-</span></span><span class="line"><span class="cl">      <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">next</span><span class="p">.</span><span class="nx">value</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">gen</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">v</span><span class="p">);</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">      <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">gen</span><span class="p">.</span><span class="k">throw</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">      <span class="p">});</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">step</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">gen</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl">  <span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>spawn 函数就是自动执行器。</p>
-<p>async 函数返回了一个 Promise 作为结果的函数，可以简单理解为，await 后面的函数执行完毕时，await 会产生一个微任务（Promise.then）。
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Node.js 定时器与事件循环 - Echo</title><meta name=Description content><meta property="og:title" content="Node.js 定时器与事件循环"><meta property="og:description" content="Node.js 提供了四个定时器，分别是：setTimeout()，setInterval()，setImmediate()，process.nextTick()。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2018-02-11-nodejs-settimeout-nexttick/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-02-11T12:40:44+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="Node.js 定时器与事件循环"><meta name=twitter:description content="Node.js 提供了四个定时器，分别是：setTimeout()，setInterval()，setImmediate()，process.nextTick()。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2018-02-11-nodejs-settimeout-nexttick/><link rel=prev href=http://example.org/posts/2018-01-08-vim-usage/><link rel=next href=http://example.org/posts/2018-03-07-nodejs-exception-catch/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Node.js 定时器与事件循环","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2018-02-11-nodejs-settimeout-nexttick\/"},"genre":"posts","wordcount":2787,"url":"http:\/\/example.org\/posts\/2018-02-11-nodejs-settimeout-nexttick\/","datePublished":"2018-02-11T12:40:44+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Node.js 定时器与事件循环</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/node.js/><i class="far fa-folder fa-fw"></i>Node.js</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-02-11>2018-02-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2787 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#processnexttick>process.nextTick()</a></li><li><a href=#微任务>微任务</a></li><li><a href=#事件循环的概念>事件循环的概念</a></li><li><a href=#事件循环的六个阶段>事件循环的六个阶段</a><ul><li><a href=#timers>timers</a></li><li><a href=#io-callbacks>I/O callbacks</a></li><li><a href=#idle-prepare>idle, prepare</a></li><li><a href=#poll>Poll</a></li><li><a href=#check>check</a></li><li><a href=#close-callbacks>close callbacks</a></li></ul></li><li><a href=#事件循环的示例>事件循环的示例</a></li><li><a href=#settimeout-和-setimmediate>setTimeout 和 setImmediate</a></li><li><a href=#async-函数和-promise>async 函数和 promise</a></li></ul></nav></div></div><div class=content id=content><p>Node.js 提供了四个定时器，分别是：<code>setTimeout()</code>，<code>setInterval()</code>，<code>setImmediate()</code>，<code>process.nextTick()</code>。</p><p>它们的用法都差不多，但是在一些特殊情况下很难区分。如下面的例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=c1>// test.js
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>1</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=nx>setImmediate</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>2</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=nx>process</span><span class=p>.</span><span class=nx>nextTick</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>3</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=nb>Promise</span><span class=p>.</span><span class=nx>resolve</span><span class=p>().</span><span class=nx>then</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>4</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>5</span><span class=p>))();</span>
+</span></span></code></pre></div><p>输出结果是：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ node test.js
+</span></span><span class=line><span class=cl><span class=m>5</span>
+</span></span><span class=line><span class=cl><span class=m>3</span>
+</span></span><span class=line><span class=cl><span class=m>4</span>
+</span></span><span class=line><span class=cl><span class=m>1</span>
+</span></span><span class=line><span class=cl><span class=m>2</span>
+</span></span></code></pre></div><p>这是为什么？</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>5</span><span class=p>))();</span>
+</span></span></code></pre></div><p>这行是同步任务，所以最先输出。</p><p>异步任务可以分成两种。</p><ul><li>追加在本轮循环的异步任务</li><li>追加在次轮循环的异步任务
+所谓"循环"，指的是<strong>事件循环</strong>（event loop）。这是 JavaScript 引擎处理异步任务的方式，后文会详细解释。这里只要理解，本轮循环一定早于次轮循环
+执行即可。</li></ul><p>Node 规定，<code>process.nextTick</code> 和 <code>Promise</code> 的回调函数，追加在本轮循环，即同步任务一旦执行完成，就开始执行它们。</p><p>而 <code>setTimeout</code>、<code>setInterval</code>、<code>setImmediate</code> 的回调函数，追加在次轮循环。</p><h2 id=processnexttick>process.nextTick()</h2><p><code>process.nextTick</code> 这个名字有点误导，它是在本轮循环执行的，而且是所有异步任务里面最快执行的。</p><p>Node 执行完所有同步任务，接下来就会执行 <code>process.nextTick</code> 的任务队列。所以，第二个输出结果是 3。</p><h2 id=微任务>微任务</h2><p><code>Promise</code> 对象的回调函数，会进入异步任务里面的"微任务"（microtask）队列。</p><p>微任务队列追加在 <code>process.nextTick</code> 队列的后面，也属于本轮循环。所以，下面的代码总是先输出 3，再输出 4。</p><h2 id=事件循环的概念>事件循环的概念</h2><p>下面开始介绍次轮循环的执行顺序，这就必须理解什么是事件循环（event loop）了。</p><p>Node 的 <a href=https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/ target=_blank rel="noopener noreffer">官方文档</a> 是这样介绍的。</p><blockquote><p>&ldquo;When Node.js starts, it initializes the event loop, processes the provided input script which may make async API
+calls, schedule timers, or call process.nextTick(), then begins processing the event loop.&rdquo;</p></blockquote><p>这段话很重要，它表达了三层意思。</p><p>首先，<strong>Node 只有一个主线程，事件循环是在主线程上完成的</strong>。</p><p>其次，Node 开始执行脚本时，会先进行事件循环的初始化，但是这时事件循环还没有开始，会先完成下面的事情。</p><ul><li>同步任务</li><li>发出异步请求</li><li>规划定时器生效的时间</li><li>执行 <code>process.nextTick()</code> 等等</li></ul><p>最后，上面这些事情都干完了，事件循环就正式开始了。</p><h2 id=事件循环的六个阶段>事件循环的六个阶段</h2><p>事件循环会无限次地执行，一轮又一轮。只有异步任务的回调函数队列清空了，才会停止执行。</p><p>每一轮的事件循环，分成六个阶段。这些阶段会依次执行。</p><ul><li>timers</li><li>I/O callbacks</li><li>idle, prepare</li><li>poll</li><li>check</li><li>close callbacks</li></ul><p>每个阶段都有一个先进先出的回调函数队列。只有一个阶段的回调函数队列清空了，该执行的回调函数都执行了，事件循环才会进入下一个阶段。</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/nodejs-timer/1.png data-srcset="/images/nodejs-timer/1.png, /images/nodejs-timer/1.png 1.5x, /images/nodejs-timer/1.png 2x" data-sizes=auto alt=/images/nodejs-timer/1.png title=/images/nodejs-timer/1.png></p><p>下面简单介绍一下每个阶段的含义，详细介绍可以看 <a href=https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/ target=_blank rel="noopener noreffer">官方文档</a> ，</p><p>也可以参考 <a href=https://jsblog.insiderattack.net/handling-io-nodejs-event-loop-part-4-418062f917d1 target=_blank rel="noopener noreffer">libuv 的源码解读</a> 。</p><h3 id=timers>timers</h3><p>这个是定时器阶段，处理 <code>setTimeout()</code> 和 <code>setInterval()</code> 的回调函数。进入这个阶段后，主线程会检查一下当前时间，是否满足定时器的条件。如
+果满足就执行回调函数，否则就离开这个阶段。</p><h3 id=io-callbacks>I/O callbacks</h3><p>除了以下操作的回调函数，其他的回调函数都在这个阶段执行。</p><ul><li><code>setTimeout()</code> 和 <code>setInterval()</code> 的回调函数</li><li><code>setImmediate()</code> 的回调函数</li><li>用于关闭请求的回调函数，比如 <code>socket.on('close', ...)</code></li></ul><h3 id=idle-prepare>idle, prepare</h3><p>该阶段只供 libuv 内部调用，这里可以忽略。</p><h3 id=poll>Poll</h3><p>这个阶段是轮询时间，用于等待还未返回的 I/O 事件，比如服务器的回应、用户移动鼠标等等。</p><p>这个阶段的时间会比较长。如果没有其他异步任务要处理（比如到期的定时器），会一直停留在这个阶段，等待 I/O 请求返回结果。</p><h3 id=check>check</h3><p>该阶段执行 <code>setImmediate()</code> 的回调函数。</p><h3 id=close-callbacks>close callbacks</h3><p>该阶段执行关闭请求的回调函数，比如 <code>socket.on('close', ...)</code>。</p><h2 id=事件循环的示例>事件循环的示例</h2><p>下面是来自官方文档的一个示例。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>const</span> <span class=nx>fs</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;fs&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>timeoutScheduled</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 异步任务一：100ms 后执行的定时器
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>delay</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>()</span> <span class=o>-</span> <span class=nx>timeoutScheduled</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=sb>`</span><span class=si>${</span><span class=nx>delay</span><span class=si>}</span><span class=sb>ms`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>},</span> <span class=mi>100</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 异步任务二：文件读取后，有一个 200ms 的回调函数
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>fs</span><span class=p>.</span><span class=nx>readFile</span><span class=p>(</span><span class=s1>&#39;test.js&#39;</span><span class=p>,</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>startCallback</span> <span class=o>=</span> <span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=k>while</span> <span class=p>(</span><span class=nb>Date</span><span class=p>.</span><span class=nx>now</span><span class=p>()</span> <span class=o>-</span> <span class=nx>startCallback</span> <span class=o>&lt;</span> <span class=mi>200</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 什么也不做
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><p>上面代码有两个异步任务，一个是 100ms 后执行的定时器，一个是文件读取，它的回调函数需要 200ms。请问运行结果是什么？</p><p><img class=lazyload src=/svg/loading.min.svg data-src=/images/nodejs-timer/2.jpg data-srcset="/images/nodejs-timer/2.jpg, /images/nodejs-timer/2.jpg 1.5x, /images/nodejs-timer/2.jpg 2x" data-sizes=auto alt=/images/nodejs-timer/2.jpg title=/images/nodejs-timer/2.jpg></p><p>脚本进入第一轮事件循环以后，没有到期的定时器，也没有已经可以执行的 I/O 回调函数，所以会进入 Poll 阶段，等待内核返回文件读取的结果。</p><p>由于读取小文件一般不会超过 100ms，所以在定时器到期之前，Poll 阶段就会得到结果，因此就会继续往下执行。</p><p>第二轮事件循环，依然没有到期的定时器，但是已经有了可以执行的 I/O 回调函数，所以会进入 I/O callbacks 阶段，执行 <code>fs.readFile</code> 的回调函数。</p><p>这个回调函数需要 200ms，也就是说，在它执行到一半的时候，100ms 的定时器就会到期。但是，必须等到这个回调函数执行完，才会离开这个阶段。</p><p>第三轮事件循环，已经有了到期的定时器，所以会在 timers 阶段执行定时器。最后输出结果大概是 200 多毫秒。</p><h2 id=settimeout-和-setimmediate>setTimeout 和 setImmediate</h2><p>由于 setTimeout 在 timers 阶段执行，而 setImmediate 在 check 阶段执行。所以，<strong>setTimeout 会先于 setImmediate 执行</strong>。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>1</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=nx>setImmediate</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>2</span><span class=p>));</span>
+</span></span></code></pre></div><p>上面代码应该先输出 1，再输出 2，但是实际执行的时候，结果却是不确定，有时还会先输出 2，再输出 1。</p><p>这是因为 setTimeout 的第二个参数默认为 0。但是实际上，Node 做不到 0 毫秒，最少也需要 1 毫秒，根据官方文档，第二个参数的取值范围在 1 毫秒
+到 2147483647 毫秒之间。也就是说，<code>setTimeout(f, 0)</code> 等同于 <code>setTimeout(f, 1)</code>。</p><p>实际执行的时候，进入事件循环以后，有可能到了 1 毫秒，也可能还没到 1 毫秒，取决于系统当时的状况。如果没到 1 毫秒，那么 timers 阶段就会跳过，
+进入 check 阶段，先执行 <code>setImmediate</code> 的回调函数。</p><p>但是，下面的代码一定是先输出 2，再输出 1。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>const</span> <span class=nx>fs</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;fs&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>fs</span><span class=p>.</span><span class=nx>readFile</span><span class=p>(</span><span class=s1>&#39;test.js&#39;</span><span class=p>,</span> <span class=p>()</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>setTimeout</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>1</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>  <span class=nx>setImmediate</span><span class=p>(()</span> <span class=p>=&gt;</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=mi>2</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><p>上面代码会先进入 I/O callbacks 阶段，然后是 check 阶段，最后才是 timers 阶段。因此，setImmediate 才会早于 setTimeout 执行。</p><h2 id=async-函数和-promise>async 函数和 promise</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>async1</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;async1 start&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=kr>await</span> <span class=nx>async2</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;async1 end&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>async2</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>   <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span> <span class=s1>&#39;async2 end&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;script start&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>setTimeout</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;settimeout&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>},</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>async1</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>new</span> <span class=nb>Promise</span><span class=p>(</span><span class=kd>function</span> <span class=p>(</span><span class=nx>resolve</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;promise1&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>resolve</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=p>}).</span><span class=nx>then</span><span class=p>(</span><span class=kd>function</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s2>&#34;promise2&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;script end&#39;</span><span class=p>);</span>
+</span></span></code></pre></div><p>上面代码的执行结果是：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>script start
+</span></span><span class=line><span class=cl>async1 start
+</span></span><span class=line><span class=cl>async2 end
+</span></span><span class=line><span class=cl>promise1
+</span></span><span class=line><span class=cl>script end
+</span></span><span class=line><span class=cl>promise2
+</span></span><span class=line><span class=cl>async1 end
+</span></span><span class=line><span class=cl>settimeout
+</span></span></code></pre></div><p>为什么 <code>async2</code> 会在 <code>promise1</code> 之前输出？</p><p>先简单了解一下 async/await 的机制。</p><p>async 其实就是将 Generator 函数和自动执行器，包装在一个函数里。关于 Generator 函数，可以参考 <a href=https://es6.ruanyifeng.com/#docs/generator target=_blank rel="noopener noreffer">这里</a> 。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>async</span> <span class=kd>function</span> <span class=nx>fn</span><span class=p>(</span><span class=nx>args</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 等同于
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>fn</span><span class=p>(</span><span class=nx>args</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>spawn</span><span class=p>(</span><span class=kd>function</span><span class=o>*</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ...
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>function</span> <span class=nx>spawn</span><span class=p>(</span><span class=nx>genF</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=k>new</span> <span class=nb>Promise</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>resolve</span><span class=p>,</span> <span class=nx>reject</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>gen</span> <span class=o>=</span> <span class=nx>genF</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=kd>function</span> <span class=nx>step</span><span class=p>(</span><span class=nx>nextF</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=kd>let</span> <span class=nx>next</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>      <span class=k>try</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>next</span> <span class=o>=</span> <span class=nx>nextF</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span> <span class=k>catch</span><span class=p>(</span><span class=nx>e</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>reject</span><span class=p>(</span><span class=nx>e</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=k>if</span><span class=p>(</span><span class=nx>next</span><span class=p>.</span><span class=nx>done</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>resolve</span><span class=p>(</span><span class=nx>next</span><span class=p>.</span><span class=nx>value</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=p>}</span>
+</span></span><span class=line><span class=cl>      <span class=nb>Promise</span><span class=p>.</span><span class=nx>resolve</span><span class=p>(</span><span class=nx>next</span><span class=p>.</span><span class=nx>value</span><span class=p>).</span><span class=nx>then</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>v</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>step</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=k>return</span> <span class=nx>gen</span><span class=p>.</span><span class=nx>next</span><span class=p>(</span><span class=nx>v</span><span class=p>);</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>      <span class=p>},</span> <span class=kd>function</span><span class=p>(</span><span class=nx>e</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>step</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=k>return</span> <span class=nx>gen</span><span class=p>.</span><span class=k>throw</span><span class=p>(</span><span class=nx>e</span><span class=p>);</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>      <span class=p>});</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=nx>step</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=k>return</span> <span class=nx>gen</span><span class=p>.</span><span class=nx>next</span><span class=p>(</span><span class=kc>undefined</span><span class=p>);</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl>  <span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>spawn 函数就是自动执行器。</p><p>async 函数返回了一个 Promise 作为结果的函数，可以简单理解为，await 后面的函数执行完毕时，await 会产生一个微任务（Promise.then）。
 注意，这个<strong>微任务实在执行完 await 之后产生的</strong>，也就是说 async 函数在执行时，如果碰到 await，就会跳出当前 async 函数，执行其他代码，
-执行完其他代码后，再回到 async 函数，执行剩下的代码，并把 await 后面的代码，添加到微任务队列。</p>
-<p>上面的例子，执行过程应该是：</p>
-<ol>
-<li>执行同步代码，输出 <code>script start</code>。</li>
-<li>遇到 <code>setTimeout</code>，添加到宏任务队列。</li>
-<li>执行 <code>async1()</code>，输出 <code>async1 start</code>。</li>
-<li><code>async1()</code> 函数里调用了 <code>async2()</code>，执行 <code>async2()</code> 中的代码，输出 <code>async2 end</code>。跳出 <code>async1()</code> 函数。</li>
-<li>创建 <code>promise</code> 对象里面的代码属于同步代码，所以接下来输出 <code>promise1</code>。遇到 <code>then</code>，产生第一个微任务，添加到微任务队列。</li>
-<li>执行同步代码，输出 <code>script end</code>。</li>
-<li>执行产生的微任务，输出 <code>promise2</code></li>
-<li>回到 <code>async1()</code> 函数，执行 await，产生一个新的 <code>promise</code>，添加到微任务队列。</li>
-<li>执行 await 后面的代码，输出 <code>async1 end</code></li>
-<li>最后，没有 <code>process.nextTick</code>，进入事件循环的 timers 阶段，实行 <code>setTimeout</code> 的回调函数，输出 <code>settimeout</code>。</li>
-</ol>
-<p><strong>原文出自</strong> <a href="http://www.ruanyifeng.com/blog/2018/02/node-event-loop.html" target="_blank" rel="noopener noreffer">Node 定时器详解</a></p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2018-02-11-nodejs-settimeout-nexttick/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2018-01-08-vim-usage/" class="prev" rel="prev" title="Vim 快捷键"><i class="fas fa-angle-left fa-fw"></i>Vim 快捷键</a>
-            <a href="/posts/2018-03-07-nodejs-exception-catch/" class="next" rel="next" title="Node.js 中的异常处理">Node.js 中的异常处理<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+执行完其他代码后，再回到 async 函数，执行剩下的代码，并把 await 后面的代码，添加到微任务队列。</p><p>上面的例子，执行过程应该是：</p><ol><li>执行同步代码，输出 <code>script start</code>。</li><li>遇到 <code>setTimeout</code>，添加到宏任务队列。</li><li>执行 <code>async1()</code>，输出 <code>async1 start</code>。</li><li><code>async1()</code> 函数里调用了 <code>async2()</code>，执行 <code>async2()</code> 中的代码，输出 <code>async2 end</code>。跳出 <code>async1()</code> 函数。</li><li>创建 <code>promise</code> 对象里面的代码属于同步代码，所以接下来输出 <code>promise1</code>。遇到 <code>then</code>，产生第一个微任务，添加到微任务队列。</li><li>执行同步代码，输出 <code>script end</code>。</li><li>执行产生的微任务，输出 <code>promise2</code></li><li>回到 <code>async1()</code> 函数，执行 await，产生一个新的 <code>promise</code>，添加到微任务队列。</li><li>执行 await 后面的代码，输出 <code>async1 end</code></li><li>最后，没有 <code>process.nextTick</code>，进入事件循环的 timers 阶段，实行 <code>setTimeout</code> 的回调函数，输出 <code>settimeout</code>。</li></ol><p><strong>原文出自</strong> <a href=http://www.ruanyifeng.com/blog/2018/02/node-event-loop.html target=_blank rel="noopener noreffer">Node 定时器详解</a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2018-02-11-nodejs-settimeout-nexttick/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2018-01-08-vim-usage/ class=prev rel=prev title="Vim 快捷键"><i class="fas fa-angle-left fa-fw"></i>Vim 快捷键</a>
+<a href=/posts/2018-03-07-nodejs-exception-catch/ class=next rel=next title="Node.js 中的异常处理">Node.js 中的异常处理<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

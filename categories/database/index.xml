@@ -1,15 +1,1 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Database - 分类 - Echo</title>
-        <link>http://example.org/categories/database/</link>
-        <description>Database - 分类 - Echo</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
-            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Thu, 27 Apr 2017 13:20:10 &#43;0000</lastBuildDate><atom:link href="http://example.org/categories/database/" rel="self" type="application/rss+xml" /><item>
-    <title>CentOs 安装配置 MySQL</title>
-    <link>http://example.org/posts/2017-04-27-mysql-yum-install/</link>
-    <pubDate>Thu, 27 Apr 2017 13:20:10 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-04-27-mysql-yum-install/</guid>
-    <description><![CDATA[<p>安装参考官网 <a href="https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html" target="_blank" rel="noopener noreffer">Yum 安装 MySQL 文档</a>。</p>]]></description>
-</item></channel>
-</rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Database - 分类 - Echo</title><link>http://example.org/categories/database/</link><description>Database - 分类 - Echo</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor><webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Thu, 27 Apr 2017 13:20:10 +0000</lastBuildDate><atom:link href="http://example.org/categories/database/" rel="self" type="application/rss+xml"/><item><title>CentOs 安装配置 MySQL</title><link>http://example.org/posts/2017-04-27-mysql-yum-install/</link><pubDate>Thu, 27 Apr 2017 13:20:10 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-04-27-mysql-yum-install/</guid><description>&lt;p>安装参考官网 &lt;a href="https://dev.mysql.com/doc/refman/8.0/en/linux-installation-yum-repo.html" target="_blank" rel="noopener noreffer">Yum 安装 MySQL 文档&lt;/a>。&lt;/p></description></item></channel></rss>

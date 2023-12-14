@@ -1,321 +1,107 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>CentOS 上使用 kubeadm 安装 kubernetes - Echo</title><meta name="Description" content=""><meta property="og:title" content="CentOS 上使用 kubeadm 安装 kubernetes" />
-<meta property="og:description" content="使用 kubeadm 安装 kubernetes 集群。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2020-02-12-kubeadm/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-02-12T19:18:55+00:00" />
-<meta property="article:modified_time" content="2021-03-09T15:03:17+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="CentOS 上使用 kubeadm 安装 kubernetes"/>
-<meta name="twitter:description" content="使用 kubeadm 安装 kubernetes 集群。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2020-02-12-kubeadm/" /><link rel="prev" href="http://example.org/posts/2020-01-31-git-usage/" /><link rel="next" href="http://example.org/posts/2020-02-28-go-profile/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "CentOS 上使用 kubeadm 安装 kubernetes",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2020-02-12-kubeadm\/"
-        },"genre": "posts","wordcount":  1048 ,
-        "url": "http:\/\/example.org\/posts\/2020-02-12-kubeadm\/","datePublished": "2020-02-12T19:18:55+00:00","dateModified": "2021-03-09T15:03:17+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">CentOS 上使用 kubeadm 安装 kubernetes</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/cloud-native/"><i class="far fa-folder fa-fw"></i>Cloud Native</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-02-12">2020-02-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1048 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#准备">准备</a></li>
-    <li><a href="#安装">安装</a>
-      <ul>
-        <li><a href="#安装-runtime">安装 runtime</a></li>
-        <li><a href="#安装-kubeadm">安装 kubeadm</a></li>
-      </ul>
-    </li>
-    <li><a href="#初始化">初始化</a>
-      <ul>
-        <li><a href="#安装网络插件">安装网络插件</a></li>
-        <li><a href="#删除-taints">删除 taints</a></li>
-        <li><a href="#查看集群状态">查看集群状态</a></li>
-      </ul>
-    </li>
-    <li><a href="#添加节点">添加节点</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>使用 kubeadm 安装 kubernetes 集群。</p>
-<h2 id="准备">准备</h2>
-<ul>
-<li>一台或多台机器，系统可以是 CentOS 7 或者 Red Hat Enterprise Linux (RHEL) 7。</li>
-<li>每台机器至少 2 GB RAM</li>
-<li>至少 2 核 CPU</li>
-<li>所有机器的网络是可以互相连接的</li>
-<li>不可以有重复的主机名，MAC 地址或者 <code>product_uuid</code>。Kubernetes 使用这些值来唯一确定集群中的节点。如果不唯一，会导致安装失败。
-<ul>
-<li>使用命令 <code>ip link</code> 或 <code>ifconfig -a</code> 来获取网络接口的 MAC 地址</li>
-<li>可以使用 <code>sudo cat /sys/class/dmi/id/product_uuid</code> 命令对 <code>product_uuid</code> 校验</li>
-</ul>
-</li>
-<li>为了保证 kubelet 正常工作，必须禁用交换分区。</li>
-</ul>
-<p>关闭防火墙：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl stop firewalld
-</span></span><span class="line"><span class="cl">systemctl disable firewalld
-</span></span></code></pre></div><p>将 SELinux 设置为 permissive 模式（相当于将其禁用）:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">setenforce <span class="m">0</span>
-</span></span><span class="line"><span class="cl">sed -i <span class="s1">&#39;s/^SELINUX=enforcing$/SELINUX=permissive/&#39;</span> /etc/selinux/config
-</span></span></code></pre></div><p>关闭 swap：</p>
-<p><code>vim /etc/fstab</code> 注释 swap 那一行：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1">#</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># /etc/fstab</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># Created by anaconda on Thu May 28 14:18:10 2020</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># Accessible filesystems, by reference, are maintained under &#39;/dev/disk&#39;</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#</span>
-</span></span><span class="line"><span class="cl">/dev/mapper/centos-root /                       xfs     defaults        <span class="m">0</span> <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="nv">UUID</span><span class="o">=</span>35c960be-191f-4f6a-afb6-e2bf959c4bd4 /boot                   xfs     defaults        <span class="m">0</span> <span class="m">0</span>
-</span></span><span class="line"><span class="cl"><span class="c1">#/dev/mapper/centos-swap swap                    swap    defaults        0 0</span>
-</span></span></code></pre></div><h2 id="安装">安装</h2>
-<h3 id="安装-runtime">安装 runtime</h3>
-<p>容器 runtime 优先使用 docker。</p>
-<h4 id="配置-yum-代理">配置 yum 代理</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim /etc/yum.conf
-</span></span><span class="line"><span class="cl"><span class="c1"># 添加行</span>
-</span></span><span class="line"><span class="cl"><span class="nv">proxy</span><span class="o">=</span>&lt;http proxy&gt;
-</span></span></code></pre></div><h4 id="安装依赖包">安装依赖包</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ yum install -y yum-utils <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  device-mapper-persistent-data <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  lvm2
-</span></span></code></pre></div><h4 id="添加-docker-yum-软件源">添加 docker yum 软件源</h4>
-<p>使用官方源：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ yum-config-manager <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --add-repo <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    https://download.docker.com/linux/centos/docker-ce.repo
-</span></span></code></pre></div><h4 id="安装-docker-ce">安装 Docker CE</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 更新 yum 软件源缓存</span>
-</span></span><span class="line"><span class="cl">$ yum makecache fast
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 安装 docker-ce</span>
-</span></span><span class="line"><span class="cl">$ yum install -y docker-ce
-</span></span></code></pre></div><h4 id="添加-docker-代理">添加 docker 代理</h4>
-<p>为 docker 配置代理：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir /etc/systemd/system/docker.service.d
-</span></span><span class="line"><span class="cl">vim /etc/systemd/system/docker.service.d/http-proxy.conf
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 添加下面的内容</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>Service<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">Environment</span><span class="o">=</span><span class="s2">&#34;HTTP_PROXY=&lt;http proxy&gt;&#34;</span> <span class="s2">&#34;NO_PROXY=localhost,127.0.0.1&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 重新载入 systemd，扫描新的或有变动的单元</span>
-</span></span><span class="line"><span class="cl">systemctl daemon-reload
-</span></span></code></pre></div><h4 id="启动-docker-ce">启动 Docker CE</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl <span class="nb">enable</span> docker
-</span></span><span class="line"><span class="cl">systemctl start docker
-</span></span></code></pre></div><h3 id="安装-kubeadm">安装 kubeadm</h3>
-<p>添加 kubernetes 源：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat <span class="s">&lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo
-</span></span></span><span class="line"><span class="cl"><span class="s">[kubernetes]
-</span></span></span><span class="line"><span class="cl"><span class="s">name=Kubernetes
-</span></span></span><span class="line"><span class="cl"><span class="s">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-</span></span></span><span class="line"><span class="cl"><span class="s">enabled=1
-</span></span></span><span class="line"><span class="cl"><span class="s">gpgcheck=1
-</span></span></span><span class="line"><span class="cl"><span class="s">repo_gpgcheck=1
-</span></span></span><span class="line"><span class="cl"><span class="s">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
-</span></span></code></pre></div><p>安装 kubeadm、kubelet 和 kubectl：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y kubelet kubeadm kubectl --disableexcludes<span class="o">=</span>kubernetes
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">systemctl <span class="nb">enable</span> --now kubelet
-</span></span></code></pre></div><p>为了解决 iptables 被绕过而导致流量无法正确路由的问题，确保 <code>net.bridge.bridge-nf-call-ip6tables</code> 和 <code>net.bridge.bridge-nf-call-iptables</code> 值为 1：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sysctl --system
-</span></span></code></pre></div><p>如果不为 1：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">cat <span class="s">&lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf
-</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-ip6tables = 1
-</span></span></span><span class="line"><span class="cl"><span class="s">net.bridge.bridge-nf-call-iptables = 1
-</span></span></span><span class="line"><span class="cl"><span class="s">EOF</span>
-</span></span></code></pre></div><h2 id="初始化">初始化</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm init &lt;args&gt;
-</span></span></code></pre></div><p>输出：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Your Kubernetes control-plane has initialized successfully!
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">To start using your cluster, you need to run the following as a regular user:
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  mkdir -p <span class="nv">$HOME</span>/.kube
-</span></span><span class="line"><span class="cl">  sudo cp -i /etc/kubernetes/admin.conf <span class="nv">$HOME</span>/.kube/config
-</span></span><span class="line"><span class="cl">  sudo chown <span class="k">$(</span>id -u<span class="k">)</span>:<span class="k">$(</span>id -g<span class="k">)</span> <span class="nv">$HOME</span>/.kube/config
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">You should now deploy a pod network to the cluster.
-</span></span><span class="line"><span class="cl">Run <span class="s2">&#34;kubectl apply -f [podnetwork].yaml&#34;</span> with one of the options listed at:
-</span></span><span class="line"><span class="cl">  https://kubernetes.io/docs/concepts/cluster-administration/addons/
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Then you can join any number of worker nodes by running the following on each as root:
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">kubeadm join 16.186.74.208:6443 --token oshoj8.i2up8b5judtojqjl <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --discovery-token-ca-cert-hash sha256:77d5f9c584b7d1fc4ff7d1e9a61f8b3d29042f8e3bc729cec834a67cb65354bb
-</span></span></code></pre></div><p>根据上面输出中的提示，执行：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir -p <span class="nv">$HOME</span>/.kube
-</span></span><span class="line"><span class="cl">sudo cp -i /etc/kubernetes/admin.conf <span class="nv">$HOME</span>/.kube/config
-</span></span><span class="line"><span class="cl">sudo chown <span class="k">$(</span>id -u<span class="k">)</span>:<span class="k">$(</span>id -g<span class="k">)</span> <span class="nv">$HOME</span>/.kube/config
-</span></span></code></pre></div><p>下面的命令用来<strong>将 node 添加到集群</strong>：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm join 16.186.74.208:6443 --token oshoj8.i2up8b5judtojqjl <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --discovery-token-ca-cert-hash sha256:77d5f9c584b7d1fc4ff7d1e9a61f8b3d29042f8e3bc729cec834a67cb65354bb
-</span></span></code></pre></div><h3 id="安装网络插件">安装网络插件</h3>
-<p>Calico 是 kubeadm 项目中执行 e2e 测试的唯一 CNI 插件。安装 calico：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
-</span></span></code></pre></div><p>如果要使用 flannel 作为网络插件，执行 <code>kubeadm init</code> 时使用 <code>--pod-network-cidr</code> 参数。</p>
-<h3 id="删除-taints">删除 taints</h3>
-<p>默认情况下，出于安全原因，集群不会在 master node 上调度 Pod。部署单机 Kubernetes 集群，要运行：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl taint nodes --all node-role.kubernetes.io/master-
-</span></span></code></pre></div><p>输出看起来像：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">node <span class="s2">&#34;test-01&#34;</span> untainted
-</span></span><span class="line"><span class="cl">taint <span class="s2">&#34;node-role.kubernetes.io/master:&#34;</span> not found
-</span></span><span class="line"><span class="cl">taint <span class="s2">&#34;node-role.kubernetes.io/master:&#34;</span> not found
-</span></span></code></pre></div><p>Node 的 taint 标记会被删除。</p>
-<h3 id="查看集群状态">查看集群状态</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubectl cluster-info
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">kubectl get node
-</span></span></code></pre></div><h2 id="添加节点">添加节点</h2>
-<p>在一个新的 node 中以前面的步骤安装 docker，kubeadm，kubelet，kubectl。</p>
-<p>然后使用 <code>kubeadm init</code> 输出的命令将 node 加入集群：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm join 16.186.74.208:6443 --token oshoj8.i2up8b5judtojqjl <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --discovery-token-ca-cert-hash sha256:77d5f9c584b7d1fc4ff7d1e9a61f8b3d29042f8e3bc729cec834a67cb65354bb
-</span></span></code></pre></div><p>如果没有令牌，可以通过在控制平面节点上运行以下命令来获取令牌：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm token list
-</span></span></code></pre></div><p>默认情况下，令牌会在 24 小时后过期。如果要在令牌过期后将节点加入集群，运行下面的命令来创建新令牌：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">kubeadm token create
-</span></span></code></pre></div><p>如果没有 <code>--discovery-token-ca-cert-hash</code> 的值，使用下面的命令获取</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt <span class="p">|</span> openssl rsa -pubin -outform der 2&gt;/dev/null <span class="p">|</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>   openssl dgst -sha256 -hex <span class="p">|</span> sed <span class="s1">&#39;s/^.* //&#39;</span>
-</span></span></code></pre></div></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-09&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/c35cdb20eba3ccdd4ce77e3d052f30d338b2f252" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) c35cdb20eba3ccdd4ce77e3d052f30d338b2f252: Posts/OAuth2.0 getting started (#3)">
-                                    <i class="fas fa-hashtag fa-fw"></i>c35cdb2</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2020-02-12-kubeadm/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2020-01-31-git-usage/" class="prev" rel="prev" title="Git 的一些使用技巧"><i class="fas fa-angle-left fa-fw"></i>Git 的一些使用技巧</a>
-            <a href="/posts/2020-02-28-go-profile/" class="next" rel="next" title="Go 如何做性能分析">Go 如何做性能分析<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>CentOS 上使用 kubeadm 安装 kubernetes - Echo</title><meta name=Description content><meta property="og:title" content="CentOS 上使用 kubeadm 安装 kubernetes"><meta property="og:description" content="使用 kubeadm 安装 kubernetes 集群。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2020-02-12-kubeadm/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-02-12T19:18:55+00:00"><meta property="article:modified_time" content="2021-03-09T15:03:17+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="CentOS 上使用 kubeadm 安装 kubernetes"><meta name=twitter:description content="使用 kubeadm 安装 kubernetes 集群。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2020-02-12-kubeadm/><link rel=prev href=http://example.org/posts/2020-01-31-git-usage/><link rel=next href=http://example.org/posts/2020-02-28-go-profile/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"CentOS 上使用 kubeadm 安装 kubernetes","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2020-02-12-kubeadm\/"},"genre":"posts","wordcount":1048,"url":"http:\/\/example.org\/posts\/2020-02-12-kubeadm\/","datePublished":"2020-02-12T19:18:55+00:00","dateModified":"2021-03-09T15:03:17+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">CentOS 上使用 kubeadm 安装 kubernetes</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/cloud-native/><i class="far fa-folder fa-fw"></i>Cloud Native</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-02-12>2020-02-12</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1048 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#准备>准备</a></li><li><a href=#安装>安装</a><ul><li><a href=#安装-runtime>安装 runtime</a></li><li><a href=#安装-kubeadm>安装 kubeadm</a></li></ul></li><li><a href=#初始化>初始化</a><ul><li><a href=#安装网络插件>安装网络插件</a></li><li><a href=#删除-taints>删除 taints</a></li><li><a href=#查看集群状态>查看集群状态</a></li></ul></li><li><a href=#添加节点>添加节点</a></li></ul></nav></div></div><div class=content id=content><p>使用 kubeadm 安装 kubernetes 集群。</p><h2 id=准备>准备</h2><ul><li>一台或多台机器，系统可以是 CentOS 7 或者 Red Hat Enterprise Linux (RHEL) 7。</li><li>每台机器至少 2 GB RAM</li><li>至少 2 核 CPU</li><li>所有机器的网络是可以互相连接的</li><li>不可以有重复的主机名，MAC 地址或者 <code>product_uuid</code>。Kubernetes 使用这些值来唯一确定集群中的节点。如果不唯一，会导致安装失败。<ul><li>使用命令 <code>ip link</code> 或 <code>ifconfig -a</code> 来获取网络接口的 MAC 地址</li><li>可以使用 <code>sudo cat /sys/class/dmi/id/product_uuid</code> 命令对 <code>product_uuid</code> 校验</li></ul></li><li>为了保证 kubelet 正常工作，必须禁用交换分区。</li></ul><p>关闭防火墙：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>systemctl stop firewalld
+</span></span><span class=line><span class=cl>systemctl disable firewalld
+</span></span></code></pre></div><p>将 SELinux 设置为 permissive 模式（相当于将其禁用）:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>setenforce <span class=m>0</span>
+</span></span><span class=line><span class=cl>sed -i <span class=s1>&#39;s/^SELINUX=enforcing$/SELINUX=permissive/&#39;</span> /etc/selinux/config
+</span></span></code></pre></div><p>关闭 swap：</p><p><code>vim /etc/fstab</code> 注释 swap 那一行：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1>#</span>
+</span></span><span class=line><span class=cl><span class=c1># /etc/fstab</span>
+</span></span><span class=line><span class=cl><span class=c1># Created by anaconda on Thu May 28 14:18:10 2020</span>
+</span></span><span class=line><span class=cl><span class=c1>#</span>
+</span></span><span class=line><span class=cl><span class=c1># Accessible filesystems, by reference, are maintained under &#39;/dev/disk&#39;</span>
+</span></span><span class=line><span class=cl><span class=c1># See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info</span>
+</span></span><span class=line><span class=cl><span class=c1>#</span>
+</span></span><span class=line><span class=cl>/dev/mapper/centos-root /                       xfs     defaults        <span class=m>0</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=nv>UUID</span><span class=o>=</span>35c960be-191f-4f6a-afb6-e2bf959c4bd4 /boot                   xfs     defaults        <span class=m>0</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl><span class=c1>#/dev/mapper/centos-swap swap                    swap    defaults        0 0</span>
+</span></span></code></pre></div><h2 id=安装>安装</h2><h3 id=安装-runtime>安装 runtime</h3><p>容器 runtime 优先使用 docker。</p><h4 id=配置-yum-代理>配置 yum 代理</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>vim /etc/yum.conf
+</span></span><span class=line><span class=cl><span class=c1># 添加行</span>
+</span></span><span class=line><span class=cl><span class=nv>proxy</span><span class=o>=</span>&lt;http proxy&gt;
+</span></span></code></pre></div><h4 id=安装依赖包>安装依赖包</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ yum install -y yum-utils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  device-mapper-persistent-data <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  lvm2
+</span></span></code></pre></div><h4 id=添加-docker-yum-软件源>添加 docker yum 软件源</h4><p>使用官方源：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ yum-config-manager <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --add-repo <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    https://download.docker.com/linux/centos/docker-ce.repo
+</span></span></code></pre></div><h4 id=安装-docker-ce>安装 Docker CE</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 更新 yum 软件源缓存</span>
+</span></span><span class=line><span class=cl>$ yum makecache fast
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 安装 docker-ce</span>
+</span></span><span class=line><span class=cl>$ yum install -y docker-ce
+</span></span></code></pre></div><h4 id=添加-docker-代理>添加 docker 代理</h4><p>为 docker 配置代理：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir /etc/systemd/system/docker.service.d
+</span></span><span class=line><span class=cl>vim /etc/systemd/system/docker.service.d/http-proxy.conf
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 添加下面的内容</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>Service<span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=nv>Environment</span><span class=o>=</span><span class=s2>&#34;HTTP_PROXY=&lt;http proxy&gt;&#34;</span> <span class=s2>&#34;NO_PROXY=localhost,127.0.0.1&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 重新载入 systemd，扫描新的或有变动的单元</span>
+</span></span><span class=line><span class=cl>systemctl daemon-reload
+</span></span></code></pre></div><h4 id=启动-docker-ce>启动 Docker CE</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>systemctl <span class=nb>enable</span> docker
+</span></span><span class=line><span class=cl>systemctl start docker
+</span></span></code></pre></div><h3 id=安装-kubeadm>安装 kubeadm</h3><p>添加 kubernetes 源：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo
+</span></span></span><span class=line><span class=cl><span class=s>[kubernetes]
+</span></span></span><span class=line><span class=cl><span class=s>name=Kubernetes
+</span></span></span><span class=line><span class=cl><span class=s>baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+</span></span></span><span class=line><span class=cl><span class=s>enabled=1
+</span></span></span><span class=line><span class=cl><span class=s>gpgcheck=1
+</span></span></span><span class=line><span class=cl><span class=s>repo_gpgcheck=1
+</span></span></span><span class=line><span class=cl><span class=s>gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><p>安装 kubeadm、kubelet 和 kubectl：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>yum install -y kubelet kubeadm kubectl --disableexcludes<span class=o>=</span>kubernetes
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>systemctl <span class=nb>enable</span> --now kubelet
+</span></span></code></pre></div><p>为了解决 iptables 被绕过而导致流量无法正确路由的问题，确保 <code>net.bridge.bridge-nf-call-ip6tables</code> 和 <code>net.bridge.bridge-nf-call-iptables</code> 值为 1：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sysctl --system
+</span></span></code></pre></div><p>如果不为 1：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat <span class=s>&lt;&lt;EOF &gt;  /etc/sysctl.d/k8s.conf
+</span></span></span><span class=line><span class=cl><span class=s>net.bridge.bridge-nf-call-ip6tables = 1
+</span></span></span><span class=line><span class=cl><span class=s>net.bridge.bridge-nf-call-iptables = 1
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></div><h2 id=初始化>初始化</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubeadm init &lt;args&gt;
+</span></span></code></pre></div><p>输出：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>Your Kubernetes control-plane has initialized successfully!
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>To start using your cluster, you need to run the following as a regular user:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  mkdir -p <span class=nv>$HOME</span>/.kube
+</span></span><span class=line><span class=cl>  sudo cp -i /etc/kubernetes/admin.conf <span class=nv>$HOME</span>/.kube/config
+</span></span><span class=line><span class=cl>  sudo chown <span class=k>$(</span>id -u<span class=k>)</span>:<span class=k>$(</span>id -g<span class=k>)</span> <span class=nv>$HOME</span>/.kube/config
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>You should now deploy a pod network to the cluster.
+</span></span><span class=line><span class=cl>Run <span class=s2>&#34;kubectl apply -f [podnetwork].yaml&#34;</span> with one of the options listed at:
+</span></span><span class=line><span class=cl>  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Then you can join any number of worker nodes by running the following on each as root:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubeadm join 16.186.74.208:6443 --token oshoj8.i2up8b5judtojqjl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --discovery-token-ca-cert-hash sha256:77d5f9c584b7d1fc4ff7d1e9a61f8b3d29042f8e3bc729cec834a67cb65354bb
+</span></span></code></pre></div><p>根据上面输出中的提示，执行：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir -p <span class=nv>$HOME</span>/.kube
+</span></span><span class=line><span class=cl>sudo cp -i /etc/kubernetes/admin.conf <span class=nv>$HOME</span>/.kube/config
+</span></span><span class=line><span class=cl>sudo chown <span class=k>$(</span>id -u<span class=k>)</span>:<span class=k>$(</span>id -g<span class=k>)</span> <span class=nv>$HOME</span>/.kube/config
+</span></span></code></pre></div><p>下面的命令用来<strong>将 node 添加到集群</strong>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubeadm join 16.186.74.208:6443 --token oshoj8.i2up8b5judtojqjl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --discovery-token-ca-cert-hash sha256:77d5f9c584b7d1fc4ff7d1e9a61f8b3d29042f8e3bc729cec834a67cb65354bb
+</span></span></code></pre></div><h3 id=安装网络插件>安装网络插件</h3><p>Calico 是 kubeadm 项目中执行 e2e 测试的唯一 CNI 插件。安装 calico：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+</span></span></code></pre></div><p>如果要使用 flannel 作为网络插件，执行 <code>kubeadm init</code> 时使用 <code>--pod-network-cidr</code> 参数。</p><h3 id=删除-taints>删除 taints</h3><p>默认情况下，出于安全原因，集群不会在 master node 上调度 Pod。部署单机 Kubernetes 集群，要运行：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl taint nodes --all node-role.kubernetes.io/master-
+</span></span></code></pre></div><p>输出看起来像：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>node <span class=s2>&#34;test-01&#34;</span> untainted
+</span></span><span class=line><span class=cl>taint <span class=s2>&#34;node-role.kubernetes.io/master:&#34;</span> not found
+</span></span><span class=line><span class=cl>taint <span class=s2>&#34;node-role.kubernetes.io/master:&#34;</span> not found
+</span></span></code></pre></div><p>Node 的 taint 标记会被删除。</p><h3 id=查看集群状态>查看集群状态</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl cluster-info
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubectl get node
+</span></span></code></pre></div><h2 id=添加节点>添加节点</h2><p>在一个新的 node 中以前面的步骤安装 docker，kubeadm，kubelet，kubectl。</p><p>然后使用 <code>kubeadm init</code> 输出的命令将 node 加入集群：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubeadm join 16.186.74.208:6443 --token oshoj8.i2up8b5judtojqjl <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --discovery-token-ca-cert-hash sha256:77d5f9c584b7d1fc4ff7d1e9a61f8b3d29042f8e3bc729cec834a67cb65354bb
+</span></span></code></pre></div><p>如果没有令牌，可以通过在控制平面节点上运行以下命令来获取令牌：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubeadm token list
+</span></span></code></pre></div><p>默认情况下，令牌会在 24 小时后过期。如果要在令牌过期后将节点加入集群，运行下面的命令来创建新令牌：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubeadm token create
+</span></span></code></pre></div><p>如果没有 <code>--discovery-token-ca-cert-hash</code> 的值，使用下面的命令获取</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt <span class=p>|</span> openssl rsa -pubin -outform der 2&gt;/dev/null <span class=p>|</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>   openssl dgst -sha256 -hex <span class=p>|</span> sed <span class=s1>&#39;s/^.* //&#39;</span>
+</span></span></code></pre></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-09&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/c35cdb20eba3ccdd4ce77e3d052f30d338b2f252 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) c35cdb20eba3ccdd4ce77e3d052f30d338b2f252: Posts/OAuth2.0 getting started (#3)">
+<i class="fas fa-hashtag fa-fw"></i>c35cdb2</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2020-02-12-kubeadm/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2020-01-31-git-usage/ class=prev rel=prev title="Git 的一些使用技巧"><i class="fas fa-angle-left fa-fw"></i>Git 的一些使用技巧</a>
+<a href=/posts/2020-02-28-go-profile/ class=next rel=next title="Go 如何做性能分析">Go 如何做性能分析<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

@@ -1,307 +1,97 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Node.js 实现文件监听 - Echo</title><meta name="Description" content=""><meta property="og:title" content="Node.js 实现文件监听" />
-<meta property="og:description" content="Node.js，实现文件监听，可以使用 fs.watch 和
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Node.js 实现文件监听 - Echo</title><meta name=Description content><meta property="og:title" content="Node.js 实现文件监听"><meta property="og:description" content="Node.js，实现文件监听，可以使用 fs.watch 和
 fs.watchFile 。
-也可以通过第三方库 chokidar 来实现。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2018-03-20-nodejs-file-watch/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2018-03-20T15:18:14+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="Node.js 实现文件监听"/>
-<meta name="twitter:description" content="Node.js，实现文件监听，可以使用 fs.watch 和
+也可以通过第三方库 chokidar 来实现。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2018-03-20-nodejs-file-watch/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-03-20T15:18:14+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="Node.js 实现文件监听"><meta name=twitter:description content="Node.js，实现文件监听，可以使用 fs.watch 和
 fs.watchFile 。
-也可以通过第三方库 chokidar 来实现。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2018-03-20-nodejs-file-watch/" /><link rel="prev" href="http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/" /><link rel="next" href="http://example.org/posts/2018-03-28-nodejs-jsdoc/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Node.js 实现文件监听",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2018-03-20-nodejs-file-watch\/"
-        },"genre": "posts","wordcount":  1369 ,
-        "url": "http:\/\/example.org\/posts\/2018-03-20-nodejs-file-watch\/","datePublished": "2018-03-20T15:18:14+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Node.js 实现文件监听</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2018-03-20">2018-03-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1369 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#fswatch">fs.watch</a></li>
-    <li><a href="#chokidar">chokidar</a></li>
-    <li><a href="#api">API</a></li>
-    <li><a href="#事件">事件</a></li>
-    <li><a href="#方法">方法</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>Node.js，实现文件监听，可以使用 <a href="https://nodejs.org/api/fs.html#fs_fs_watch_filename_options_listener" target="_blank" rel="noopener noreffer">fs.watch</a> 和
-<a href="https://nodejs.org/api/fs.html#fs_fs_watchfile_filename_options_listener" target="_blank" rel="noopener noreffer">fs.watchFile</a> 。</p>
-<p>也可以通过第三方库 <a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreffer">chokidar</a> 来实现。</p>
-<h2 id="fswatch">fs.watch</h2>
-<p>官网例子：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">fs</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="s1">&#39;somedir&#39;</span><span class="p">,</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">filename</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`event type is: </span><span class="si">${</span><span class="nx">eventType</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">filename</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sb">`filename provided: </span><span class="si">${</span><span class="nx">filename</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;filename not provided&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><p><code>fs.watch</code> 的不支持子文件夹的侦听，而且在很多情况下会侦听到两次事件。</p>
-<h2 id="chokidar">chokidar</h2>
-<p>安装什么的就不介绍了，参考 <a href="https://www.npmjs.com/package/chokidar" target="_blank" rel="noopener noreffer">官方文档</a> 。</p>
-<p>例子：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">ContentPackWatcher</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">constructor</span><span class="p">(</span><span class="nx">robot</span><span class="p">,</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span><span class="nx">awaitWriteFinish</span><span class="o">:</span> <span class="kc">true</span><span class="p">})</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">dirPath</span> <span class="o">=</span> <span class="sb">`</span><span class="si">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">HUBOT_ENTERPRISE_PACKAGES_DIR</span><span class="si">}</span><span class="sb">/*.zip`</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">watcher</span> <span class="o">=</span> <span class="nx">Chokidar</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">watcher</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">addFileListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;addDir&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">addDirectoryListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">fileChangeListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;unlink&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">fileDeleteListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;unlinkDir&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">directoryDeleteListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;error&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">errorListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;ready&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">readyListener</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="nx">getWatched</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">watcher</span><span class="p">.</span><span class="nx">getWatched</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="nx">stopWatch</span><span class="p">(</span><span class="nx">paths</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">watcher</span><span class="p">.</span><span class="nx">unwatch</span><span class="p">(</span><span class="nx">paths</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="nx">readyListener</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="s1">&#39;Initial scan complete. Ready for changes.&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="nx">errorListener</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">logger</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;Error happened&#39;</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">//add new file
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">addFileListener</span><span class="p">(</span><span class="nx">filePath</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="sb">`File </span><span class="si">${</span><span class="nx">filePath</span><span class="si">}</span><span class="sb"> has been added, size: </span><span class="si">${</span><span class="nx">stats</span><span class="p">.</span><span class="nx">size</span><span class="si">}</span><span class="sb">.`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">//add new directory
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">addDirectoryListener</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="sb">`Directory </span><span class="si">${</span><span class="nx">dirPath</span><span class="si">}</span><span class="sb"> has been added.`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">//watch file change
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">fileChangeListener</span><span class="p">(</span><span class="nx">filePath</span><span class="p">,</span> <span class="nx">stats</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">stats</span><span class="p">.</span><span class="nx">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="sb">`File </span><span class="si">${</span><span class="nx">filePath</span><span class="si">}</span><span class="sb"> has been changed, size: </span><span class="si">${</span><span class="nx">stats</span><span class="p">.</span><span class="nx">size</span><span class="si">}</span><span class="sb">.`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">//watch file delete
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">fileDeleteListener</span><span class="p">(</span><span class="nx">filePath</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="sb">`File </span><span class="si">${</span><span class="nx">filePath</span><span class="si">}</span><span class="sb"> has been removed.`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">  <span class="c1">//watch directory delete
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">directoryDeleteListener</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">logger</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="sb">`Directory </span><span class="si">${</span><span class="nx">dirPath</span><span class="si">}</span><span class="sb"> has been removed.`</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="api">API</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chokidar</span><span class="p">.</span><span class="nx">watch</span><span class="p">(</span><span class="nx">paths</span><span class="p">,</span> <span class="p">[</span><span class="nx">options</span><span class="p">])</span>
-</span></span></code></pre></div><ul>
-<li><code>paths</code>: 可以是一个字符串数组或一个字符串。</li>
-<li><code>options</code>: 对象。
-<ul>
-<li><code>persistent</code>: 默认<code>true</code>，进程是否持续监听文件，如果设置为 <code>false</code>，当使用 fsevents 监听时，<code>ready</code> 之后不会触发任何监听事件。</li>
-<li><code>ignored</code>: 忽略某些文件的监听，</li>
-<li><code>ignoreInitial</code>: 默认 <code>false</code>，如果设置为 <code>false</code>,在初始化 chokidar 实例时，如果监听到匹配的文件也会被触发 <code>add/addDir</code> 事件。</li>
-<li><code>followSymlinks</code>: 默认 <code>true</code>，如果设置为 <code>false</code>,只看符号链接本身的变化。</li>
-<li><code>cwd</code>: 监听的路径的 <code>base</code> 目录。</li>
-<li><code>disableGlobbing</code>: 默认 <code>false</code>，如果设置为 true,那么传递给<code>.watch()</code>和<code>add()</code>的字符串被视为文字路径名,即使它们看起来就像 globs。</li>
-<li><code>usePolling</code>: 默认 <code>false</code>，是否使用 <code>fs.watchFile</code> (backed by polling), 或者 <code>fs.watch</code>，如果轮询导致CPU占用过高，可以设置
+也可以通过第三方库 chokidar 来实现。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2018-03-20-nodejs-file-watch/><link rel=prev href=http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/><link rel=next href=http://example.org/posts/2018-03-28-nodejs-jsdoc/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Node.js 实现文件监听","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2018-03-20-nodejs-file-watch\/"},"genre":"posts","wordcount":1369,"url":"http:\/\/example.org\/posts\/2018-03-20-nodejs-file-watch\/","datePublished":"2018-03-20T15:18:14+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Node.js 实现文件监听</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/node.js/><i class="far fa-folder fa-fw"></i>Node.js</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-03-20>2018-03-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1369 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#fswatch>fs.watch</a></li><li><a href=#chokidar>chokidar</a></li><li><a href=#api>API</a></li><li><a href=#事件>事件</a></li><li><a href=#方法>方法</a></li></ul></nav></div></div><div class=content id=content><p>Node.js，实现文件监听，可以使用 <a href=https://nodejs.org/api/fs.html#fs_fs_watch_filename_options_listener target=_blank rel="noopener noreffer">fs.watch</a> 和
+<a href=https://nodejs.org/api/fs.html#fs_fs_watchfile_filename_options_listener target=_blank rel="noopener noreffer">fs.watchFile</a> 。</p><p>也可以通过第三方库 <a href=https://www.npmjs.com/package/chokidar target=_blank rel="noopener noreffer">chokidar</a> 来实现。</p><h2 id=fswatch>fs.watch</h2><p>官网例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>fs</span><span class=p>.</span><span class=nx>watch</span><span class=p>(</span><span class=s1>&#39;somedir&#39;</span><span class=p>,</span> <span class=p>(</span><span class=nx>eventType</span><span class=p>,</span> <span class=nx>filename</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=sb>`event type is: </span><span class=si>${</span><span class=nx>eventType</span><span class=si>}</span><span class=sb>`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=nx>filename</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=sb>`filename provided: </span><span class=si>${</span><span class=nx>filename</span><span class=si>}</span><span class=sb>`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;filename not provided&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><p><code>fs.watch</code> 的不支持子文件夹的侦听，而且在很多情况下会侦听到两次事件。</p><h2 id=chokidar>chokidar</h2><p>安装什么的就不介绍了，参考 <a href=https://www.npmjs.com/package/chokidar target=_blank rel="noopener noreffer">官方文档</a> 。</p><p>例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>class</span> <span class=nx>ContentPackWatcher</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>constructor</span><span class=p>(</span><span class=nx>robot</span><span class=p>,</span> <span class=nx>options</span> <span class=o>=</span> <span class=p>{</span><span class=nx>awaitWriteFinish</span><span class=o>:</span> <span class=kc>true</span><span class=p>})</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>dirPath</span> <span class=o>=</span> <span class=sb>`</span><span class=si>${</span><span class=nx>process</span><span class=p>.</span><span class=nx>env</span><span class=p>.</span><span class=nx>HUBOT_ENTERPRISE_PACKAGES_DIR</span><span class=si>}</span><span class=sb>/*.zip`</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>this</span><span class=p>.</span><span class=nx>watcher</span> <span class=o>=</span> <span class=nx>Chokidar</span><span class=p>.</span><span class=nx>watch</span><span class=p>(</span><span class=nx>dirPath</span><span class=p>,</span> <span class=nx>options</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>this</span><span class=p>.</span><span class=nx>watcher</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;add&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>addFileListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;addDir&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>addDirectoryListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;change&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>fileChangeListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;unlink&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>fileDeleteListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;unlinkDir&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>directoryDeleteListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;error&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>errorListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>      <span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;ready&#39;</span><span class=p>,</span> <span class=k>this</span><span class=p>.</span><span class=nx>readyListener</span><span class=p>.</span><span class=nx>bind</span><span class=p>(</span><span class=k>this</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nx>getWatched</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>this</span><span class=p>.</span><span class=nx>watcher</span><span class=p>.</span><span class=nx>getWatched</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nx>stopWatch</span><span class=p>(</span><span class=nx>paths</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>this</span><span class=p>.</span><span class=nx>watcher</span><span class=p>.</span><span class=nx>unwatch</span><span class=p>(</span><span class=nx>paths</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nx>readyListener</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>logger</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=s1>&#39;Initial scan complete. Ready for changes.&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=nx>errorListener</span><span class=p>(</span><span class=nx>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>logger</span><span class=p>.</span><span class=nx>error</span><span class=p>(</span><span class=s1>&#39;Error happened&#39;</span><span class=p>,</span> <span class=nx>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>//add new file
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>addFileListener</span><span class=p>(</span><span class=nx>filePath</span><span class=p>,</span> <span class=nx>stats</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>stats</span><span class=p>.</span><span class=nx>size</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>logger</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=sb>`File </span><span class=si>${</span><span class=nx>filePath</span><span class=si>}</span><span class=sb> has been added, size: </span><span class=si>${</span><span class=nx>stats</span><span class=p>.</span><span class=nx>size</span><span class=si>}</span><span class=sb>.`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>//add new directory
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>addDirectoryListener</span><span class=p>(</span><span class=nx>dirPath</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>logger</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=sb>`Directory </span><span class=si>${</span><span class=nx>dirPath</span><span class=si>}</span><span class=sb> has been added.`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>//watch file change
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>fileChangeListener</span><span class=p>(</span><span class=nx>filePath</span><span class=p>,</span> <span class=nx>stats</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>stats</span><span class=p>.</span><span class=nx>size</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>logger</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=sb>`File </span><span class=si>${</span><span class=nx>filePath</span><span class=si>}</span><span class=sb> has been changed, size: </span><span class=si>${</span><span class=nx>stats</span><span class=p>.</span><span class=nx>size</span><span class=si>}</span><span class=sb>.`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>//watch file delete
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>fileDeleteListener</span><span class=p>(</span><span class=nx>filePath</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>logger</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=sb>`File </span><span class=si>${</span><span class=nx>filePath</span><span class=si>}</span><span class=sb> has been removed.`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>//watch directory delete
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>directoryDeleteListener</span><span class=p>(</span><span class=nx>dirPath</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>logger</span><span class=p>.</span><span class=nx>info</span><span class=p>(</span><span class=sb>`Directory </span><span class=si>${</span><span class=nx>dirPath</span><span class=si>}</span><span class=sb> has been removed.`</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=api>API</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>chokidar</span><span class=p>.</span><span class=nx>watch</span><span class=p>(</span><span class=nx>paths</span><span class=p>,</span> <span class=p>[</span><span class=nx>options</span><span class=p>])</span>
+</span></span></code></pre></div><ul><li><code>paths</code>: 可以是一个字符串数组或一个字符串。</li><li><code>options</code>: 对象。<ul><li><code>persistent</code>: 默认<code>true</code>，进程是否持续监听文件，如果设置为 <code>false</code>，当使用 fsevents 监听时，<code>ready</code> 之后不会触发任何监听事件。</li><li><code>ignored</code>: 忽略某些文件的监听，</li><li><code>ignoreInitial</code>: 默认 <code>false</code>，如果设置为 <code>false</code>,在初始化 chokidar 实例时，如果监听到匹配的文件也会被触发 <code>add/addDir</code> 事件。</li><li><code>followSymlinks</code>: 默认 <code>true</code>，如果设置为 <code>false</code>,只看符号链接本身的变化。</li><li><code>cwd</code>: 监听的路径的 <code>base</code> 目录。</li><li><code>disableGlobbing</code>: 默认 <code>false</code>，如果设置为 true,那么传递给<code>.watch()</code>和<code>add()</code>的字符串被视为文字路径名,即使它们看起来就像 globs。</li><li><code>usePolling</code>: 默认 <code>false</code>，是否使用 <code>fs.watchFile</code> (backed by polling), 或者 <code>fs.watch</code>，如果轮询导致CPU占用过高，可以设置
 为 <code>false</code>。它通常需要设置 <code>true</code> 当通过网络监听文件时和非标准的情况下。在 OS X 上设置为 <code>true</code>，会覆盖 <code>useFsEvents</code>，也可以设
-置 <code>CHOKIDAR_USEPOLLING</code> 环境变量来覆盖它。</li>
-<li><code>Polling-specific</code> 设置（只在 <code>usePolling: true</code> 是有效）
-<ul>
-<li><code>interval</code>:(default: 100) 文件系统轮询时间间隔，也可以通过设置环境变量 <code>CHOKIDAR_INTERVAL</code> 来覆盖它。</li>
-<li><code>binaryInterval</code>:(default: 300) 二进制文件系统轮询时间间隔。</li>
-</ul>
-</li>
-<li><code>useFsEvents</code>:(default: true on OS X)当 fsevents 的监听接口可用时，是否启用。当显式地设置为 <code>true</code>,fsevents 取代 <code>usePolling</code>。
-在 OS X 上设置为 <code>false</code> 时，<code>usePolling: true</code> 变为默认。</li>
-<li><code>alwaysStat</code>: 默认 <code>false</code>，如果 <code>add</code>,<code>addDir</code>，<code>change</code> 事件依赖 <code>fs.Stats</code> 对象（callback的第二个参数），设置为 <code>true</code> 时，
-可以确保传入这个对象，尽管它不是可用的。</li>
-<li><code>depth</code>: 默认 <code>undefined</code>，遍历子目录的层级。</li>
-<li><code>awaitWriteFinish</code>: 默认 <code>false</code>，默认情况下，文件第一次出现在磁盘上，文件被写完之前，就会触发 <code>add</code> 事件。此外,在某些情况下会触
+置 <code>CHOKIDAR_USEPOLLING</code> 环境变量来覆盖它。</li><li><code>Polling-specific</code> 设置（只在 <code>usePolling: true</code> 是有效）<ul><li><code>interval</code>:(default: 100) 文件系统轮询时间间隔，也可以通过设置环境变量 <code>CHOKIDAR_INTERVAL</code> 来覆盖它。</li><li><code>binaryInterval</code>:(default: 300) 二进制文件系统轮询时间间隔。</li></ul></li><li><code>useFsEvents</code>:(default: true on OS X)当 fsevents 的监听接口可用时，是否启用。当显式地设置为 <code>true</code>,fsevents 取代 <code>usePolling</code>。
+在 OS X 上设置为 <code>false</code> 时，<code>usePolling: true</code> 变为默认。</li><li><code>alwaysStat</code>: 默认 <code>false</code>，如果 <code>add</code>,<code>addDir</code>，<code>change</code> 事件依赖 <code>fs.Stats</code> 对象（callback的第二个参数），设置为 <code>true</code> 时，
+可以确保传入这个对象，尽管它不是可用的。</li><li><code>depth</code>: 默认 <code>undefined</code>，遍历子目录的层级。</li><li><code>awaitWriteFinish</code>: 默认 <code>false</code>，默认情况下，文件第一次出现在磁盘上，文件被写完之前，就会触发 <code>add</code> 事件。此外,在某些情况下会触
 发 <code>change</code> 事件，在一些情况下，特别是监听大文件，需要在等待写操作完成以后回复一个文件创建或者修改。设置为 <code>true</code>，会检查文件大小，直到文件在
 设置的时间内(stabilityThreshold)不再改变，才会触发 <code>add</code> 或者 <code>change</code> 事件。设置适当的时间依赖系统和硬件。<code>awaitWriteFinish</code> 可以是
-一个对象，包含下面的属性:
-<ul>
-<li><code>stabilityThreshold</code>: (default: 2000)单位毫秒，等待文件大小不再改变的时间，在设置时间之后触发事件。</li>
-<li><code>pollInterval</code>: (default: 100)，检查文件大小的时间间隔。</li>
-</ul>
-</li>
-<li><code>ignorePermissionErrors</code>: 默认 <code>false</code>，忽略没有权限操作文件的 <code>error</code>。</li>
-</ul>
-</li>
-</ul>
-<h2 id="事件">事件</h2>
-<p><code>chokidar</code> 可以通过 <code>on</code> 方法监听到下面的事件：</p>
-<ul>
-<li>add, 文件添加</li>
-<li>addDir, 文件夹添加</li>
-<li>change, 文件变化</li>
-<li>unlink, 文件删除</li>
-<li>unlinkDir, 文件夹删除</li>
-<li>ready</li>
-<li>raw</li>
-<li>error</li>
-</ul>
-<p>除了 <code>ready</code>，<code>raw</code>，<code>error</code> 这三个事件，其他事件触发都可以拿到文件路径。</p>
-<h2 id="方法">方法</h2>
-<ul>
-<li><code>.add(path / paths)</code>: 添加监听文件。参数可以是一个字符串数组或一个字符串。</li>
-<li><code>.on(event, callback)</code>: 监听事件，除了 <code>ready</code>，<code>raw</code>，<code>error</code> 这三个事件，其他事件的 <code>callback</code> 函数的第一个参数是文件路径。</li>
-<li><code>.unwatch(path / paths)</code>: 停止监听某个文件。参数可以是一个字符串数组或一个字符串。</li>
-<li><code>.close()</code>: 删除所有文件监听。</li>
-<li><code>.getWatched()</code>: 返回一个包含所有被监听的文件的对象。</li>
-</ul></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2018-03-20-nodejs-file-watch/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2018-03-17-nodejs-exports-moduleexports/" class="prev" rel="prev" title="关于 exports 和 module.exports"><i class="fas fa-angle-left fa-fw"></i>关于 exports 和 module.exports</a>
-            <a href="/posts/2018-03-28-nodejs-jsdoc/" class="next" rel="next" title="Node.js 生成 API 文档">Node.js 生成 API 文档<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+一个对象，包含下面的属性:<ul><li><code>stabilityThreshold</code>: (default: 2000)单位毫秒，等待文件大小不再改变的时间，在设置时间之后触发事件。</li><li><code>pollInterval</code>: (default: 100)，检查文件大小的时间间隔。</li></ul></li><li><code>ignorePermissionErrors</code>: 默认 <code>false</code>，忽略没有权限操作文件的 <code>error</code>。</li></ul></li></ul><h2 id=事件>事件</h2><p><code>chokidar</code> 可以通过 <code>on</code> 方法监听到下面的事件：</p><ul><li>add, 文件添加</li><li>addDir, 文件夹添加</li><li>change, 文件变化</li><li>unlink, 文件删除</li><li>unlinkDir, 文件夹删除</li><li>ready</li><li>raw</li><li>error</li></ul><p>除了 <code>ready</code>，<code>raw</code>，<code>error</code> 这三个事件，其他事件触发都可以拿到文件路径。</p><h2 id=方法>方法</h2><ul><li><code>.add(path / paths)</code>: 添加监听文件。参数可以是一个字符串数组或一个字符串。</li><li><code>.on(event, callback)</code>: 监听事件，除了 <code>ready</code>，<code>raw</code>，<code>error</code> 这三个事件，其他事件的 <code>callback</code> 函数的第一个参数是文件路径。</li><li><code>.unwatch(path / paths)</code>: 停止监听某个文件。参数可以是一个字符串数组或一个字符串。</li><li><code>.close()</code>: 删除所有文件监听。</li><li><code>.getWatched()</code>: 返回一个包含所有被监听的文件的对象。</li></ul></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2018-03-20-nodejs-file-watch/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2018-03-17-nodejs-exports-moduleexports/ class=prev rel=prev title="关于 exports 和 module.exports"><i class="fas fa-angle-left fa-fw"></i>关于 exports 和 module.exports</a>
+<a href=/posts/2018-03-28-nodejs-jsdoc/ class=next rel=next title="Node.js 生成 API 文档">Node.js 生成 API 文档<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

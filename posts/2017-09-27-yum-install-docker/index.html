@@ -1,249 +1,72 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>CentOs 安装 Docker - Echo</title><meta name="Description" content=""><meta property="og:title" content="CentOs 安装 Docker" />
-<meta property="og:description" content="在 CentOS 7 上通过 yum 安装 docker。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2017-09-27-yum-install-docker/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2017-09-27T10:44:08+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="CentOs 安装 Docker"/>
-<meta name="twitter:description" content="在 CentOS 7 上通过 yum 安装 docker。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2017-09-27-yum-install-docker/" /><link rel="prev" href="http://example.org/posts/2017-09-05-yarn/" /><link rel="next" href="http://example.org/posts/2017-10-13-eslint-introduction/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "CentOs 安装 Docker",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2017-09-27-yum-install-docker\/"
-        },"genre": "posts","wordcount":  466 ,
-        "url": "http:\/\/example.org\/posts\/2017-09-27-yum-install-docker\/","datePublished": "2017-09-27T10:44:08+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">CentOs 安装 Docker</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2017-09-27">2017-09-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 466 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 1 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#配置-yum-代理">配置 yum 代理</a></li>
-    <li><a href="#卸载旧版本">卸载旧版本</a></li>
-    <li><a href="#安装依赖包">安装依赖包</a></li>
-    <li><a href="#添加-yum-软件源">添加 yum 软件源</a></li>
-    <li><a href="#安装-docker-ce">安装 Docker CE</a></li>
-    <li><a href="#启动-docker-ce">启动 Docker CE</a></li>
-    <li><a href="#添加-docker-代理">添加 docker 代理</a></li>
-    <li><a href="#错误docker-runc-did-not-terminate-sucessfully-unknown">错误：docker-runc did not terminate sucessfully unknown</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>在 CentOS 7 上通过 yum 安装 docker。</p>
-<h2 id="配置-yum-代理">配置 yum 代理</h2>
-<p>因为我安装 docker 的服务器在公司内网，所以要配置代理，如果不是请忽略。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">http_proxy</span><span class="o">=</span>&lt;http proxy endpoint&gt;
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">https_proxy</span><span class="o">=</span><span class="nv">$http_proxy</span>
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">HTTP_PROXY</span><span class="o">=</span><span class="nv">$http_proxy</span>
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">HTTPS_PROXY</span><span class="o">=</span><span class="nv">$http_proxy</span>
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">no_proxy</span><span class="o">=</span>127.0.0.1,localhost
-</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">NO_PROXY</span><span class="o">=</span><span class="nv">$no_proxy</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">vim /etc/yum.conf
-</span></span><span class="line"><span class="cl"><span class="c1"># 添加行</span>
-</span></span><span class="line"><span class="cl"><span class="nv">proxy</span><span class="o">=</span>http://web-proxy.com:8080
-</span></span></code></pre></div><h2 id="卸载旧版本">卸载旧版本</h2>
-<p>旧版本的 Docker 称为 docker 或者 docker-engine，使用以下命令卸载旧版本：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo yum remove docker <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>                  docker-common <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>                  docker-selinux <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>                  docker-engine
-</span></span></code></pre></div><h2 id="安装依赖包">安装依赖包</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo yum install -y yum-utils <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  device-mapper-persistent-data <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  lvm2
-</span></span></code></pre></div><h2 id="添加-yum-软件源">添加 yum 软件源</h2>
-<p>这里使用官方源：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo yum-config-manager <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --add-repo <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    https://download.docker.com/linux/centos/docker-ce.repo
-</span></span></code></pre></div><p>如果使用国内网络，建议使用国内源：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ sudo yum-config-manager <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    --add-repo <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>    https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-</span></span></code></pre></div><p>如果需要最新版本的 Docker CE 使用以下命令:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo yum-config-manager --enable docker-ce-edge
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">sudo yum-config-manager --enable docker-ce-test
-</span></span></code></pre></div><h2 id="安装-docker-ce">安装 Docker CE</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 更新 yum 软件源缓存</span>
-</span></span><span class="line"><span class="cl">$ sudo yum makecache fast
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 安装 docker-ce</span>
-</span></span><span class="line"><span class="cl">$ sudo yum install docker-ce
-</span></span></code></pre></div><h2 id="启动-docker-ce">启动 Docker CE</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> docker
-</span></span><span class="line"><span class="cl">sudo systemctl start docker
-</span></span></code></pre></div><h2 id="添加-docker-代理">添加 docker 代理</h2>
-<p>为 docker 配置代理：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">mkdir /etc/systemd/system/docker.service.d
-</span></span><span class="line"><span class="cl">vim /etc/systemd/system/docker.service.d/http-proxy.conf
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 添加下面的内容</span>
-</span></span><span class="line"><span class="cl"><span class="o">[</span>Service<span class="o">]</span>
-</span></span><span class="line"><span class="cl"><span class="nv">Environment</span><span class="o">=</span><span class="s2">&#34;HTTP_PROXY={http proxy endpoint}&#34;</span> <span class="s2">&#34;NO_PROXY=localhost,127.0.0.1,docker-registry.somecorporation.com&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 重新载入 systemd，扫描新的或有变动的单元</span>
-</span></span><span class="line"><span class="cl">systemctl daemon-reload
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 查看环境变量属性</span>
-</span></span><span class="line"><span class="cl">systemctl show --property<span class="o">=</span>Environment docker
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># 重启 docker 服务</span>
-</span></span><span class="line"><span class="cl">systemctl restart docker
-</span></span></code></pre></div><p>官方代配置文档：</p>
-<ul>
-<li><a href="https://docs.docker.com/config/daemon/" target="_blank" rel="noopener noreffer">Configure and troubleshoot the Docker daemon</a></li>
-<li><a href="https://docs.docker.com/config/daemon/systemd/" target="_blank" rel="noopener noreffer">Control Docker with systemd</a></li>
-</ul>
-<p>如果没有代理，由于国内网络的问题，拉取 Docker 镜像会十分缓慢，建议配置国内镜像加速，然后在 <code>/etc/docker/daemon.json</code> （如果文件不存在请新
-建该文件）中配置：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nt">&#34;registry-mirrors&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;https://********.mirror.aliyuncs.com&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">  <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>之后重新启动服务。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl daemon-reload
-</span></span><span class="line"><span class="cl">sudo systemctl restart docker
-</span></span></code></pre></div><h2 id="错误docker-runc-did-not-terminate-sucessfully-unknown">错误：docker-runc did not terminate sucessfully unknown</h2>
-<p>系统版本不支持。
-<a href="https://github.com/moby/moby/issues/35906" target="_blank" rel="noopener noreffer">https://github.com/moby/moby/issues/35906</a></p>
-<p><a href="https://docs.docker.com/engine/installation/linux/docker-ce/centos/" target="_blank" rel="noopener noreffer">Docker 官方 CentOS 安装文档</a></p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2017-09-27-yum-install-docker/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2017-09-05-yarn/" class="prev" rel="prev" title="使用 Yarn 代替 NPM"><i class="fas fa-angle-left fa-fw"></i>使用 Yarn 代替 NPM</a>
-            <a href="/posts/2017-10-13-eslint-introduction/" class="next" rel="next" title="ESlint 入门">ESlint 入门<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>CentOs 安装 Docker - Echo</title><meta name=Description content><meta property="og:title" content="CentOs 安装 Docker"><meta property="og:description" content="在 CentOS 7 上通过 yum 安装 docker。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2017-09-27-yum-install-docker/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-09-27T10:44:08+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="CentOs 安装 Docker"><meta name=twitter:description content="在 CentOS 7 上通过 yum 安装 docker。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2017-09-27-yum-install-docker/><link rel=prev href=http://example.org/posts/2017-09-05-yarn/><link rel=next href=http://example.org/posts/2017-10-13-eslint-introduction/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"CentOs 安装 Docker","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2017-09-27-yum-install-docker\/"},"genre":"posts","wordcount":466,"url":"http:\/\/example.org\/posts\/2017-09-27-yum-install-docker\/","datePublished":"2017-09-27T10:44:08+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">CentOs 安装 Docker</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/linux/><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-09-27>2017-09-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 466 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 1 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#配置-yum-代理>配置 yum 代理</a></li><li><a href=#卸载旧版本>卸载旧版本</a></li><li><a href=#安装依赖包>安装依赖包</a></li><li><a href=#添加-yum-软件源>添加 yum 软件源</a></li><li><a href=#安装-docker-ce>安装 Docker CE</a></li><li><a href=#启动-docker-ce>启动 Docker CE</a></li><li><a href=#添加-docker-代理>添加 docker 代理</a></li><li><a href=#错误docker-runc-did-not-terminate-sucessfully-unknown>错误：docker-runc did not terminate sucessfully unknown</a></li></ul></nav></div></div><div class=content id=content><p>在 CentOS 7 上通过 yum 安装 docker。</p><h2 id=配置-yum-代理>配置 yum 代理</h2><p>因为我安装 docker 的服务器在公司内网，所以要配置代理，如果不是请忽略。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>export</span> <span class=nv>http_proxy</span><span class=o>=</span>&lt;http proxy endpoint&gt;
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>https_proxy</span><span class=o>=</span><span class=nv>$http_proxy</span>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>HTTP_PROXY</span><span class=o>=</span><span class=nv>$http_proxy</span>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>HTTPS_PROXY</span><span class=o>=</span><span class=nv>$http_proxy</span>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>no_proxy</span><span class=o>=</span>127.0.0.1,localhost
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>NO_PROXY</span><span class=o>=</span><span class=nv>$no_proxy</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>vim /etc/yum.conf
+</span></span><span class=line><span class=cl><span class=c1># 添加行</span>
+</span></span><span class=line><span class=cl><span class=nv>proxy</span><span class=o>=</span>http://web-proxy.com:8080
+</span></span></code></pre></div><h2 id=卸载旧版本>卸载旧版本</h2><p>旧版本的 Docker 称为 docker 或者 docker-engine，使用以下命令卸载旧版本：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo yum remove docker <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>                  docker-common <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>                  docker-selinux <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>                  docker-engine
+</span></span></code></pre></div><h2 id=安装依赖包>安装依赖包</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo yum install -y yum-utils <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  device-mapper-persistent-data <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  lvm2
+</span></span></code></pre></div><h2 id=添加-yum-软件源>添加 yum 软件源</h2><p>这里使用官方源：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo yum-config-manager <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --add-repo <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    https://download.docker.com/linux/centos/docker-ce.repo
+</span></span></code></pre></div><p>如果使用国内网络，建议使用国内源：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ sudo yum-config-manager <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --add-repo <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+</span></span></code></pre></div><p>如果需要最新版本的 Docker CE 使用以下命令:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo yum-config-manager --enable docker-ce-edge
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>sudo yum-config-manager --enable docker-ce-test
+</span></span></code></pre></div><h2 id=安装-docker-ce>安装 Docker CE</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 更新 yum 软件源缓存</span>
+</span></span><span class=line><span class=cl>$ sudo yum makecache fast
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 安装 docker-ce</span>
+</span></span><span class=line><span class=cl>$ sudo yum install docker-ce
+</span></span></code></pre></div><h2 id=启动-docker-ce>启动 Docker CE</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo systemctl <span class=nb>enable</span> docker
+</span></span><span class=line><span class=cl>sudo systemctl start docker
+</span></span></code></pre></div><h2 id=添加-docker-代理>添加 docker 代理</h2><p>为 docker 配置代理：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>mkdir /etc/systemd/system/docker.service.d
+</span></span><span class=line><span class=cl>vim /etc/systemd/system/docker.service.d/http-proxy.conf
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 添加下面的内容</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>Service<span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=nv>Environment</span><span class=o>=</span><span class=s2>&#34;HTTP_PROXY={http proxy endpoint}&#34;</span> <span class=s2>&#34;NO_PROXY=localhost,127.0.0.1,docker-registry.somecorporation.com&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 重新载入 systemd，扫描新的或有变动的单元</span>
+</span></span><span class=line><span class=cl>systemctl daemon-reload
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查看环境变量属性</span>
+</span></span><span class=line><span class=cl>systemctl show --property<span class=o>=</span>Environment docker
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 重启 docker 服务</span>
+</span></span><span class=line><span class=cl>systemctl restart docker
+</span></span></code></pre></div><p>官方代配置文档：</p><ul><li><a href=https://docs.docker.com/config/daemon/ target=_blank rel="noopener noreffer">Configure and troubleshoot the Docker daemon</a></li><li><a href=https://docs.docker.com/config/daemon/systemd/ target=_blank rel="noopener noreffer">Control Docker with systemd</a></li></ul><p>如果没有代理，由于国内网络的问题，拉取 Docker 镜像会十分缓慢，建议配置国内镜像加速，然后在 <code>/etc/docker/daemon.json</code> （如果文件不存在请新
+建该文件）中配置：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;registry-mirrors&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;https://********.mirror.aliyuncs.com&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>之后重新启动服务。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo systemctl daemon-reload
+</span></span><span class=line><span class=cl>sudo systemctl restart docker
+</span></span></code></pre></div><h2 id=错误docker-runc-did-not-terminate-sucessfully-unknown>错误：docker-runc did not terminate sucessfully unknown</h2><p>系统版本不支持。
+<a href=https://github.com/moby/moby/issues/35906 target=_blank rel="noopener noreffer">https://github.com/moby/moby/issues/35906</a></p><p><a href=https://docs.docker.com/engine/installation/linux/docker-ce/centos/ target=_blank rel="noopener noreffer">Docker 官方 CentOS 安装文档</a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2017-09-27-yum-install-docker/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2017-09-05-yarn/ class=prev rel=prev title="使用 Yarn 代替 NPM"><i class="fas fa-angle-left fa-fw"></i>使用 Yarn 代替 NPM</a>
+<a href=/posts/2017-10-13-eslint-introduction/ class=next rel=next title="ESlint 入门">ESlint 入门<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

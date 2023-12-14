@@ -1,242 +1,59 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>JavaScript 的闭包 - Echo</title><meta name="Description" content=""><meta property="og:title" content="JavaScript 的闭包" />
-<meta property="og:description" content="JavaScript 的闭包有两个用途：
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>JavaScript 的闭包 - Echo</title><meta name=Description content><meta property="og:title" content="JavaScript 的闭包"><meta property="og:description" content="JavaScript 的闭包有两个用途：
 
 访问函数内部的变量。
 让变量的值在作用域内保持不变。
-" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2017-03-19-js-closure/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2017-03-19T23:26:21+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="JavaScript 的闭包"/>
-<meta name="twitter:description" content="JavaScript 的闭包有两个用途：
+"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2017-03-19-js-closure/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-03-19T23:26:21+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="JavaScript 的闭包"><meta name=twitter:description content="JavaScript 的闭包有两个用途：
 
 访问函数内部的变量。
 让变量的值在作用域内保持不变。
-"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2017-03-19-js-closure/" /><link rel="prev" href="http://example.org/posts/2017-02-18-nodejs-command/" /><link rel="next" href="http://example.org/posts/2017-03-29-js-methods/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "JavaScript 的闭包",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2017-03-19-js-closure\/"
-        },"genre": "posts","wordcount":  962 ,
-        "url": "http:\/\/example.org\/posts\/2017-03-19-js-closure\/","datePublished": "2017-03-19T23:26:21+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">JavaScript 的闭包</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/javascript/"><i class="far fa-folder fa-fw"></i>Javascript</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2017-03-19">2017-03-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 962 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#javascript-中使用闭包的陷阱">JavaScript 中使用闭包的陷阱</a></li>
-    <li><a href="#闭包的使用">闭包的使用</a>
-      <ul>
-        <li><a href="#span-idjump保持变量的作用域span"><!-- raw HTML omitted -->保持变量的作用域<!-- raw HTML omitted --></a></li>
-        <li><a href="#访问函数内部的变量">访问函数内部的变量</a></li>
-        <li><a href="#闭包的注意点">闭包的注意点</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>JavaScript 的闭包有两个用途：</p>
-<ol>
-<li>访问函数内部的变量。</li>
-<li>让变量的值在作用域内保持不变。</li>
-</ol>
-<p>JavaScript 没有块作用域（比如 <code>for</code> 循环，<code>if</code> 的 <code>{}</code> 中的代码块），函数是 JavaScript 中唯一有作用域的对象。</p>
-<h2 id="javascript-中使用闭包的陷阱">JavaScript 中使用闭包的陷阱</h2>
-<p>如果在循环中创建函数，并引用循环变量，原意是打印出 <code>0</code>，<code>1</code>，<code>2</code>，但结果却是一样的:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">tasks</span> <span class="o">=</span> <span class="p">[];</span>
-</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">tasks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;&gt;&gt;&gt; &#39;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">);</span> <span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;end for.&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">tasks</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">tasks</span><span class="p">[</span><span class="nx">j</span><span class="p">]();</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// end for.
-</span></span></span><span class="line"><span class="cl"><span class="c1">// &gt;&gt;&gt; 3&gt;&gt;&gt; 3&gt;&gt;&gt; 3
+"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2017-03-19-js-closure/><link rel=prev href=http://example.org/posts/2017-02-18-nodejs-command/><link rel=next href=http://example.org/posts/2017-03-29-js-methods/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"JavaScript 的闭包","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2017-03-19-js-closure\/"},"genre":"posts","wordcount":962,"url":"http:\/\/example.org\/posts\/2017-03-19-js-closure\/","datePublished":"2017-03-19T23:26:21+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">JavaScript 的闭包</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/javascript/><i class="far fa-folder fa-fw"></i>Javascript</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-03-19>2017-03-19</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 962 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#javascript-中使用闭包的陷阱>JavaScript 中使用闭包的陷阱</a></li><li><a href=#闭包的使用>闭包的使用</a><ul><li><a href=#span-idjump保持变量的作用域span>保持变量的作用域</a></li><li><a href=#访问函数内部的变量>访问函数内部的变量</a></li><li><a href=#闭包的注意点>闭包的注意点</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>JavaScript 的闭包有两个用途：</p><ol><li>访问函数内部的变量。</li><li>让变量的值在作用域内保持不变。</li></ol><p>JavaScript 没有块作用域（比如 <code>for</code> 循环，<code>if</code> 的 <code>{}</code> 中的代码块），函数是 JavaScript 中唯一有作用域的对象。</p><h2 id=javascript-中使用闭包的陷阱>JavaScript 中使用闭包的陷阱</h2><p>如果在循环中创建函数，并引用循环变量，原意是打印出 <code>0</code>，<code>1</code>，<code>2</code>，但结果却是一样的:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>tasks</span> <span class=o>=</span> <span class=p>[];</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=p>(</span><span class=kd>var</span> <span class=nx>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=nx>i</span> <span class=o>&lt;</span> <span class=mi>3</span><span class=p>;</span> <span class=nx>i</span> <span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>tasks</span><span class=p>.</span><span class=nx>push</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;&gt;&gt;&gt; &#39;</span> <span class=o>+</span> <span class=nx>i</span><span class=p>);</span> <span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;end for.&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=p>(</span><span class=kd>var</span> <span class=nx>j</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=nx>j</span> <span class=o>&lt;</span> <span class=nx>tasks</span><span class=p>.</span><span class=nx>length</span><span class=p>;</span> <span class=nx>j</span> <span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>tasks</span><span class=p>[</span><span class=nx>j</span><span class=p>]();</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// end for.
+</span></span></span><span class=line><span class=cl><span class=c1>// &gt;&gt;&gt; 3&gt;&gt;&gt; 3&gt;&gt;&gt; 3
 </span></span></span></code></pre></div><p>问题的原因在于，函数创建时并未执行，所以先打印 <code>end for</code>，然后才执行函数。
 由于函数引用了循环变量 <code>i</code>，在函数执行时，由于 <code>i</code> 的值已经变成了 <code>3</code>，所以，打印出的结果不对。
-注意到 <code>i</code> 为什么不是 <code>2</code>，因为 <code>i++</code> 多加一次。</p>
-<p>解决方法可以使用<a href="#jump" rel="">闭包</a></p>
-<h2 id="闭包的使用">闭包的使用</h2>
-<h3 id="span-idjump保持变量的作用域span"><!-- raw HTML omitted -->保持变量的作用域<!-- raw HTML omitted --></h3>
-<blockquote>
-<p>ES6中可以使用 <code>let</code> 定义块级变量</p>
-</blockquote>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">})(</span><span class="nx">i</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p><code>function()</code> 匿名函数立即被执行，因此，闭包拿到的参数 <code>i</code> 就是当前循环变量的值的副本。为变量构建一个作用域。</p>
-<h3 id="访问函数内部的变量">访问函数内部的变量</h3>
-<p>在 JavaScript 中，函数可以访问其外部定义的变量，外部不能访问函数内部定义的变量。而通过调用闭包函数达到访问函数内部变量的目的。
+注意到 <code>i</code> 为什么不是 <code>2</code>，因为 <code>i++</code> 多加一次。</p><p>解决方法可以使用<a href=#jump rel>闭包</a></p><h2 id=闭包的使用>闭包的使用</h2><h3 id=span-idjump保持变量的作用域span>保持变量的作用域</h3><blockquote><p>ES6中可以使用 <code>let</code> 定义块级变量</p></blockquote><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=k>for</span><span class=p>(</span><span class=kd>var</span> <span class=nx>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=nx>i</span> <span class=o>&lt;</span> <span class=mi>10</span><span class=p>;</span> <span class=nx>i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>e</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>setTimeout</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>e</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span> <span class=mi>1000</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>})(</span><span class=nx>i</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p><code>function()</code> 匿名函数立即被执行，因此，闭包拿到的参数 <code>i</code> 就是当前循环变量的值的副本。为变量构建一个作用域。</p><h3 id=访问函数内部的变量>访问函数内部的变量</h3><p>在 JavaScript 中，函数可以访问其外部定义的变量，外部不能访问函数内部定义的变量。而通过调用闭包函数达到访问函数内部变量的目的。
 在下面示例中，<code>count</code> 相当于一个“私有变量”，在 <code>Counter</code> 函数外部不能访问这个变量。在 <code>Counter</code> 中，还定义了 <code>increment</code> 和 <code>get</code> 两
-个“闭包函数”，这两个函数都保持着对 <code>Counter</code> 作用域的引用，因此可以访问到 <code>Counter</code> 作用域内定义的变量 <code>count</code>。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">Counter</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"> <span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"> <span class="k">return</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">increment</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="nx">count</span><span class="o">++</span><span class="p">;</span> <span class="p">},</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">count</span><span class="p">;</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Counter</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="nx">foo</span><span class="p">.</span><span class="nx">increment</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl"><span class="nx">foo</span><span class="p">.</span><span class="nx">get</span><span class="p">();</span> <span class="c1">// -&gt; 3
-</span></span></span></code></pre></div><h3 id="闭包的注意点">闭包的注意点</h3>
-<ol>
-<li>
-<p>由于闭包会使得函数中的变量都被保存在内存中，所以不能滥用闭包，否则可能导致内存泄露。解决方法是，在退出函数之前，将不使用的局部变量全部删除。一
-旦数据不再有用，最好通过将其值设置为 <code>null</code> 来释放其引用——这个做法叫做解除引用（<code>dereferencing</code>）。</p>
-</li>
-<li>
-<p>闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象使用，把闭包当作它的公用方法，把内部变量当作它的私有属性，这时一定要小
-心，不要随便改变父函数内部变量的值。</p>
-</li>
-<li>
-<p>在闭包中使用 <code>this</code> 对象也可能会导致一些问题。<code>this</code> 对象是在运行时基于函数的执行环境绑定的：
+个“闭包函数”，这两个函数都保持着对 <code>Counter</code> 作用域的引用，因此可以访问到 <code>Counter</code> 作用域内定义的变量 <code>count</code>。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>Counter</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl> <span class=kd>var</span> <span class=nx>count</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl> <span class=k>return</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>increment</span><span class=o>:</span> <span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=nx>count</span><span class=o>++</span><span class=p>;</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=nx>get</span><span class=o>:</span> <span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=k>return</span> <span class=nx>count</span><span class=p>;</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>foo</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Counter</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nx>foo</span><span class=p>.</span><span class=nx>increment</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nx>foo</span><span class=p>.</span><span class=nx>get</span><span class=p>();</span> <span class=c1>// -&gt; 3
+</span></span></span></code></pre></div><h3 id=闭包的注意点>闭包的注意点</h3><ol><li><p>由于闭包会使得函数中的变量都被保存在内存中，所以不能滥用闭包，否则可能导致内存泄露。解决方法是，在退出函数之前，将不使用的局部变量全部删除。一
+旦数据不再有用，最好通过将其值设置为 <code>null</code> 来释放其引用——这个做法叫做解除引用（<code>dereferencing</code>）。</p></li><li><p>闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象使用，把闭包当作它的公用方法，把内部变量当作它的私有属性，这时一定要小
+心，不要随便改变父函数内部变量的值。</p></li><li><p>在闭包中使用 <code>this</code> 对象也可能会导致一些问题。<code>this</code> 对象是在运行时基于函数的执行环境绑定的：
 在全局函数中，<code>this</code> 等于 <code>window</code>，而当函数被作为某个对象的方法调用时，<code>this</code> 等于那个对象。不过，匿名函数的执行环境具有全局性，因此
-其 <code>this</code> 对象通常指向 <code>window</code>，不过，把外部作用域中的 <code>this</code> 对象保存在一个闭包能够访问到的变量里，就可以让闭包访问该对象了。</p>
-</li>
-</ol></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2017-03-19-js-closure/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2017-02-18-nodejs-command/" class="prev" rel="prev" title="Node.js 命令行实现"><i class="fas fa-angle-left fa-fw"></i>Node.js 命令行实现</a>
-            <a href="/posts/2017-03-29-js-methods/" class="next" rel="next" title="Javascript 中的类方法、构造方法、原型方法">Javascript 中的类方法、构造方法、原型方法<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+其 <code>this</code> 对象通常指向 <code>window</code>，不过，把外部作用域中的 <code>this</code> 对象保存在一个闭包能够访问到的变量里，就可以让闭包访问该对象了。</p></li></ol></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2017-03-19-js-closure/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2017-02-18-nodejs-command/ class=prev rel=prev title="Node.js 命令行实现"><i class="fas fa-angle-left fa-fw"></i>Node.js 命令行实现</a>
+<a href=/posts/2017-03-29-js-methods/ class=next rel=next title="Javascript 中的类方法、构造方法、原型方法">Javascript 中的类方法、构造方法、原型方法<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

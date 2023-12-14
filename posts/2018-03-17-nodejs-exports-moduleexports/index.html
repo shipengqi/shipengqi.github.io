@@ -1,264 +1,89 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>关于 exports 和 module.exports - Echo</title><meta name="Description" content=""><meta property="og:title" content="关于 exports 和 module.exports" />
-<meta property="og:description" content="exports 变量是在模块的文件级别作用域内有效的，它在模块被执行前被赋予 module.exports。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2018-03-17T10:09:13+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="关于 exports 和 module.exports"/>
-<meta name="twitter:description" content="exports 变量是在模块的文件级别作用域内有效的，它在模块被执行前被赋予 module.exports。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/" /><link rel="prev" href="http://example.org/posts/2018-03-07-nodejs-exception-catch/" /><link rel="next" href="http://example.org/posts/2018-03-20-nodejs-file-watch/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "关于 exports 和 module.exports",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2018-03-17-nodejs-exports-moduleexports\/"
-        },"genre": "posts","wordcount":  1198 ,
-        "url": "http:\/\/example.org\/posts\/2018-03-17-nodejs-exports-moduleexports\/","datePublished": "2018-03-17T10:09:13+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">关于 exports 和 module.exports</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2018-03-17">2018-03-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1198 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#依赖循环">依赖循环</a></li>
-    <li><a href="#exports-和-moduleexports-的区别">exports 和 module.exports 的区别</a></li>
-    <li><a href="#require-方法的的实现">require 方法的的实现</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p><code>exports</code> 变量是在模块的文件级别作用域内有效的，它在<strong>模块被执行前</strong>被赋予 <code>module.exports</code>。</p>
-<p>我们通过一个依赖循环的例子来理解 <code>exports</code> 和 <code>module.exports</code> 的区别。</p>
-<h2 id="依赖循环">依赖循环</h2>
-<p>如下面官网的例子:</p>
-<p>文件 <code>a.js</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a 开始&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 a 中，b.done = %j&#39;</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a 结束&#39;</span><span class="p">);</span>
-</span></span></code></pre></div><p>文件 <code>b.js</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;b 开始&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./a.js&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 b 中，a.done = %j&#39;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;b 结束&#39;</span><span class="p">);</span>
-</span></span></code></pre></div><p><code>main.js</code>：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;main 开始&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">a</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./a.js&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 main 中，a.done=%j，b.done=%j&#39;</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">done</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span>
-</span></span></code></pre></div><p>运行结果：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">main 开始
-</span></span><span class="line"><span class="cl">a 开始
-</span></span><span class="line"><span class="cl">b 开始
-</span></span><span class="line"><span class="cl">在 b 中，a.done <span class="o">=</span> <span class="nb">false</span>
-</span></span><span class="line"><span class="cl">b 结束
-</span></span><span class="line"><span class="cl">在 a 中，b.done <span class="o">=</span> <span class="nb">true</span>
-</span></span><span class="line"><span class="cl">a 结束
-</span></span><span class="line"><span class="cl">在 main 中，a.done<span class="o">=</span>true，b.done<span class="o">=</span><span class="nb">true</span>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>关于 exports 和 module.exports - Echo</title><meta name=Description content><meta property="og:title" content="关于 exports 和 module.exports"><meta property="og:description" content="exports 变量是在模块的文件级别作用域内有效的，它在模块被执行前被赋予 module.exports。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-03-17T10:09:13+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="关于 exports 和 module.exports"><meta name=twitter:description content="exports 变量是在模块的文件级别作用域内有效的，它在模块被执行前被赋予 module.exports。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2018-03-17-nodejs-exports-moduleexports/><link rel=prev href=http://example.org/posts/2018-03-07-nodejs-exception-catch/><link rel=next href=http://example.org/posts/2018-03-20-nodejs-file-watch/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"关于 exports 和 module.exports","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2018-03-17-nodejs-exports-moduleexports\/"},"genre":"posts","wordcount":1198,"url":"http:\/\/example.org\/posts\/2018-03-17-nodejs-exports-moduleexports\/","datePublished":"2018-03-17T10:09:13+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">关于 exports 和 module.exports</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/node.js/><i class="far fa-folder fa-fw"></i>Node.js</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2018-03-17>2018-03-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1198 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#依赖循环>依赖循环</a></li><li><a href=#exports-和-moduleexports-的区别>exports 和 module.exports 的区别</a></li><li><a href=#require-方法的的实现>require 方法的的实现</a></li></ul></nav></div></div><div class=content id=content><p><code>exports</code> 变量是在模块的文件级别作用域内有效的，它在<strong>模块被执行前</strong>被赋予 <code>module.exports</code>。</p><p>我们通过一个依赖循环的例子来理解 <code>exports</code> 和 <code>module.exports</code> 的区别。</p><h2 id=依赖循环>依赖循环</h2><p>如下面官网的例子:</p><p>文件 <code>a.js</code>:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;a 开始&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>b</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./b.js&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;在 a 中，b.done = %j&#39;</span><span class=p>,</span> <span class=nx>b</span><span class=p>.</span><span class=nx>done</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;a 结束&#39;</span><span class=p>);</span>
+</span></span></code></pre></div><p>文件 <code>b.js</code>:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;b 开始&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>a</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./a.js&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;在 b 中，a.done = %j&#39;</span><span class=p>,</span> <span class=nx>a</span><span class=p>.</span><span class=nx>done</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;b 结束&#39;</span><span class=p>);</span>
+</span></span></code></pre></div><p><code>main.js</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;main 开始&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>a</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./a.js&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>b</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./b.js&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;在 main 中，a.done=%j，b.done=%j&#39;</span><span class=p>,</span> <span class=nx>a</span><span class=p>.</span><span class=nx>done</span><span class=p>,</span> <span class=nx>b</span><span class=p>.</span><span class=nx>done</span><span class=p>);</span>
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>main 开始
+</span></span><span class=line><span class=cl>a 开始
+</span></span><span class=line><span class=cl>b 开始
+</span></span><span class=line><span class=cl>在 b 中，a.done <span class=o>=</span> <span class=nb>false</span>
+</span></span><span class=line><span class=cl>b 结束
+</span></span><span class=line><span class=cl>在 a 中，b.done <span class=o>=</span> <span class=nb>true</span>
+</span></span><span class=line><span class=cl>a 结束
+</span></span><span class=line><span class=cl>在 main 中，a.done<span class=o>=</span>true，b.done<span class=o>=</span><span class=nb>true</span>
 </span></span></code></pre></div><p>当 <code>main.js</code> 加载 <code>a.js</code> 时，<code>a.js</code> 又加载 <code>b.js</code>。 此时，<code>b.js</code> 会尝试去加载 <code>a.js</code>。 为了防止无限的循环，会返回一个<code>a.js</code>
-的 <code>exports</code> 对象的 <code>未完成的副本</code>(<code>{done: false}</code>) 给 <code>b.js</code> 模块。</p>
-<p>然后 <code>b.js</code> 完成加载，并将 <code>exports</code> 对象提供给 <code>a.js</code> 模块。当 <code>main.js</code> 加载这两个模块时，它们都已经完成加载。所以输
-出：<code>在 main 中，a.done=true，b.done=true</code>。</p>
-<h2 id="exports-和-moduleexports-的区别">exports 和 module.exports 的区别</h2>
-<ul>
-<li><code>exports</code> 是 <code>module.exports</code> 的引用</li>
-<li><code>module.exports</code> 初始值为一个空对象 <code>{}</code>，所以 <code>exports</code> 初始值也是 <code>{}</code></li>
-<li><code>require()</code> 返回的是 <code>module.exports</code> 而不是 <code>exports</code></li>
-</ul>
-<p><code>module.exports.foo = ...</code> 可以写成 <code>exports.foo = ...</code>。 注意，<strong>如果一个新的 objetc 被赋值给 <code>exports</code>，它就不再绑定
-到 <code>module.exports</code></strong>：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// 从对模块的引用中导出
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">done</span><span class="o">:</span> <span class="kc">false</span> <span class="p">};</span>  <span class="c1">// 不导出，只在模块内有效
-</span></span></span></code></pre></div><p>当 <code>module.exports</code> 属性被一个新的对象完全替代时，也会重新赋值 <code>exports</code>，例如：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">hello</span><span class="p">()</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="c1">//TODO
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">};</span>
-</span></span></code></pre></div><p>把依赖循环的例子中的 <code>a.js</code> 稍作修改如下:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a 开始&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">done</span><span class="o">:</span> <span class="kc">false</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 a 中，b.done = %j&#39;</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a 结束&#39;</span><span class="p">);</span>
-</span></span></code></pre></div><p>运行结果：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">main 开始
-</span></span><span class="line"><span class="cl">a 开始
-</span></span><span class="line"><span class="cl">b 开始
-</span></span><span class="line"><span class="cl">在 b 中，a.done <span class="o">=</span> <span class="nb">false</span>
-</span></span><span class="line"><span class="cl">b 结束
-</span></span><span class="line"><span class="cl">在 a 中，b.done <span class="o">=</span> <span class="nb">true</span>
-</span></span><span class="line"><span class="cl">a 结束
-</span></span><span class="line"><span class="cl">在 main 中，a.done<span class="o">=</span>false，b.done<span class="o">=</span><span class="nb">true</span>
-</span></span></code></pre></div><p>所以说 <code>require()</code> 返回的是 <code>module.exports</code> 而不是 <code>exports</code>。</p>
-<p>再修改文件 <code>a.js</code> 如下:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a 开始&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">b</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./b.js&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;在 a 中，b.done = %j&#39;</span><span class="p">,</span> <span class="nx">b</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;a 结束&#39;</span><span class="p">);</span>
-</span></span></code></pre></div><p>运行结果：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">main 开始
-</span></span><span class="line"><span class="cl">a 开始
-</span></span><span class="line"><span class="cl">b 开始
-</span></span><span class="line"><span class="cl">在 b 中，a.done <span class="o">=</span> undefined
-</span></span><span class="line"><span class="cl">b 结束
-</span></span><span class="line"><span class="cl">在 a 中，b.done <span class="o">=</span> <span class="nb">true</span>
-</span></span><span class="line"><span class="cl">a 结束
-</span></span><span class="line"><span class="cl">在 main 中，a.done<span class="o">=</span>true，b.done<span class="o">=</span><span class="nb">true</span>
-</span></span></code></pre></div><p>我们看到 <code>在 b 中，a.done = undefined</code>，这是因为 <code>b.js</code> 尝试加载 <code>a.js</code> 时，这是 <code>a.js</code> 的 <code>module.exports</code> 对象是 <code>{}</code>。</p>
-<h2 id="require-方法的的实现">require 方法的的实现</h2>
-<p>通过下面 <code>require()</code> 方法实现的伪代码，更容易理解：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">require</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">module</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">exports</span><span class="o">:</span> <span class="p">{}</span> <span class="p">};</span>
-</span></span><span class="line"><span class="cl">  <span class="p">((</span><span class="nx">module</span><span class="p">,</span> <span class="nx">exports</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 模块代码在这。在这个例子中，定义了一个函数。
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="kd">function</span> <span class="nx">someFunc</span><span class="p">()</span> <span class="p">{}</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">exports</span> <span class="o">=</span> <span class="nx">someFunc</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 此时，exports 不再是一个 module.exports 的快捷方式，
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 且这个模块依然导出一个空的默认对象。
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">someFunc</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 此时，该模块导出 someFunc，而不是默认对象。
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">})(</span><span class="nx">module</span><span class="p">,</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p><strong>参考文章</strong> <a href="http://Node.js.cn/api/modules.html" target="_blank" rel="noopener noreffer">Node.js 中文文档</a></p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2018-03-17-nodejs-exports-moduleexports/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2018-03-07-nodejs-exception-catch/" class="prev" rel="prev" title="Node.js 中的异常处理"><i class="fas fa-angle-left fa-fw"></i>Node.js 中的异常处理</a>
-            <a href="/posts/2018-03-20-nodejs-file-watch/" class="next" rel="next" title="Node.js 实现文件监听">Node.js 实现文件监听<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+的 <code>exports</code> 对象的 <code>未完成的副本</code>(<code>{done: false}</code>) 给 <code>b.js</code> 模块。</p><p>然后 <code>b.js</code> 完成加载，并将 <code>exports</code> 对象提供给 <code>a.js</code> 模块。当 <code>main.js</code> 加载这两个模块时，它们都已经完成加载。所以输
+出：<code>在 main 中，a.done=true，b.done=true</code>。</p><h2 id=exports-和-moduleexports-的区别>exports 和 module.exports 的区别</h2><ul><li><code>exports</code> 是 <code>module.exports</code> 的引用</li><li><code>module.exports</code> 初始值为一个空对象 <code>{}</code>，所以 <code>exports</code> 初始值也是 <code>{}</code></li><li><code>require()</code> 返回的是 <code>module.exports</code> 而不是 <code>exports</code></li></ul><p><code>module.exports.foo = ...</code> 可以写成 <code>exports.foo = ...</code>。 注意，<strong>如果一个新的 objetc 被赋值给 <code>exports</code>，它就不再绑定
+到 <code>module.exports</code></strong>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>module</span><span class=p>.</span><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span> <span class=c1>// 从对模块的引用中导出
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>exports</span> <span class=o>=</span> <span class=p>{</span> <span class=nx>done</span><span class=o>:</span> <span class=kc>false</span> <span class=p>};</span>  <span class=c1>// 不导出，只在模块内有效
+</span></span></span></code></pre></div><p>当 <code>module.exports</code> 属性被一个新的对象完全替代时，也会重新赋值 <code>exports</code>，例如：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>module</span><span class=p>.</span><span class=nx>exports</span> <span class=o>=</span> <span class=nx>exports</span> <span class=o>=</span> <span class=kd>function</span> <span class=nx>hello</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>//TODO
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>};</span>
+</span></span></code></pre></div><p>把依赖循环的例子中的 <code>a.js</code> 稍作修改如下:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;a 开始&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>module</span><span class=p>.</span><span class=nx>exports</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>done</span><span class=o>:</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>b</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./b.js&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;在 a 中，b.done = %j&#39;</span><span class=p>,</span> <span class=nx>b</span><span class=p>.</span><span class=nx>done</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;a 结束&#39;</span><span class=p>);</span>
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>main 开始
+</span></span><span class=line><span class=cl>a 开始
+</span></span><span class=line><span class=cl>b 开始
+</span></span><span class=line><span class=cl>在 b 中，a.done <span class=o>=</span> <span class=nb>false</span>
+</span></span><span class=line><span class=cl>b 结束
+</span></span><span class=line><span class=cl>在 a 中，b.done <span class=o>=</span> <span class=nb>true</span>
+</span></span><span class=line><span class=cl>a 结束
+</span></span><span class=line><span class=cl>在 main 中，a.done<span class=o>=</span>false，b.done<span class=o>=</span><span class=nb>true</span>
+</span></span></code></pre></div><p>所以说 <code>require()</code> 返回的是 <code>module.exports</code> 而不是 <code>exports</code>。</p><p>再修改文件 <code>a.js</code> 如下:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;a 开始&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>b</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;./b.js&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;在 a 中，b.done = %j&#39;</span><span class=p>,</span> <span class=nx>b</span><span class=p>.</span><span class=nx>done</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>done</span> <span class=o>=</span> <span class=kc>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;a 结束&#39;</span><span class=p>);</span>
+</span></span></code></pre></div><p>运行结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>main 开始
+</span></span><span class=line><span class=cl>a 开始
+</span></span><span class=line><span class=cl>b 开始
+</span></span><span class=line><span class=cl>在 b 中，a.done <span class=o>=</span> undefined
+</span></span><span class=line><span class=cl>b 结束
+</span></span><span class=line><span class=cl>在 a 中，b.done <span class=o>=</span> <span class=nb>true</span>
+</span></span><span class=line><span class=cl>a 结束
+</span></span><span class=line><span class=cl>在 main 中，a.done<span class=o>=</span>true，b.done<span class=o>=</span><span class=nb>true</span>
+</span></span></code></pre></div><p>我们看到 <code>在 b 中，a.done = undefined</code>，这是因为 <code>b.js</code> 尝试加载 <code>a.js</code> 时，这是 <code>a.js</code> 的 <code>module.exports</code> 对象是 <code>{}</code>。</p><h2 id=require-方法的的实现>require 方法的的实现</h2><p>通过下面 <code>require()</code> 方法实现的伪代码，更容易理解：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>require</span><span class=p>(</span><span class=cm>/* ... */</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>module</span> <span class=o>=</span> <span class=p>{</span> <span class=nx>exports</span><span class=o>:</span> <span class=p>{}</span> <span class=p>};</span>
+</span></span><span class=line><span class=cl>  <span class=p>((</span><span class=nx>module</span><span class=p>,</span> <span class=nx>exports</span><span class=p>)</span> <span class=p>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 模块代码在这。在这个例子中，定义了一个函数。
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kd>function</span> <span class=nx>someFunc</span><span class=p>()</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl>    <span class=nx>exports</span> <span class=o>=</span> <span class=nx>someFunc</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 此时，exports 不再是一个 module.exports 的快捷方式，
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// 且这个模块依然导出一个空的默认对象。
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>module</span><span class=p>.</span><span class=nx>exports</span> <span class=o>=</span> <span class=nx>someFunc</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 此时，该模块导出 someFunc，而不是默认对象。
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>})(</span><span class=nx>module</span><span class=p>,</span> <span class=nx>module</span><span class=p>.</span><span class=nx>exports</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>module</span><span class=p>.</span><span class=nx>exports</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p><strong>参考文章</strong> <a href=http://Node.js.cn/api/modules.html target=_blank rel="noopener noreffer">Node.js 中文文档</a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2018-03-17-nodejs-exports-moduleexports/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2018-03-07-nodejs-exception-catch/ class=prev rel=prev title="Node.js 中的异常处理"><i class="fas fa-angle-left fa-fw"></i>Node.js 中的异常处理</a>
+<a href=/posts/2018-03-20-nodejs-file-watch/ class=next rel=next title="Node.js 实现文件监听">Node.js 实现文件监听<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

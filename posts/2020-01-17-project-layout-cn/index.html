@@ -1,490 +1,77 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Go project-layout（翻译） - Echo</title><meta name="Description" content=""><meta property="og:title" content="Go project-layout（翻译）" />
-<meta property="og:description" content="标准的 Go 项目布局，project-layout 翻译。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2020-01-17-project-layout-cn/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-01-17T16:56:17+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="Go project-layout（翻译）"/>
-<meta name="twitter:description" content="标准的 Go 项目布局，project-layout 翻译。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2020-01-17-project-layout-cn/" /><link rel="prev" href="http://example.org/posts/2019-12-07-node-profile/" /><link rel="next" href="http://example.org/posts/2020-01-31-git-usage/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Go project-layout（翻译）",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2020-01-17-project-layout-cn\/"
-        },"genre": "posts","wordcount":  3279 ,
-        "url": "http:\/\/example.org\/posts\/2020-01-17-project-layout-cn\/","datePublished": "2020-01-17T16:56:17+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Go project-layout（翻译）</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/go/"><i class="far fa-folder fa-fw"></i>Go</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-01-17">2020-01-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3279 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#go-目录">Go 目录</a>
-      <ul>
-        <li><a href="#cmd"><code>/cmd</code></a></li>
-        <li><a href="#internal"><code>/internal</code></a></li>
-        <li><a href="#pkg"><code>/pkg</code></a></li>
-        <li><a href="#vendor"><code>/vendor</code></a></li>
-      </ul>
-    </li>
-    <li><a href="#服务应用目录">服务应用目录</a>
-      <ul>
-        <li><a href="#api"><code>/api</code></a></li>
-      </ul>
-    </li>
-    <li><a href="#web-应用程序目录">Web 应用程序目录</a>
-      <ul>
-        <li><a href="#web"><code>/web</code></a></li>
-      </ul>
-    </li>
-    <li><a href="#通用应用程序目录">通用应用程序目录</a>
-      <ul>
-        <li><a href="#configs"><code>/configs</code></a></li>
-        <li><a href="#init"><code>/init</code></a></li>
-        <li><a href="#scripts"><code>/scripts</code></a></li>
-        <li><a href="#build"><code>/build</code></a></li>
-        <li><a href="#deployments"><code>/deployments</code></a></li>
-        <li><a href="#test"><code>/test</code></a></li>
-      </ul>
-    </li>
-    <li><a href="#其他目录">其他目录</a>
-      <ul>
-        <li><a href="#docs"><code>/docs</code></a></li>
-        <li><a href="#tools"><code>/tools</code></a></li>
-        <li><a href="#examples"><code>/examples</code></a></li>
-        <li><a href="#third_party"><code>/third_party</code></a></li>
-        <li><a href="#githooks"><code>/githooks</code></a></li>
-        <li><a href="#assets"><code>/assets</code></a></li>
-        <li><a href="#website"><code>/website</code></a></li>
-      </ul>
-    </li>
-    <li><a href="#你不应该拥有的目录">你不应该拥有的目录</a>
-      <ul>
-        <li><a href="#src"><code>/src</code></a></li>
-      </ul>
-    </li>
-    <li><a href="#徽章">徽章</a></li>
-    <li><a href="#note">Note</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>标准的 Go 项目布局，<a href="https://github.com/golang-standards/project-layout" target="_blank" rel="noopener noreffer">project-layout</a> 翻译。</p>
-<p>这是一个 Go 应用项目的基本布局。它不是官方核心 Go dev 团队定义的标准；然而，它是 GO 生态圈中一套历史上和新兴项目中常见的布局模式。其中
-一些模式比其他模式更受欢迎。它还有一些小的增强,以及一些对于任何一个大真实世界应用程序，都通用的支持目录。</p>
-<p>如果你正在学习 GO,或者你正在自己创建一个 PoC 或只是简单玩一玩, 那这个项目布局对你来说有点过头了。从简单的东西开始（一个 <code>main.go</code> 文件就足够
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Go project-layout（翻译） - Echo</title><meta name=Description content><meta property="og:title" content="Go project-layout（翻译）"><meta property="og:description" content="标准的 Go 项目布局，project-layout 翻译。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2020-01-17-project-layout-cn/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-01-17T16:56:17+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="Go project-layout（翻译）"><meta name=twitter:description content="标准的 Go 项目布局，project-layout 翻译。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2020-01-17-project-layout-cn/><link rel=prev href=http://example.org/posts/2019-12-07-node-profile/><link rel=next href=http://example.org/posts/2020-01-31-git-usage/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Go project-layout（翻译）","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2020-01-17-project-layout-cn\/"},"genre":"posts","wordcount":3279,"url":"http:\/\/example.org\/posts\/2020-01-17-project-layout-cn\/","datePublished":"2020-01-17T16:56:17+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Go project-layout（翻译）</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/go/><i class="far fa-folder fa-fw"></i>Go</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-01-17>2020-01-17</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 3279 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 7 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#go-目录>Go 目录</a><ul><li><a href=#cmd><code>/cmd</code></a></li><li><a href=#internal><code>/internal</code></a></li><li><a href=#pkg><code>/pkg</code></a></li><li><a href=#vendor><code>/vendor</code></a></li></ul></li><li><a href=#服务应用目录>服务应用目录</a><ul><li><a href=#api><code>/api</code></a></li></ul></li><li><a href=#web-应用程序目录>Web 应用程序目录</a><ul><li><a href=#web><code>/web</code></a></li></ul></li><li><a href=#通用应用程序目录>通用应用程序目录</a><ul><li><a href=#configs><code>/configs</code></a></li><li><a href=#init><code>/init</code></a></li><li><a href=#scripts><code>/scripts</code></a></li><li><a href=#build><code>/build</code></a></li><li><a href=#deployments><code>/deployments</code></a></li><li><a href=#test><code>/test</code></a></li></ul></li><li><a href=#其他目录>其他目录</a><ul><li><a href=#docs><code>/docs</code></a></li><li><a href=#tools><code>/tools</code></a></li><li><a href=#examples><code>/examples</code></a></li><li><a href=#third_party><code>/third_party</code></a></li><li><a href=#githooks><code>/githooks</code></a></li><li><a href=#assets><code>/assets</code></a></li><li><a href=#website><code>/website</code></a></li></ul></li><li><a href=#你不应该拥有的目录>你不应该拥有的目录</a><ul><li><a href=#src><code>/src</code></a></li></ul></li><li><a href=#徽章>徽章</a></li><li><a href=#note>Note</a></li></ul></nav></div></div><div class=content id=content><p>标准的 Go 项目布局，<a href=https://github.com/golang-standards/project-layout target=_blank rel="noopener noreffer">project-layout</a> 翻译。</p><p>这是一个 Go 应用项目的基本布局。它不是官方核心 Go dev 团队定义的标准；然而，它是 GO 生态圈中一套历史上和新兴项目中常见的布局模式。其中
+一些模式比其他模式更受欢迎。它还有一些小的增强,以及一些对于任何一个大真实世界应用程序，都通用的支持目录。</p><p>如果你正在学习 GO,或者你正在自己创建一个 PoC 或只是简单玩一玩, 那这个项目布局对你来说有点过头了。从简单的东西开始（一个 <code>main.go</code> 文件就足够
 了）。随着你的项目的发展，确保你的代码结构良好是非常重要的，否则你最终会有很多隐藏的依赖和全局状态的混乱代码。当有更多人在项目上工作时，就需要更多
 的结构。这时就需要引入一种通用的方式来管理软件 packages/libraries。当你有一个开源项目，或者其他项目从你的项目库中导入代码时，这时就需要私有
-的（<code>internal</code>）包和代码。</p>
-<p>Clone <code>project-layout</code> 仓库, 保留你需要的东西，然后删除所有其他的东西。虽然它在那里，但并不意味着你必须全部使用它。
-这些模式并不是在每一个项目都会用到的。即使是 <code>vendor</code> 模式也不是万能的。</p>
-<p>随着 Go 1.14 版本的发布，<a href="https://github.com/golang/go/wiki/Modules" target="_blank" rel="noopener noreffer"><code>Go Modules</code></a> 终于可以用于生产环境了。使用 <code>Go Modules</code> 除非
-你有特定的理由不使用它。使用 <code>Go Modules</code> 就不再需要担心 <code>$GOPATH</code> 和项目要放在哪里。</p>
-<p>项目中的 <code>go.mod</code> 文件会假设你的项目托管在 Github 上，但这并不是必须的。模块路径可以是任何东西，但第一个模块路径组件的名称中应该有一个
+的（<code>internal</code>）包和代码。</p><p>Clone <code>project-layout</code> 仓库, 保留你需要的东西，然后删除所有其他的东西。虽然它在那里，但并不意味着你必须全部使用它。
+这些模式并不是在每一个项目都会用到的。即使是 <code>vendor</code> 模式也不是万能的。</p><p>随着 Go 1.14 版本的发布，<a href=https://github.com/golang/go/wiki/Modules target=_blank rel="noopener noreffer"><code>Go Modules</code></a> 终于可以用于生产环境了。使用 <code>Go Modules</code> 除非
+你有特定的理由不使用它。使用 <code>Go Modules</code> 就不再需要担心 <code>$GOPATH</code> 和项目要放在哪里。</p><p>项目中的 <code>go.mod</code> 文件会假设你的项目托管在 Github 上，但这并不是必须的。模块路径可以是任何东西，但第一个模块路径组件的名称中应该有一个
 点（当前版本的 Go 不再强制要求它，但如果你使用的是稍旧的版本，如果构建失败了，不要惊讶）。如果你想了解更多，可以参
-考 issue <a href="https://github.com/golang/go/issues/37554" target="_blank" rel="noopener noreffer"><code>37554</code></a> 和 <a href="https://github.com/golang/go/issues/32819" target="_blank" rel="noopener noreffer"><code>32819</code></a> 。</p>
-<p>这个项目布局是通用为主的，它不试图强加一个特定的 Go 包结构。</p>
-<p>如果你在命名、格式化和样式方面需要帮助，可以从运行 <a href="https://golang.org/cmd/gofmt/" target="_blank" rel="noopener noreffer"><code>gofmt</code></a> 和
-<a href="https://github.com/golang/lint" target="_blank" rel="noopener noreffer"><code>golint</code></a> 开始。此外，请务必阅读这些 Go 的代码规范指南和建议。</p>
-<ul>
-<li><a href="https://talks.golang.org/2014/names.slide" target="_blank" rel="noopener noreffer">https://talks.golang.org/2014/names.slide</a></li>
-<li><a href="https://golang.org/doc/effective_go.html#names" target="_blank" rel="noopener noreffer">https://golang.org/doc/effective_go.html#names</a></li>
-<li><a href="https://blog.golang.org/package-names" target="_blank" rel="noopener noreffer">https://blog.golang.org/package-names</a></li>
-<li><a href="https://github.com/golang/go/wiki/CodeReviewComments" target="_blank" rel="noopener noreffer">https://github.com/golang/go/wiki/CodeReviewComments</a></li>
-<li><a href="https://rakyll.org/style-packages/" target="_blank" rel="noopener noreffer">Style guideline for Go packages</a> (rakyll/JBD)</li>
-</ul>
-<p>可以查看 <a href="https://medium.com/golang-learn/go-project-layout-e5213cdcfaa2" target="_blank" rel="noopener noreffer"><code>Go Project Layout</code></a> 的历史背景信息。</p>
-<p>更多关于命名和组织包以及代码结构的建议：</p>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=PTE4VJIdHPg" target="_blank" rel="noopener noreffer">GopherCon EU 2018: Peter Bourgon - Best Practices for Industrial Programming</a></li>
-<li><a href="https://www.youtube.com/watch?v=MzTcsI6tn-0" target="_blank" rel="noopener noreffer">GopherCon Russia 2018: Ashley McNamara + Brian Ketelsen - Go best practices.</a></li>
-<li><a href="https://www.youtube.com/watch?v=ltqV6pDKZD8" target="_blank" rel="noopener noreffer">GopherCon 2017: Edward Muller - Go Anti-Patterns</a></li>
-<li><a href="https://www.youtube.com/watch?v=oL6JBUk6tj0" target="_blank" rel="noopener noreffer">GopherCon 2018: Kat Zien - How Do You Structure Your Go Apps</a></li>
-</ul>
-<h2 id="go-目录">Go 目录</h2>
-<p>目录结构示例：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">.
-</span></span><span class="line"><span class="cl">├── api
-</span></span><span class="line"><span class="cl">├── assets
-</span></span><span class="line"><span class="cl">├── build
-</span></span><span class="line"><span class="cl">│   ├── ci
-</span></span><span class="line"><span class="cl">│   └── package
-</span></span><span class="line"><span class="cl">├── cmd
-</span></span><span class="line"><span class="cl">│   └── _your_app_
-</span></span><span class="line"><span class="cl">├── configs
-</span></span><span class="line"><span class="cl">├── deployments
-</span></span><span class="line"><span class="cl">├── docs
-</span></span><span class="line"><span class="cl">├── examples
-</span></span><span class="line"><span class="cl">├── githooks
-</span></span><span class="line"><span class="cl">├── init
-</span></span><span class="line"><span class="cl">├── internal
-</span></span><span class="line"><span class="cl">│   ├── app
-</span></span><span class="line"><span class="cl">│   │   └── _your_app_
-</span></span><span class="line"><span class="cl">│   └── pkg
-</span></span><span class="line"><span class="cl">│       └── _your_private_lib_
-</span></span><span class="line"><span class="cl">├── pkg
-</span></span><span class="line"><span class="cl">│   └── _your_public_lib_
-</span></span><span class="line"><span class="cl">├── scripts
-</span></span><span class="line"><span class="cl">├── <span class="nb">test</span>
-</span></span><span class="line"><span class="cl">├── third_party
-</span></span><span class="line"><span class="cl">├── tools
-</span></span><span class="line"><span class="cl">├── vendor
-</span></span><span class="line"><span class="cl">├── web
-</span></span><span class="line"><span class="cl">│   ├── app
-</span></span><span class="line"><span class="cl">│   ├── static
-</span></span><span class="line"><span class="cl">│   └── template
-</span></span><span class="line"><span class="cl">├── website
-</span></span><span class="line"><span class="cl">├── README.md
-</span></span><span class="line"><span class="cl">├── LICENSE.md
-</span></span><span class="line"><span class="cl">├── Makefile
-</span></span><span class="line"><span class="cl">├── go.mod
-</span></span><span class="line"><span class="cl">└── .gitignore
-</span></span></code></pre></div><h3 id="cmd"><code>/cmd</code></h3>
-<p>项目中的主要应用程序。</p>
-<p>每个应用程序的目录名应该与你想要的可执行文件的名相匹配（例如，<code>/cmd/myapp</code>）。</p>
-<p>不要在此目录中放置大量代码。如果你认为这个代码可以被其他项目引用，那么它应该存在于 <code>/pkg</code> 目录。如果代码不可重用，或者如果不希望其他人重用它，那么将
-代码放入 <code>/internal</code> 目录。</p>
-<p>比较常见的项目，有一个小的 <code>main</code> 函数，从 <code>/internal</code> 和 <code>/pkg</code> 目录中导入并调用代码，其他的都不需要。</p>
-<p>例子:</p>
-<ul>
-<li><a href="https://github.com/heptio/ark/tree/master/cmd" target="_blank" rel="noopener noreffer">https://github.com/heptio/ark/tree/master/cmd</a> (只是一个非常小的 <code>main</code> 函数，其他的东西都在包里)</li>
-<li><a href="https://github.com/moby/moby/tree/master/cmd" target="_blank" rel="noopener noreffer">https://github.com/moby/moby/tree/master/cmd</a></li>
-<li><a href="https://github.com/prometheus/prometheus/tree/master/cmd" target="_blank" rel="noopener noreffer">https://github.com/prometheus/prometheus/tree/master/cmd</a></li>
-<li><a href="https://github.com/influxdata/influxdb/tree/master/cmd" target="_blank" rel="noopener noreffer">https://github.com/influxdata/influxdb/tree/master/cmd</a></li>
-<li><a href="https://github.com/kubernetes/kubernetes/tree/master/cmd" target="_blank" rel="noopener noreffer">https://github.com/kubernetes/kubernetes/tree/master/cmd</a></li>
-</ul>
-<h3 id="internal"><code>/internal</code></h3>
-<p>私有应用程序和库代码。这是你不希望别人在他们的应用程序或库中导入的代码。</p>
-<p>注意，这个布局模式是由 Go 编译器本身执行的。更多细节请参见 Go 1.4 <a href="https://golang.org/doc/go1.4#internalpackages" target="_blank" rel="noopener noreffer"><code>release notes</code></a> 。
-注意，你并不局限于顶层的 <code>internal</code> 目录。你可以在你的项目树的任何层级上有一个 <code>internal</code> 目录。</p>
-<blockquote>
-<p>Go 语言的构建工具对包含 <code>internal</code> 名字的路径段的包导入路径做了特殊处理。一个 <code>internal</code> 包只能被和 <code>internal</code> 目录有同一个父目录的
-包所导入。例如，<code>net/http/internal/chunked</code> 内部包只能被 <code>net/http/httputil</code> 或 <code>net/http</code> 包导入，但是不能被 <code>net/url</code> 包导入。</p>
-</blockquote>
-<p>你可以选择在你的内部包中添加一些额外的结构，将共享和非共享的内部代码分开。这并不是必须的（尤其是对于较小的项目来说），但如果能有可视化的线索显
-示出预定的包的用途就很好了。</p>
-<p>将实际应用程序代码放入 <code>/internal/app</code> 目录(例如，<code>/internal/app/myapp</code>。应用程序共享的代码可以放在 <code>/internal/pkg</code> 目录(例如，
-<code>/internal/pkg/myprivlib</code>)。</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/hashicorp/terraform/tree/master/internal" target="_blank" rel="noopener noreffer">https://github.com/hashicorp/terraform/tree/master/internal</a></li>
-<li><a href="https://github.com/influxdata/influxdb/tree/master/internal" target="_blank" rel="noopener noreffer">https://github.com/influxdata/influxdb/tree/master/internal</a></li>
-<li><a href="https://github.com/perkeep/perkeep/tree/master/internal" target="_blank" rel="noopener noreffer">https://github.com/perkeep/perkeep/tree/master/internal</a></li>
-<li><a href="https://github.com/jaegertracing/jaeger/tree/master/internal" target="_blank" rel="noopener noreffer">https://github.com/jaegertracing/jaeger/tree/master/internal</a></li>
-<li><a href="https://github.com/moby/moby/tree/master/internal" target="_blank" rel="noopener noreffer">https://github.com/moby/moby/tree/master/internal</a></li>
-<li><a href="https://github.com/satellity/satellity/tree/master/internal" target="_blank" rel="noopener noreffer">https://github.com/satellity/satellity/tree/master/internal</a></li>
-</ul>
-<h3 id="pkg"><code>/pkg</code></h3>
-<p>可以被外部应用程序使用的库代码(例如，<code>/pkg/mypubliclib</code>)。其他项目将导入这些库，并希望它们能工作，所以在你把东西放在这里之前要三思。</p>
-<p>需要注意的是，使用 <code>internal</code> 目录来保证你的私有包不能被导入是一个比较好的方法，因为它是由 Go 强制执行的。</p>
-<p><code>/pkg</code> 目录中的代码应该是可以被安全的导入使用的。Travis Jeffery 的 blog <a href="https://travisjeffery.com/b/2019/11/i-ll-take-pkg-over-internal/" target="_blank" rel="noopener noreffer"><code>I'll take pkg over internal</code></a>
-提供了关于 <code>pkg</code> 和 <code>internal</code> 目录的一个很好的概述，以及什么时候使用它们可能有意义。</p>
-<p>如果你的应用程序项目真的很小，而且额外的嵌套不会增加多少价值（除非你真的想用），那就不要用它。当它变得足够大，而你的根目录变得相当繁忙时，再考虑
-使用（尤其是当你有很多非 Go 的应用组件时）。</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/prometheus/prometheus/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/prometheus/prometheus/tree/master/pkg</a></li>
-<li><a href="https://github.com/jaegertracing/jaeger/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/jaegertracing/jaeger/tree/master/pkg</a></li>
-<li><a href="https://github.com/istio/istio/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/istio/istio/tree/master/pkg</a></li>
-<li><a href="https://github.com/GoogleContainerTools/kaniko" target="_blank" rel="noopener noreffer">https://github.com/GoogleContainerTools/kaniko</a></li>
-<li><a href="https://github.com/google/gvisor/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/google/gvisor/tree/master/pkg</a></li>
-<li><a href="https://github.com/google/syzkaller/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/google/syzkaller/tree/master/pkg</a></li>
-<li><a href="https://github.com/perkeep/perkeep/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/perkeep/perkeep/tree/master/pkg</a></li>
-<li><a href="https://github.com/minio/minio/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/minio/minio/tree/master/pkg</a></li>
-<li><a href="https://github.com/heptio/ark/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/heptio/ark/tree/master/pkg</a></li>
-<li><a href="https://github.com/argoproj/argo/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/argoproj/argo/tree/master/pkg</a></li>
-<li><a href="https://github.com/heptio/sonobuoy/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/heptio/sonobuoy/tree/master/pkg</a></li>
-<li><a href="https://github.com/helm/helm/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/helm/helm/tree/master/pkg</a></li>
-<li><a href="https://github.com/kubernetes/kubernetes/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/kubernetes/kubernetes/tree/master/pkg</a></li>
-<li><a href="https://github.com/kubernetes/kops/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/kubernetes/kops/tree/master/pkg</a></li>
-<li><a href="https://github.com/moby/moby/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/moby/moby/tree/master/pkg</a></li>
-<li><a href="https://github.com/grafana/grafana/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/grafana/grafana/tree/master/pkg</a></li>
-<li><a href="https://github.com/influxdata/influxdb/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/influxdata/influxdb/tree/master/pkg</a></li>
-<li><a href="https://github.com/cockroachdb/cockroach/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/cockroachdb/cockroach/tree/master/pkg</a></li>
-<li><a href="https://github.com/derekparker/delve/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/derekparker/delve/tree/master/pkg</a></li>
-<li><a href="https://github.com/etcd-io/etcd/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/etcd-io/etcd/tree/master/pkg</a></li>
-<li><a href="https://github.com/oklog/oklog/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/oklog/oklog/tree/master/pkg</a></li>
-<li><a href="https://github.com/flynn/flynn/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/flynn/flynn/tree/master/pkg</a></li>
-<li><a href="https://github.com/jesseduffield/lazygit/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/jesseduffield/lazygit/tree/master/pkg</a></li>
-<li><a href="https://github.com/gopasspw/gopass/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/gopasspw/gopass/tree/master/pkg</a></li>
-<li><a href="https://github.com/sosedoff/pgweb/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/sosedoff/pgweb/tree/master/pkg</a></li>
-<li><a href="https://github.com/GoogleContainerTools/skaffold/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/GoogleContainerTools/skaffold/tree/master/pkg</a></li>
-<li><a href="https://github.com/knative/serving/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/knative/serving/tree/master/pkg</a></li>
-<li><a href="https://github.com/grafana/loki/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/grafana/loki/tree/master/pkg</a></li>
-<li><a href="https://github.com/bloomberg/goldpinger/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/bloomberg/goldpinger/tree/master/pkg</a></li>
-<li><a href="https://github.com/crossplaneio/crossplane/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/crossplaneio/crossplane/tree/master/pkg</a></li>
-<li><a href="https://github.com/Ne0nd0g/merlin/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/Ne0nd0g/merlin/tree/master/pkg</a></li>
-<li><a href="https://github.com/jenkins-x/jx/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/jenkins-x/jx/tree/master/pkg</a></li>
-<li><a href="https://github.com/DataDog/datadog-agent/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/DataDog/datadog-agent/tree/master/pkg</a></li>
-<li><a href="https://github.com/dapr/dapr/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/dapr/dapr/tree/master/pkg</a></li>
-<li><a href="https://github.com/cortexproject/cortex/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/cortexproject/cortex/tree/master/pkg</a></li>
-<li><a href="https://github.com/dexidp/dex/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/dexidp/dex/tree/master/pkg</a></li>
-<li><a href="https://github.com/pusher/oauth2_proxy/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/pusher/oauth2_proxy/tree/master/pkg</a></li>
-<li><a href="https://github.com/pdfcpu/pdfcpu/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/pdfcpu/pdfcpu/tree/master/pkg</a></li>
-<li><a href="https://github.com/weaveworks/kured/pkg" target="_blank" rel="noopener noreffer">https://github.com/weaveworks/kured/pkg</a></li>
-<li><a href="https://github.com/weaveworks/footloose/pkg" target="_blank" rel="noopener noreffer">https://github.com/weaveworks/footloose/pkg</a></li>
-<li><a href="https://github.com/weaveworks/ignite/pkg" target="_blank" rel="noopener noreffer">https://github.com/weaveworks/ignite/pkg</a></li>
-<li><a href="https://github.com/tmrts/boilr/tree/master/pkg" target="_blank" rel="noopener noreffer">https://github.com/tmrts/boilr/tree/master/pkg</a></li>
-</ul>
-<h3 id="vendor"><code>/vendor</code></h3>
-<p>应用程序依赖(手动管理，或你喜欢的依赖管理工具，Go Modules)。 <code>go mod vendor</code> 命令将为你创建 <code>/vendor</code> 目录。请注意，如果你不是使
-用 Go 1.14，你可能需要在你的 <code>go build</code> 命令中添加 <code>-mod=vendor</code> 标志，因为 Go 1.14 的默认值是 <code>on</code>。</p>
-<p>如果你正在构建一个库，不要提交你的应用程序依赖项。</p>
-<p>注意，从 <a href="https://golang.org/doc/go1.13#modules" target="_blank" rel="noopener noreffer"><code>1.13</code></a> 开始，Go 启用了模块代理功能（默认使用 <code>https://proxy.golang.org</code> 作为
-模块代理服务器）。阅读更多关于它的 <a href="https://blog.golang.org/module-mirror-launch" target="_blank" rel="noopener noreffer">信息</a> ，看看它是否符合你的所有要求和限制。如果符合，
-那么你就完全不需要 <code>vendor</code> 目录了。</p>
-<h2 id="服务应用目录">服务应用目录</h2>
-<h3 id="api"><code>/api</code></h3>
-<p>OpenAPI/Swagger 规范，JSON schema 文件，协议定义文件。</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/kubernetes/kubernetes/tree/master/api" target="_blank" rel="noopener noreffer">https://github.com/kubernetes/kubernetes/tree/master/api</a></li>
-<li><a href="https://github.com/openshift/origin/tree/master/api" target="_blank" rel="noopener noreffer">https://github.com/openshift/origin/tree/master/api</a></li>
-</ul>
-<h2 id="web-应用程序目录">Web 应用程序目录</h2>
-<h3 id="web"><code>/web</code></h3>
-<p>Web 应用程序特定组件:静态 Web 资产、服务器端模板和 SPAs。</p>
-<h2 id="通用应用程序目录">通用应用程序目录</h2>
-<h3 id="configs"><code>/configs</code></h3>
-<p>配置文件模板，或默认配置文件。</p>
-<p>把你的 <code>confd</code>或 <code>consul-template</code> 模板文件放在这里。</p>
-<h3 id="init"><code>/init</code></h3>
-<p>系统初始化(systemd, upstart, sysv)和进程管理器/supervisor (runit, supervisord)配置。</p>
-<h3 id="scripts"><code>/scripts</code></h3>
-<p>执行各种构建、安装、分析等操作的脚本。</p>
-<p>这些脚本，可让根目录的 Makefile 文件保持小而简单(例如，<code>https://github.com/hashicorp/terraform/blob/master/Makefile</code>)</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/kubernetes/helm/tree/master/scripts" target="_blank" rel="noopener noreffer">https://github.com/kubernetes/helm/tree/master/scripts</a></li>
-<li><a href="https://github.com/cockroachdb/cockroach/tree/master/scripts" target="_blank" rel="noopener noreffer">https://github.com/cockroachdb/cockroach/tree/master/scripts</a></li>
-<li><a href="https://github.com/hashicorp/terraform/tree/master/scripts" target="_blank" rel="noopener noreffer">https://github.com/hashicorp/terraform/tree/master/scripts</a></li>
-</ul>
-<h3 id="build"><code>/build</code></h3>
-<p>打包与持续集成。</p>
-<p>将云(AMI)、容器(Docker)、OS(deb、rpm、pkg)包配置和脚本放入 <code>/build/package</code> 目录。</p>
-<p>把你的 CI(travis， circle， drone) 配置和脚本放在 <code>/build/ci</code> 目录。请注意，一些 CI 工具(例如，Travis CI)对配置文件的位置非常挑剔。在
-尝试将配置文件放入 <code>/build/ci</code> 之后，请将它们链接到 CI 工具期望的位置(如果可能的话).</p>
-<h3 id="deployments"><code>/deployments</code></h3>
-<p>IaaS、PaaS、system 和 <em>容器编排部署</em> 配置和模板(docker-compose, kubernetes/helm, mesos, terraform, bosh)。</p>
-<p>注意，在一些项目中（尤其是使用 kubernetes 部署的应用程序），这个目录被称为 <code>/deploy</code>。</p>
-<h3 id="test"><code>/test</code></h3>
-<p>额外的外部测试应用程序和测试数据。你可以随意构造 <code>/test</code>。或对于更大的项目来说，可以有一个数据子目录。例如，<code>/test/data</code> 或<code>/test/testdata</code>，
-如果你需要 Go 忽略这个目录中的内容。注意，Go 还将忽略以 <code>.</code> or <code>_</code> 开头的目录或文件，因此在如何命名测试数据目录方面，具有更大的灵活性.</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/openshift/origin/tree/master/test" target="_blank" rel="noopener noreffer">https://github.com/openshift/origin/tree/master/test</a> (test data is in the /testdata subdirectory)</li>
-</ul>
-<h2 id="其他目录">其他目录</h2>
-<h3 id="docs"><code>/docs</code></h3>
-<p>程序设计和用户文档(除 godoc 生成的文档之外)。</p>
-<p>见<a href="docs/README.md" rel=""><code>/docs</code></a>目录的例子。</p>
-<h3 id="tools"><code>/tools</code></h3>
-<p>支撑该项目的工具。请注意，这些工具可以从 <code>/pkg</code> 和 <code>/internal</code> 目录导入和使用代码。</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/istio/istio/tree/master/tools" target="_blank" rel="noopener noreffer">https://github.com/istio/istio/tree/master/tools</a></li>
-<li><a href="https://github.com/openshift/origin/tree/master/tools" target="_blank" rel="noopener noreffer">https://github.com/openshift/origin/tree/master/tools</a></li>
-<li><a href="https://github.com/dapr/dapr/tree/master/tools" target="_blank" rel="noopener noreffer">https://github.com/dapr/dapr/tree/master/tools</a></li>
-</ul>
-<h3 id="examples"><code>/examples</code></h3>
-<p>应用程序，公共包的示例。</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/nats-io/nats.go/tree/master/examples" target="_blank" rel="noopener noreffer">https://github.com/nats-io/nats.go/tree/master/examples</a></li>
-<li><a href="https://github.com/docker-slim/docker-slim/tree/master/examples" target="_blank" rel="noopener noreffer">https://github.com/docker-slim/docker-slim/tree/master/examples</a></li>
-<li><a href="https://github.com/gohugoio/hugo/tree/master/examples" target="_blank" rel="noopener noreffer">https://github.com/gohugoio/hugo/tree/master/examples</a></li>
-<li><a href="https://github.com/hashicorp/packer/tree/master/examples" target="_blank" rel="noopener noreffer">https://github.com/hashicorp/packer/tree/master/examples</a></li>
-</ul>
-<h3 id="third_party"><code>/third_party</code></h3>
-<p>外部辅助工具、被 fork 的代码和其他第三方实用程序(例如，Swagger UI)。</p>
-<h3 id="githooks"><code>/githooks</code></h3>
-<p>Git 钩子。</p>
-<h3 id="assets"><code>/assets</code></h3>
-<p>与项目一起使用的其他资源(图像、logos 等)。</p>
-<h3 id="website"><code>/website</code></h3>
-<p>如果你没有使用 Github pages，这是放置项目网站的地方。</p>
-<p>例子：</p>
-<ul>
-<li><a href="https://github.com/hashicorp/vault/tree/master/website" target="_blank" rel="noopener noreffer">https://github.com/hashicorp/vault/tree/master/website</a></li>
-<li><a href="https://github.com/perkeep/perkeep/tree/master/website" target="_blank" rel="noopener noreffer">https://github.com/perkeep/perkeep/tree/master/website</a></li>
-</ul>
-<h2 id="你不应该拥有的目录">你不应该拥有的目录</h2>
-<h3 id="src"><code>/src</code></h3>
-<p>一些 GO 项目确实有 <code>src</code> 文件夹，但这种是在 Java 世界的开发中比较常见的模式。如果你不想让你的 Go 代码或 Go 项目看起来像 Java，就尽量不要使用
-这种模式。</p>
-<p>不要把项目级别的 <code>/src</code> 目录与 Go 的工作空间使用的 <code>/src</code> 目录混为一谈，如 <a href="https://golang.org/doc/code.html" target="_blank" rel="noopener noreffer"><code>How to Write Go Code</code></a>
-中的描述。</p>
-<h2 id="徽章">徽章</h2>
-<ul>
-<li>
-<p><a href="https://goreportcard.com/" target="_blank" rel="noopener noreffer">Go Report Card</a>它会用 <code>gofmt</code>，<code>go vet</code>，<code>gocyclo</code>，<code>golint</code>，<code>ineffassign</code>，<code>license</code> 和
-<code>misspell</code> 扫描你代码。将 <code>github.com/golang-standards/project-layout</code> 替换为你的项目。</p>
-</li>
-<li>
-<p><a href="http://godoc.org" target="_blank" rel="noopener noreffer">GoDoc</a> 提供 GoDoc 生成文档的在线版本。请将链接更改为指向你项目的链接。</p>
-</li>
-<li>
-<p><a href="https://shields.io/" target="_blank" rel="noopener noreffer">Release</a> 它将显示项目的最新发布号。更改 Github 链接指向你的项目。</p>
-</li>
-</ul>
-<p><a href="https://goreportcard.com/report/github.com/golang-standards/project-layout" target="_blank" rel="noopener noreffer"><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square"
-        data-srcset="https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square, https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square 1.5x, https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square 2x"
-        data-sizes="auto"
-        alt="https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square"
-        title="Go Report Card" /></a>
-<a href="http://godoc.org/github.com/golang-standards/project-layout" target="_blank" rel="noopener noreffer"><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square"
-        data-srcset="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square, https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square 1.5x, https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square 2x"
-        data-sizes="auto"
-        alt="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square"
-        title="Go Doc" /></a>
-<a href="https://github.com/golang-standards/project-layout/releases/latest" target="_blank" rel="noopener noreffer"><img
-        class="lazyload"
-        src="/svg/loading.min.svg"
-        data-src="https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square"
-        data-srcset="https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square, https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square 1.5x, https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square 2x"
-        data-sizes="auto"
-        alt="https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square"
-        title="Release" /></a></p>
-<h2 id="note">Note</h2>
-<p>一个更具自信心的项目模板，具有可重用的配置、脚本和代码。<strong>WIP-工作正在进行中</strong>。</p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2020-01-17-project-layout-cn/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2019-12-07-node-profile/" class="prev" rel="prev" title="Node 如何做性能分析"><i class="fas fa-angle-left fa-fw"></i>Node 如何做性能分析</a>
-            <a href="/posts/2020-01-31-git-usage/" class="next" rel="next" title="Git 的一些使用技巧">Git 的一些使用技巧<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+考 issue <a href=https://github.com/golang/go/issues/37554 target=_blank rel="noopener noreffer"><code>37554</code></a> 和 <a href=https://github.com/golang/go/issues/32819 target=_blank rel="noopener noreffer"><code>32819</code></a> 。</p><p>这个项目布局是通用为主的，它不试图强加一个特定的 Go 包结构。</p><p>如果你在命名、格式化和样式方面需要帮助，可以从运行 <a href=https://golang.org/cmd/gofmt/ target=_blank rel="noopener noreffer"><code>gofmt</code></a> 和
+<a href=https://github.com/golang/lint target=_blank rel="noopener noreffer"><code>golint</code></a> 开始。此外，请务必阅读这些 Go 的代码规范指南和建议。</p><ul><li><a href=https://talks.golang.org/2014/names.slide target=_blank rel="noopener noreffer">https://talks.golang.org/2014/names.slide</a></li><li><a href=https://golang.org/doc/effective_go.html#names target=_blank rel="noopener noreffer">https://golang.org/doc/effective_go.html#names</a></li><li><a href=https://blog.golang.org/package-names target=_blank rel="noopener noreffer">https://blog.golang.org/package-names</a></li><li><a href=https://github.com/golang/go/wiki/CodeReviewComments target=_blank rel="noopener noreffer">https://github.com/golang/go/wiki/CodeReviewComments</a></li><li><a href=https://rakyll.org/style-packages/ target=_blank rel="noopener noreffer">Style guideline for Go packages</a> (rakyll/JBD)</li></ul><p>可以查看 <a href=https://medium.com/golang-learn/go-project-layout-e5213cdcfaa2 target=_blank rel="noopener noreffer"><code>Go Project Layout</code></a> 的历史背景信息。</p><p>更多关于命名和组织包以及代码结构的建议：</p><ul><li><a href="https://www.youtube.com/watch?v=PTE4VJIdHPg" target=_blank rel="noopener noreffer">GopherCon EU 2018: Peter Bourgon - Best Practices for Industrial Programming</a></li><li><a href="https://www.youtube.com/watch?v=MzTcsI6tn-0" target=_blank rel="noopener noreffer">GopherCon Russia 2018: Ashley McNamara + Brian Ketelsen - Go best practices.</a></li><li><a href="https://www.youtube.com/watch?v=ltqV6pDKZD8" target=_blank rel="noopener noreffer">GopherCon 2017: Edward Muller - Go Anti-Patterns</a></li><li><a href="https://www.youtube.com/watch?v=oL6JBUk6tj0" target=_blank rel="noopener noreffer">GopherCon 2018: Kat Zien - How Do You Structure Your Go Apps</a></li></ul><h2 id=go-目录>Go 目录</h2><p>目录结构示例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>.
+</span></span><span class=line><span class=cl>├── api
+</span></span><span class=line><span class=cl>├── assets
+</span></span><span class=line><span class=cl>├── build
+</span></span><span class=line><span class=cl>│   ├── ci
+</span></span><span class=line><span class=cl>│   └── package
+</span></span><span class=line><span class=cl>├── cmd
+</span></span><span class=line><span class=cl>│   └── _your_app_
+</span></span><span class=line><span class=cl>├── configs
+</span></span><span class=line><span class=cl>├── deployments
+</span></span><span class=line><span class=cl>├── docs
+</span></span><span class=line><span class=cl>├── examples
+</span></span><span class=line><span class=cl>├── githooks
+</span></span><span class=line><span class=cl>├── init
+</span></span><span class=line><span class=cl>├── internal
+</span></span><span class=line><span class=cl>│   ├── app
+</span></span><span class=line><span class=cl>│   │   └── _your_app_
+</span></span><span class=line><span class=cl>│   └── pkg
+</span></span><span class=line><span class=cl>│       └── _your_private_lib_
+</span></span><span class=line><span class=cl>├── pkg
+</span></span><span class=line><span class=cl>│   └── _your_public_lib_
+</span></span><span class=line><span class=cl>├── scripts
+</span></span><span class=line><span class=cl>├── <span class=nb>test</span>
+</span></span><span class=line><span class=cl>├── third_party
+</span></span><span class=line><span class=cl>├── tools
+</span></span><span class=line><span class=cl>├── vendor
+</span></span><span class=line><span class=cl>├── web
+</span></span><span class=line><span class=cl>│   ├── app
+</span></span><span class=line><span class=cl>│   ├── static
+</span></span><span class=line><span class=cl>│   └── template
+</span></span><span class=line><span class=cl>├── website
+</span></span><span class=line><span class=cl>├── README.md
+</span></span><span class=line><span class=cl>├── LICENSE.md
+</span></span><span class=line><span class=cl>├── Makefile
+</span></span><span class=line><span class=cl>├── go.mod
+</span></span><span class=line><span class=cl>└── .gitignore
+</span></span></code></pre></div><h3 id=cmd><code>/cmd</code></h3><p>项目中的主要应用程序。</p><p>每个应用程序的目录名应该与你想要的可执行文件的名相匹配（例如，<code>/cmd/myapp</code>）。</p><p>不要在此目录中放置大量代码。如果你认为这个代码可以被其他项目引用，那么它应该存在于 <code>/pkg</code> 目录。如果代码不可重用，或者如果不希望其他人重用它，那么将
+代码放入 <code>/internal</code> 目录。</p><p>比较常见的项目，有一个小的 <code>main</code> 函数，从 <code>/internal</code> 和 <code>/pkg</code> 目录中导入并调用代码，其他的都不需要。</p><p>例子:</p><ul><li><a href=https://github.com/heptio/ark/tree/master/cmd target=_blank rel="noopener noreffer">https://github.com/heptio/ark/tree/master/cmd</a> (只是一个非常小的 <code>main</code> 函数，其他的东西都在包里)</li><li><a href=https://github.com/moby/moby/tree/master/cmd target=_blank rel="noopener noreffer">https://github.com/moby/moby/tree/master/cmd</a></li><li><a href=https://github.com/prometheus/prometheus/tree/master/cmd target=_blank rel="noopener noreffer">https://github.com/prometheus/prometheus/tree/master/cmd</a></li><li><a href=https://github.com/influxdata/influxdb/tree/master/cmd target=_blank rel="noopener noreffer">https://github.com/influxdata/influxdb/tree/master/cmd</a></li><li><a href=https://github.com/kubernetes/kubernetes/tree/master/cmd target=_blank rel="noopener noreffer">https://github.com/kubernetes/kubernetes/tree/master/cmd</a></li></ul><h3 id=internal><code>/internal</code></h3><p>私有应用程序和库代码。这是你不希望别人在他们的应用程序或库中导入的代码。</p><p>注意，这个布局模式是由 Go 编译器本身执行的。更多细节请参见 Go 1.4 <a href=https://golang.org/doc/go1.4#internalpackages target=_blank rel="noopener noreffer"><code>release notes</code></a> 。
+注意，你并不局限于顶层的 <code>internal</code> 目录。你可以在你的项目树的任何层级上有一个 <code>internal</code> 目录。</p><blockquote><p>Go 语言的构建工具对包含 <code>internal</code> 名字的路径段的包导入路径做了特殊处理。一个 <code>internal</code> 包只能被和 <code>internal</code> 目录有同一个父目录的
+包所导入。例如，<code>net/http/internal/chunked</code> 内部包只能被 <code>net/http/httputil</code> 或 <code>net/http</code> 包导入，但是不能被 <code>net/url</code> 包导入。</p></blockquote><p>你可以选择在你的内部包中添加一些额外的结构，将共享和非共享的内部代码分开。这并不是必须的（尤其是对于较小的项目来说），但如果能有可视化的线索显
+示出预定的包的用途就很好了。</p><p>将实际应用程序代码放入 <code>/internal/app</code> 目录(例如，<code>/internal/app/myapp</code>。应用程序共享的代码可以放在 <code>/internal/pkg</code> 目录(例如，
+<code>/internal/pkg/myprivlib</code>)。</p><p>例子：</p><ul><li><a href=https://github.com/hashicorp/terraform/tree/master/internal target=_blank rel="noopener noreffer">https://github.com/hashicorp/terraform/tree/master/internal</a></li><li><a href=https://github.com/influxdata/influxdb/tree/master/internal target=_blank rel="noopener noreffer">https://github.com/influxdata/influxdb/tree/master/internal</a></li><li><a href=https://github.com/perkeep/perkeep/tree/master/internal target=_blank rel="noopener noreffer">https://github.com/perkeep/perkeep/tree/master/internal</a></li><li><a href=https://github.com/jaegertracing/jaeger/tree/master/internal target=_blank rel="noopener noreffer">https://github.com/jaegertracing/jaeger/tree/master/internal</a></li><li><a href=https://github.com/moby/moby/tree/master/internal target=_blank rel="noopener noreffer">https://github.com/moby/moby/tree/master/internal</a></li><li><a href=https://github.com/satellity/satellity/tree/master/internal target=_blank rel="noopener noreffer">https://github.com/satellity/satellity/tree/master/internal</a></li></ul><h3 id=pkg><code>/pkg</code></h3><p>可以被外部应用程序使用的库代码(例如，<code>/pkg/mypubliclib</code>)。其他项目将导入这些库，并希望它们能工作，所以在你把东西放在这里之前要三思。</p><p>需要注意的是，使用 <code>internal</code> 目录来保证你的私有包不能被导入是一个比较好的方法，因为它是由 Go 强制执行的。</p><p><code>/pkg</code> 目录中的代码应该是可以被安全的导入使用的。Travis Jeffery 的 blog <a href=https://travisjeffery.com/b/2019/11/i-ll-take-pkg-over-internal/ target=_blank rel="noopener noreffer"><code>I'll take pkg over internal</code></a>
+提供了关于 <code>pkg</code> 和 <code>internal</code> 目录的一个很好的概述，以及什么时候使用它们可能有意义。</p><p>如果你的应用程序项目真的很小，而且额外的嵌套不会增加多少价值（除非你真的想用），那就不要用它。当它变得足够大，而你的根目录变得相当繁忙时，再考虑
+使用（尤其是当你有很多非 Go 的应用组件时）。</p><p>例子：</p><ul><li><a href=https://github.com/prometheus/prometheus/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/prometheus/prometheus/tree/master/pkg</a></li><li><a href=https://github.com/jaegertracing/jaeger/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/jaegertracing/jaeger/tree/master/pkg</a></li><li><a href=https://github.com/istio/istio/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/istio/istio/tree/master/pkg</a></li><li><a href=https://github.com/GoogleContainerTools/kaniko target=_blank rel="noopener noreffer">https://github.com/GoogleContainerTools/kaniko</a></li><li><a href=https://github.com/google/gvisor/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/google/gvisor/tree/master/pkg</a></li><li><a href=https://github.com/google/syzkaller/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/google/syzkaller/tree/master/pkg</a></li><li><a href=https://github.com/perkeep/perkeep/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/perkeep/perkeep/tree/master/pkg</a></li><li><a href=https://github.com/minio/minio/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/minio/minio/tree/master/pkg</a></li><li><a href=https://github.com/heptio/ark/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/heptio/ark/tree/master/pkg</a></li><li><a href=https://github.com/argoproj/argo/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/argoproj/argo/tree/master/pkg</a></li><li><a href=https://github.com/heptio/sonobuoy/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/heptio/sonobuoy/tree/master/pkg</a></li><li><a href=https://github.com/helm/helm/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/helm/helm/tree/master/pkg</a></li><li><a href=https://github.com/kubernetes/kubernetes/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/kubernetes/kubernetes/tree/master/pkg</a></li><li><a href=https://github.com/kubernetes/kops/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/kubernetes/kops/tree/master/pkg</a></li><li><a href=https://github.com/moby/moby/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/moby/moby/tree/master/pkg</a></li><li><a href=https://github.com/grafana/grafana/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/grafana/grafana/tree/master/pkg</a></li><li><a href=https://github.com/influxdata/influxdb/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/influxdata/influxdb/tree/master/pkg</a></li><li><a href=https://github.com/cockroachdb/cockroach/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/cockroachdb/cockroach/tree/master/pkg</a></li><li><a href=https://github.com/derekparker/delve/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/derekparker/delve/tree/master/pkg</a></li><li><a href=https://github.com/etcd-io/etcd/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/etcd-io/etcd/tree/master/pkg</a></li><li><a href=https://github.com/oklog/oklog/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/oklog/oklog/tree/master/pkg</a></li><li><a href=https://github.com/flynn/flynn/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/flynn/flynn/tree/master/pkg</a></li><li><a href=https://github.com/jesseduffield/lazygit/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/jesseduffield/lazygit/tree/master/pkg</a></li><li><a href=https://github.com/gopasspw/gopass/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/gopasspw/gopass/tree/master/pkg</a></li><li><a href=https://github.com/sosedoff/pgweb/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/sosedoff/pgweb/tree/master/pkg</a></li><li><a href=https://github.com/GoogleContainerTools/skaffold/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/GoogleContainerTools/skaffold/tree/master/pkg</a></li><li><a href=https://github.com/knative/serving/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/knative/serving/tree/master/pkg</a></li><li><a href=https://github.com/grafana/loki/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/grafana/loki/tree/master/pkg</a></li><li><a href=https://github.com/bloomberg/goldpinger/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/bloomberg/goldpinger/tree/master/pkg</a></li><li><a href=https://github.com/crossplaneio/crossplane/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/crossplaneio/crossplane/tree/master/pkg</a></li><li><a href=https://github.com/Ne0nd0g/merlin/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/Ne0nd0g/merlin/tree/master/pkg</a></li><li><a href=https://github.com/jenkins-x/jx/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/jenkins-x/jx/tree/master/pkg</a></li><li><a href=https://github.com/DataDog/datadog-agent/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/DataDog/datadog-agent/tree/master/pkg</a></li><li><a href=https://github.com/dapr/dapr/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/dapr/dapr/tree/master/pkg</a></li><li><a href=https://github.com/cortexproject/cortex/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/cortexproject/cortex/tree/master/pkg</a></li><li><a href=https://github.com/dexidp/dex/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/dexidp/dex/tree/master/pkg</a></li><li><a href=https://github.com/pusher/oauth2_proxy/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/pusher/oauth2_proxy/tree/master/pkg</a></li><li><a href=https://github.com/pdfcpu/pdfcpu/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/pdfcpu/pdfcpu/tree/master/pkg</a></li><li><a href=https://github.com/weaveworks/kured/pkg target=_blank rel="noopener noreffer">https://github.com/weaveworks/kured/pkg</a></li><li><a href=https://github.com/weaveworks/footloose/pkg target=_blank rel="noopener noreffer">https://github.com/weaveworks/footloose/pkg</a></li><li><a href=https://github.com/weaveworks/ignite/pkg target=_blank rel="noopener noreffer">https://github.com/weaveworks/ignite/pkg</a></li><li><a href=https://github.com/tmrts/boilr/tree/master/pkg target=_blank rel="noopener noreffer">https://github.com/tmrts/boilr/tree/master/pkg</a></li></ul><h3 id=vendor><code>/vendor</code></h3><p>应用程序依赖(手动管理，或你喜欢的依赖管理工具，Go Modules)。 <code>go mod vendor</code> 命令将为你创建 <code>/vendor</code> 目录。请注意，如果你不是使
+用 Go 1.14，你可能需要在你的 <code>go build</code> 命令中添加 <code>-mod=vendor</code> 标志，因为 Go 1.14 的默认值是 <code>on</code>。</p><p>如果你正在构建一个库，不要提交你的应用程序依赖项。</p><p>注意，从 <a href=https://golang.org/doc/go1.13#modules target=_blank rel="noopener noreffer"><code>1.13</code></a> 开始，Go 启用了模块代理功能（默认使用 <code>https://proxy.golang.org</code> 作为
+模块代理服务器）。阅读更多关于它的 <a href=https://blog.golang.org/module-mirror-launch target=_blank rel="noopener noreffer">信息</a> ，看看它是否符合你的所有要求和限制。如果符合，
+那么你就完全不需要 <code>vendor</code> 目录了。</p><h2 id=服务应用目录>服务应用目录</h2><h3 id=api><code>/api</code></h3><p>OpenAPI/Swagger 规范，JSON schema 文件，协议定义文件。</p><p>例子：</p><ul><li><a href=https://github.com/kubernetes/kubernetes/tree/master/api target=_blank rel="noopener noreffer">https://github.com/kubernetes/kubernetes/tree/master/api</a></li><li><a href=https://github.com/openshift/origin/tree/master/api target=_blank rel="noopener noreffer">https://github.com/openshift/origin/tree/master/api</a></li></ul><h2 id=web-应用程序目录>Web 应用程序目录</h2><h3 id=web><code>/web</code></h3><p>Web 应用程序特定组件:静态 Web 资产、服务器端模板和 SPAs。</p><h2 id=通用应用程序目录>通用应用程序目录</h2><h3 id=configs><code>/configs</code></h3><p>配置文件模板，或默认配置文件。</p><p>把你的 <code>confd</code>或 <code>consul-template</code> 模板文件放在这里。</p><h3 id=init><code>/init</code></h3><p>系统初始化(systemd, upstart, sysv)和进程管理器/supervisor (runit, supervisord)配置。</p><h3 id=scripts><code>/scripts</code></h3><p>执行各种构建、安装、分析等操作的脚本。</p><p>这些脚本，可让根目录的 Makefile 文件保持小而简单(例如，<code>https://github.com/hashicorp/terraform/blob/master/Makefile</code>)</p><p>例子：</p><ul><li><a href=https://github.com/kubernetes/helm/tree/master/scripts target=_blank rel="noopener noreffer">https://github.com/kubernetes/helm/tree/master/scripts</a></li><li><a href=https://github.com/cockroachdb/cockroach/tree/master/scripts target=_blank rel="noopener noreffer">https://github.com/cockroachdb/cockroach/tree/master/scripts</a></li><li><a href=https://github.com/hashicorp/terraform/tree/master/scripts target=_blank rel="noopener noreffer">https://github.com/hashicorp/terraform/tree/master/scripts</a></li></ul><h3 id=build><code>/build</code></h3><p>打包与持续集成。</p><p>将云(AMI)、容器(Docker)、OS(deb、rpm、pkg)包配置和脚本放入 <code>/build/package</code> 目录。</p><p>把你的 CI(travis， circle， drone) 配置和脚本放在 <code>/build/ci</code> 目录。请注意，一些 CI 工具(例如，Travis CI)对配置文件的位置非常挑剔。在
+尝试将配置文件放入 <code>/build/ci</code> 之后，请将它们链接到 CI 工具期望的位置(如果可能的话).</p><h3 id=deployments><code>/deployments</code></h3><p>IaaS、PaaS、system 和 <em>容器编排部署</em> 配置和模板(docker-compose, kubernetes/helm, mesos, terraform, bosh)。</p><p>注意，在一些项目中（尤其是使用 kubernetes 部署的应用程序），这个目录被称为 <code>/deploy</code>。</p><h3 id=test><code>/test</code></h3><p>额外的外部测试应用程序和测试数据。你可以随意构造 <code>/test</code>。或对于更大的项目来说，可以有一个数据子目录。例如，<code>/test/data</code> 或<code>/test/testdata</code>，
+如果你需要 Go 忽略这个目录中的内容。注意，Go 还将忽略以 <code>.</code> or <code>_</code> 开头的目录或文件，因此在如何命名测试数据目录方面，具有更大的灵活性.</p><p>例子：</p><ul><li><a href=https://github.com/openshift/origin/tree/master/test target=_blank rel="noopener noreffer">https://github.com/openshift/origin/tree/master/test</a> (test data is in the /testdata subdirectory)</li></ul><h2 id=其他目录>其他目录</h2><h3 id=docs><code>/docs</code></h3><p>程序设计和用户文档(除 godoc 生成的文档之外)。</p><p>见<a href=docs/README.md rel><code>/docs</code></a>目录的例子。</p><h3 id=tools><code>/tools</code></h3><p>支撑该项目的工具。请注意，这些工具可以从 <code>/pkg</code> 和 <code>/internal</code> 目录导入和使用代码。</p><p>例子：</p><ul><li><a href=https://github.com/istio/istio/tree/master/tools target=_blank rel="noopener noreffer">https://github.com/istio/istio/tree/master/tools</a></li><li><a href=https://github.com/openshift/origin/tree/master/tools target=_blank rel="noopener noreffer">https://github.com/openshift/origin/tree/master/tools</a></li><li><a href=https://github.com/dapr/dapr/tree/master/tools target=_blank rel="noopener noreffer">https://github.com/dapr/dapr/tree/master/tools</a></li></ul><h3 id=examples><code>/examples</code></h3><p>应用程序，公共包的示例。</p><p>例子：</p><ul><li><a href=https://github.com/nats-io/nats.go/tree/master/examples target=_blank rel="noopener noreffer">https://github.com/nats-io/nats.go/tree/master/examples</a></li><li><a href=https://github.com/docker-slim/docker-slim/tree/master/examples target=_blank rel="noopener noreffer">https://github.com/docker-slim/docker-slim/tree/master/examples</a></li><li><a href=https://github.com/gohugoio/hugo/tree/master/examples target=_blank rel="noopener noreffer">https://github.com/gohugoio/hugo/tree/master/examples</a></li><li><a href=https://github.com/hashicorp/packer/tree/master/examples target=_blank rel="noopener noreffer">https://github.com/hashicorp/packer/tree/master/examples</a></li></ul><h3 id=third_party><code>/third_party</code></h3><p>外部辅助工具、被 fork 的代码和其他第三方实用程序(例如，Swagger UI)。</p><h3 id=githooks><code>/githooks</code></h3><p>Git 钩子。</p><h3 id=assets><code>/assets</code></h3><p>与项目一起使用的其他资源(图像、logos 等)。</p><h3 id=website><code>/website</code></h3><p>如果你没有使用 Github pages，这是放置项目网站的地方。</p><p>例子：</p><ul><li><a href=https://github.com/hashicorp/vault/tree/master/website target=_blank rel="noopener noreffer">https://github.com/hashicorp/vault/tree/master/website</a></li><li><a href=https://github.com/perkeep/perkeep/tree/master/website target=_blank rel="noopener noreffer">https://github.com/perkeep/perkeep/tree/master/website</a></li></ul><h2 id=你不应该拥有的目录>你不应该拥有的目录</h2><h3 id=src><code>/src</code></h3><p>一些 GO 项目确实有 <code>src</code> 文件夹，但这种是在 Java 世界的开发中比较常见的模式。如果你不想让你的 Go 代码或 Go 项目看起来像 Java，就尽量不要使用
+这种模式。</p><p>不要把项目级别的 <code>/src</code> 目录与 Go 的工作空间使用的 <code>/src</code> 目录混为一谈，如 <a href=https://golang.org/doc/code.html target=_blank rel="noopener noreffer"><code>How to Write Go Code</code></a>
+中的描述。</p><h2 id=徽章>徽章</h2><ul><li><p><a href=https://goreportcard.com/ target=_blank rel="noopener noreffer">Go Report Card</a>它会用 <code>gofmt</code>，<code>go vet</code>，<code>gocyclo</code>，<code>golint</code>，<code>ineffassign</code>，<code>license</code> 和
+<code>misspell</code> 扫描你代码。将 <code>github.com/golang-standards/project-layout</code> 替换为你的项目。</p></li><li><p><a href=http://godoc.org target=_blank rel="noopener noreffer">GoDoc</a> 提供 GoDoc 生成文档的在线版本。请将链接更改为指向你项目的链接。</p></li><li><p><a href=https://shields.io/ target=_blank rel="noopener noreffer">Release</a> 它将显示项目的最新发布号。更改 Github 链接指向你的项目。</p></li></ul><p><a href=https://goreportcard.com/report/github.com/golang-standards/project-layout target=_blank rel="noopener noreffer"><img class=lazyload src=/svg/loading.min.svg data-src="https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square" data-srcset="https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square, https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square 1.5x, https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square 2x" data-sizes=auto alt="https://goreportcard.com/badge/github.com/golang-standards/project-layout?style=flat-square" title="Go Report Card"></a>
+<a href=http://godoc.org/github.com/golang-standards/project-layout target=_blank rel="noopener noreffer"><img class=lazyload src=/svg/loading.min.svg data-src="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square" data-srcset="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square, https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square 1.5x, https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square 2x" data-sizes=auto alt="https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square" title="Go Doc"></a>
+<a href=https://github.com/golang-standards/project-layout/releases/latest target=_blank rel="noopener noreffer"><img class=lazyload src=/svg/loading.min.svg data-src="https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square" data-srcset="https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square, https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square 1.5x, https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square 2x" data-sizes=auto alt="https://img.shields.io/github/release/golang-standards/project-layout.svg?style=flat-square" title=Release></a></p><h2 id=note>Note</h2><p>一个更具自信心的项目模板，具有可重用的配置、脚本和代码。<strong>WIP-工作正在进行中</strong>。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2020-01-17-project-layout-cn/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2019-12-07-node-profile/ class=prev rel=prev title="Node 如何做性能分析"><i class="fas fa-angle-left fa-fw"></i>Node 如何做性能分析</a>
+<a href=/posts/2020-01-31-git-usage/ class=next rel=next title="Git 的一些使用技巧">Git 的一些使用技巧<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

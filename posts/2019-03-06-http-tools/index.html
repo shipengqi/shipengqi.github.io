@@ -1,290 +1,113 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Linux 下使用 AB 进行压力测试 - Echo</title><meta name="Description" content=""><meta property="og:title" content="Linux 下使用 AB 进行压力测试" />
-<meta property="og:description" content="Linux 下使用 AB 进行压力测试。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2019-03-06-http-tools/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2019-03-06T14:03:23+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="Linux 下使用 AB 进行压力测试"/>
-<meta name="twitter:description" content="Linux 下使用 AB 进行压力测试。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2019-03-06-http-tools/" /><link rel="prev" href="http://example.org/posts/2018-10-23-linux-nvm/" /><link rel="next" href="http://example.org/posts/2019-06-10-koa2-resource-code-analysis/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Linux 下使用 AB 进行压力测试",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2019-03-06-http-tools\/"
-        },"genre": "posts","wordcount":  914 ,
-        "url": "http:\/\/example.org\/posts\/2019-03-06-http-tools\/","datePublished": "2019-03-06T14:03:23+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Linux 下使用 AB 进行压力测试</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/linux/"><i class="far fa-folder fa-fw"></i>Linux</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2019-03-06">2019-03-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 914 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#安装">安装</a></li>
-    <li><a href="#get-请求">GET 请求</a></li>
-    <li><a href="#post-请求">POST 请求</a></li>
-    <li><a href="#其他参数">其他参数</a></li>
-    <li><a href="#常见问题">常见问题</a>
-      <ul>
-        <li><a href="#当并发设置为-250-以上的时候就会出现-apr_socket_recv-connection-refused-111-错误">当并发设置为 250 以上的时候就会出现 apr_socket_recv Connection refused 111 错误</a></li>
-      </ul>
-    </li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>Linux 下使用 AB 进行压力测试。</p>
-<h2 id="安装">安装</h2>
-<p>AB 测试工具安装：<code>yum install -y httpd-tools</code></p>
-<h2 id="get-请求">GET 请求</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ab -n <span class="m">1000</span> -c <span class="m">100</span> http://www.baidu.com/
-</span></span></code></pre></div><ul>
-<li><code>-n</code>，总的请求数</li>
-<li><code>-c</code>，单个时刻并发数</li>
-</ul>
-<p>压测结果：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">This is ApacheBench, Version 2.3 &lt;<span class="nv">$Revision</span>: <span class="m">1430300</span> $&gt;
-</span></span><span class="line"><span class="cl">Copyright <span class="m">1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
-</span></span><span class="line"><span class="cl">Licensed to The Apache Software Foundation, http://www.apache.org/
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Benchmarking juejin.im <span class="o">(</span>be patient<span class="o">)</span>
-</span></span><span class="line"><span class="cl">Completed <span class="m">100</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">200</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">300</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">400</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">500</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">600</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">700</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">800</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">900</span> requests
-</span></span><span class="line"><span class="cl">Completed <span class="m">1000</span> requests
-</span></span><span class="line"><span class="cl">Finished <span class="m">1000</span> requests
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Server Software:        nginx
-</span></span><span class="line"><span class="cl">Server Hostname:        juejin.im
-</span></span><span class="line"><span class="cl">Server Port:            <span class="m">443</span>
-</span></span><span class="line"><span class="cl">SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,2048,256
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Document Path:          /
-</span></span><span class="line"><span class="cl">Document Length:        <span class="m">271405</span> bytes
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Concurrency Level:      100（并发数：100）
-</span></span><span class="line"><span class="cl">Time taken <span class="k">for</span> tests:   120.042 seconds（一共用了 <span class="m">120</span> 秒）
-</span></span><span class="line"><span class="cl">Complete requests:      1000（总的请求数：1000）
-</span></span><span class="line"><span class="cl">Failed requests:        0（失败的请求次数）
-</span></span><span class="line"><span class="cl">Write errors:           <span class="m">0</span>
-</span></span><span class="line"><span class="cl">Total transferred:      <span class="m">271948000</span> bytes
-</span></span><span class="line"><span class="cl">HTML transferred:       <span class="m">271405000</span> bytes
-</span></span><span class="line"><span class="cl">Requests per second:    8.33 <span class="o">[</span><span class="c1">#/sec] (mean)（QPS 系统吞吐量，平均每秒请求数，计算公式 = 总请求数 / 总时间数）</span>
-</span></span><span class="line"><span class="cl">Time per request:       12004.215 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean<span class="o">)</span>（毫秒，平均每次并发 <span class="m">100</span> 个请求的处理时间）
-</span></span><span class="line"><span class="cl">Time per request:       120.042 <span class="o">[</span>ms<span class="o">]</span> <span class="o">(</span>mean, across all concurrent requests<span class="o">)</span>（毫秒，并发 <span class="m">100</span> 下，平均每个请求处理时间）
-</span></span><span class="line"><span class="cl">Transfer rate:          2212.34 <span class="o">[</span>Kbytes/sec<span class="o">]</span> received（平均每秒网络流量）
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Connection Times <span class="o">(</span>ms<span class="o">)</span>
-</span></span><span class="line"><span class="cl">              min  mean<span class="o">[</span>+/-sd<span class="o">]</span> median   max
-</span></span><span class="line"><span class="cl">Connect:       <span class="m">57</span>  <span class="m">159</span> 253.6     <span class="m">77</span>    <span class="m">1002</span>
-</span></span><span class="line"><span class="cl">Processing:  <span class="m">1139</span> <span class="m">11570</span> 2348.2  <span class="m">11199</span>   <span class="m">36198</span>
-</span></span><span class="line"><span class="cl">Waiting:      <span class="m">156</span> <span class="m">1398</span> 959.4   <span class="m">1279</span>   <span class="m">22698</span>
-</span></span><span class="line"><span class="cl">Total:       <span class="m">1232</span> <span class="m">11730</span> 2374.1  <span class="m">11300</span>   <span class="m">36274</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Percentage of the requests served within a certain <span class="nb">time</span> <span class="o">(</span>ms<span class="o">)</span>
-</span></span><span class="line"><span class="cl">  50%  <span class="m">11300</span>
-</span></span><span class="line"><span class="cl">  66%  <span class="m">11562</span>
-</span></span><span class="line"><span class="cl">  75%  <span class="m">11863</span>
-</span></span><span class="line"><span class="cl">  80%  <span class="m">12159</span>
-</span></span><span class="line"><span class="cl">  90%  <span class="m">13148</span>
-</span></span><span class="line"><span class="cl">  95%  <span class="m">15814</span>
-</span></span><span class="line"><span class="cl">  98%  <span class="m">18882</span>
-</span></span><span class="line"><span class="cl">  99%  <span class="m">22255</span>
-</span></span><span class="line"><span class="cl"> 100%  <span class="m">36274</span> <span class="o">(</span>longest request<span class="o">)</span>
-</span></span></code></pre></div><h2 id="post-请求">POST 请求</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ab -n <span class="m">5000</span> -c <span class="m">200</span> -p data.txt -T application/x-www-form-urlencoded http://your.api
-</span></span></code></pre></div><ul>
-<li><code>-p</code>，请求数据的文件的完整路经。</li>
-<li><code>-T</code>，<code>Content-Type</code>。</li>
-</ul>
-<p><code>-p</code> 指定文件的格式应该是 <code>name1=value1&amp;name2=value2</code>。</p>
-<p><strong>注意，如果是在内网请求外网，要加上 <code>-X hostname:port</code>，指定你的 http 代理</strong>。</p>
-<h2 id="其他参数">其他参数</h2>
-<p>可以使用<code>ab --help</code>查看：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">Usage: ab <span class="o">[</span>options<span class="o">]</span> <span class="o">[</span>http<span class="o">[</span>s<span class="o">]</span>://<span class="o">]</span>hostname<span class="o">[</span>:port<span class="o">]</span>/path
-</span></span><span class="line"><span class="cl">Options are:
-</span></span><span class="line"><span class="cl">    -n requests     Number of requests to perform
-</span></span><span class="line"><span class="cl">    -c concurrency  Number of multiple requests to make
-</span></span><span class="line"><span class="cl">    -t timelimit    Seconds to max. <span class="nb">wait</span> <span class="k">for</span> responses
-</span></span><span class="line"><span class="cl">    -b windowsize   Size of TCP send/receive buffer, in bytes
-</span></span><span class="line"><span class="cl">    -p postfile     File containing data to POST. Remember also to <span class="nb">set</span> -T
-</span></span><span class="line"><span class="cl">    -u putfile      File containing data to PUT. Remember also to <span class="nb">set</span> -T
-</span></span><span class="line"><span class="cl">    -T content-type Content-type header <span class="k">for</span> POSTing, eg.
-</span></span><span class="line"><span class="cl">                    <span class="s1">&#39;application/x-www-form-urlencoded&#39;</span>
-</span></span><span class="line"><span class="cl">                    Default is <span class="s1">&#39;text/plain&#39;</span>
-</span></span><span class="line"><span class="cl">    -v verbosity    How much troubleshooting info to print
-</span></span><span class="line"><span class="cl">    -w              Print out results in HTML tables
-</span></span><span class="line"><span class="cl">    -i              Use HEAD instead of GET
-</span></span><span class="line"><span class="cl">    -x attributes   String to insert as table attributes
-</span></span><span class="line"><span class="cl">    -y attributes   String to insert as tr attributes
-</span></span><span class="line"><span class="cl">    -z attributes   String to insert as td or th attributes
-</span></span><span class="line"><span class="cl">    -C attribute    Add cookie, eg. <span class="s1">&#39;Apache=1234. (repeatable)
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -H attribute    Add Arbitrary header line, eg. &#39;</span>Accept-Encoding: gzip<span class="s1">&#39;
-</span></span></span><span class="line"><span class="cl"><span class="s1">                    Inserted after all normal header lines. (repeatable)
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -A attribute    Add Basic WWW Authentication, the attributes
-</span></span></span><span class="line"><span class="cl"><span class="s1">                    are a colon separated username and password.
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -P attribute    Add Basic Proxy Authentication, the attributes
-</span></span></span><span class="line"><span class="cl"><span class="s1">                    are a colon separated username and password.
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -X proxy:port   Proxyserver and port number to use
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -V              Print version number and exit
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -k              Use HTTP KeepAlive feature
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -d              Do not show percentiles served table.
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -S              Do not show confidence estimators and warnings.
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -g filename     Output collected data to gnuplot format file.
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -e filename     Output CSV file with percentages served
-</span></span></span><span class="line"><span class="cl"><span class="s1">    -r              Don&#39;</span>t <span class="nb">exit</span> on socket receive errors.
-</span></span><span class="line"><span class="cl">    -h              Display usage information <span class="o">(</span>this message<span class="o">)</span>
-</span></span><span class="line"><span class="cl">    -Z ciphersuite  Specify SSL/TLS cipher suite <span class="o">(</span>See openssl ciphers<span class="o">)</span>
-</span></span></code></pre></div><h2 id="常见问题">常见问题</h2>
-<h3 id="当并发设置为-250-以上的时候就会出现-apr_socket_recv-connection-refused-111-错误">当并发设置为 250 以上的时候就会出现 apr_socket_recv Connection refused 111 错误</h3>
-<p>这是因为是 linux 网络参数设置。一般 apache 默认最大并发量为 150，可以进入配置文件修改 <code>Threadperchild</code> 等参数值。</p>
-<p>如何调整 Apache 的最大并发量：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vi /etc/sysctl.conf
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">net.nf_conntrack_max <span class="o">=</span> <span class="m">655360</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">net.netfilter.nf_conntrack_tcp_timeout_established <span class="o">=</span> <span class="m">1200</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">sysctl -p /etc/sysctl.conf
-</span></span></code></pre></div><p>修改后，重新启用 apache ab 进行测试，问题解决。</p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2019-03-06-http-tools/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2018-10-23-linux-nvm/" class="prev" rel="prev" title="CentOs 安装 NVM"><i class="fas fa-angle-left fa-fw"></i>CentOs 安装 NVM</a>
-            <a href="/posts/2019-06-10-koa2-resource-code-analysis/" class="next" rel="next" title="koa2 框架源码分析">koa2 框架源码分析<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Linux 下使用 AB 进行压力测试 - Echo</title><meta name=Description content><meta property="og:title" content="Linux 下使用 AB 进行压力测试"><meta property="og:description" content="Linux 下使用 AB 进行压力测试。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2019-03-06-http-tools/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-03-06T14:03:23+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="Linux 下使用 AB 进行压力测试"><meta name=twitter:description content="Linux 下使用 AB 进行压力测试。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2019-03-06-http-tools/><link rel=prev href=http://example.org/posts/2018-10-23-linux-nvm/><link rel=next href=http://example.org/posts/2019-06-10-koa2-resource-code-analysis/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Linux 下使用 AB 进行压力测试","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2019-03-06-http-tools\/"},"genre":"posts","wordcount":914,"url":"http:\/\/example.org\/posts\/2019-03-06-http-tools\/","datePublished":"2019-03-06T14:03:23+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Linux 下使用 AB 进行压力测试</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/linux/><i class="far fa-folder fa-fw"></i>Linux</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2019-03-06>2019-03-06</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 914 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#安装>安装</a></li><li><a href=#get-请求>GET 请求</a></li><li><a href=#post-请求>POST 请求</a></li><li><a href=#其他参数>其他参数</a></li><li><a href=#常见问题>常见问题</a><ul><li><a href=#当并发设置为-250-以上的时候就会出现-apr_socket_recv-connection-refused-111-错误>当并发设置为 250 以上的时候就会出现 apr_socket_recv Connection refused 111 错误</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>Linux 下使用 AB 进行压力测试。</p><h2 id=安装>安装</h2><p>AB 测试工具安装：<code>yum install -y httpd-tools</code></p><h2 id=get-请求>GET 请求</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>ab -n <span class=m>1000</span> -c <span class=m>100</span> http://www.baidu.com/
+</span></span></code></pre></div><ul><li><code>-n</code>，总的请求数</li><li><code>-c</code>，单个时刻并发数</li></ul><p>压测结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>This is ApacheBench, Version 2.3 &lt;<span class=nv>$Revision</span>: <span class=m>1430300</span> $&gt;
+</span></span><span class=line><span class=cl>Copyright <span class=m>1996</span> Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+</span></span><span class=line><span class=cl>Licensed to The Apache Software Foundation, http://www.apache.org/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Benchmarking juejin.im <span class=o>(</span>be patient<span class=o>)</span>
+</span></span><span class=line><span class=cl>Completed <span class=m>100</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>200</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>300</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>400</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>500</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>600</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>700</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>800</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>900</span> requests
+</span></span><span class=line><span class=cl>Completed <span class=m>1000</span> requests
+</span></span><span class=line><span class=cl>Finished <span class=m>1000</span> requests
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Server Software:        nginx
+</span></span><span class=line><span class=cl>Server Hostname:        juejin.im
+</span></span><span class=line><span class=cl>Server Port:            <span class=m>443</span>
+</span></span><span class=line><span class=cl>SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES256-GCM-SHA384,2048,256
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Document Path:          /
+</span></span><span class=line><span class=cl>Document Length:        <span class=m>271405</span> bytes
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Concurrency Level:      100（并发数：100）
+</span></span><span class=line><span class=cl>Time taken <span class=k>for</span> tests:   120.042 seconds（一共用了 <span class=m>120</span> 秒）
+</span></span><span class=line><span class=cl>Complete requests:      1000（总的请求数：1000）
+</span></span><span class=line><span class=cl>Failed requests:        0（失败的请求次数）
+</span></span><span class=line><span class=cl>Write errors:           <span class=m>0</span>
+</span></span><span class=line><span class=cl>Total transferred:      <span class=m>271948000</span> bytes
+</span></span><span class=line><span class=cl>HTML transferred:       <span class=m>271405000</span> bytes
+</span></span><span class=line><span class=cl>Requests per second:    8.33 <span class=o>[</span><span class=c1>#/sec] (mean)（QPS 系统吞吐量，平均每秒请求数，计算公式 = 总请求数 / 总时间数）</span>
+</span></span><span class=line><span class=cl>Time per request:       12004.215 <span class=o>[</span>ms<span class=o>]</span> <span class=o>(</span>mean<span class=o>)</span>（毫秒，平均每次并发 <span class=m>100</span> 个请求的处理时间）
+</span></span><span class=line><span class=cl>Time per request:       120.042 <span class=o>[</span>ms<span class=o>]</span> <span class=o>(</span>mean, across all concurrent requests<span class=o>)</span>（毫秒，并发 <span class=m>100</span> 下，平均每个请求处理时间）
+</span></span><span class=line><span class=cl>Transfer rate:          2212.34 <span class=o>[</span>Kbytes/sec<span class=o>]</span> received（平均每秒网络流量）
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Connection Times <span class=o>(</span>ms<span class=o>)</span>
+</span></span><span class=line><span class=cl>              min  mean<span class=o>[</span>+/-sd<span class=o>]</span> median   max
+</span></span><span class=line><span class=cl>Connect:       <span class=m>57</span>  <span class=m>159</span> 253.6     <span class=m>77</span>    <span class=m>1002</span>
+</span></span><span class=line><span class=cl>Processing:  <span class=m>1139</span> <span class=m>11570</span> 2348.2  <span class=m>11199</span>   <span class=m>36198</span>
+</span></span><span class=line><span class=cl>Waiting:      <span class=m>156</span> <span class=m>1398</span> 959.4   <span class=m>1279</span>   <span class=m>22698</span>
+</span></span><span class=line><span class=cl>Total:       <span class=m>1232</span> <span class=m>11730</span> 2374.1  <span class=m>11300</span>   <span class=m>36274</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Percentage of the requests served within a certain <span class=nb>time</span> <span class=o>(</span>ms<span class=o>)</span>
+</span></span><span class=line><span class=cl>  50%  <span class=m>11300</span>
+</span></span><span class=line><span class=cl>  66%  <span class=m>11562</span>
+</span></span><span class=line><span class=cl>  75%  <span class=m>11863</span>
+</span></span><span class=line><span class=cl>  80%  <span class=m>12159</span>
+</span></span><span class=line><span class=cl>  90%  <span class=m>13148</span>
+</span></span><span class=line><span class=cl>  95%  <span class=m>15814</span>
+</span></span><span class=line><span class=cl>  98%  <span class=m>18882</span>
+</span></span><span class=line><span class=cl>  99%  <span class=m>22255</span>
+</span></span><span class=line><span class=cl> 100%  <span class=m>36274</span> <span class=o>(</span>longest request<span class=o>)</span>
+</span></span></code></pre></div><h2 id=post-请求>POST 请求</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>ab -n <span class=m>5000</span> -c <span class=m>200</span> -p data.txt -T application/x-www-form-urlencoded http://your.api
+</span></span></code></pre></div><ul><li><code>-p</code>，请求数据的文件的完整路经。</li><li><code>-T</code>，<code>Content-Type</code>。</li></ul><p><code>-p</code> 指定文件的格式应该是 <code>name1=value1&amp;name2=value2</code>。</p><p><strong>注意，如果是在内网请求外网，要加上 <code>-X hostname:port</code>，指定你的 http 代理</strong>。</p><h2 id=其他参数>其他参数</h2><p>可以使用<code>ab --help</code>查看：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>Usage: ab <span class=o>[</span>options<span class=o>]</span> <span class=o>[</span>http<span class=o>[</span>s<span class=o>]</span>://<span class=o>]</span>hostname<span class=o>[</span>:port<span class=o>]</span>/path
+</span></span><span class=line><span class=cl>Options are:
+</span></span><span class=line><span class=cl>    -n requests     Number of requests to perform
+</span></span><span class=line><span class=cl>    -c concurrency  Number of multiple requests to make
+</span></span><span class=line><span class=cl>    -t timelimit    Seconds to max. <span class=nb>wait</span> <span class=k>for</span> responses
+</span></span><span class=line><span class=cl>    -b windowsize   Size of TCP send/receive buffer, in bytes
+</span></span><span class=line><span class=cl>    -p postfile     File containing data to POST. Remember also to <span class=nb>set</span> -T
+</span></span><span class=line><span class=cl>    -u putfile      File containing data to PUT. Remember also to <span class=nb>set</span> -T
+</span></span><span class=line><span class=cl>    -T content-type Content-type header <span class=k>for</span> POSTing, eg.
+</span></span><span class=line><span class=cl>                    <span class=s1>&#39;application/x-www-form-urlencoded&#39;</span>
+</span></span><span class=line><span class=cl>                    Default is <span class=s1>&#39;text/plain&#39;</span>
+</span></span><span class=line><span class=cl>    -v verbosity    How much troubleshooting info to print
+</span></span><span class=line><span class=cl>    -w              Print out results in HTML tables
+</span></span><span class=line><span class=cl>    -i              Use HEAD instead of GET
+</span></span><span class=line><span class=cl>    -x attributes   String to insert as table attributes
+</span></span><span class=line><span class=cl>    -y attributes   String to insert as tr attributes
+</span></span><span class=line><span class=cl>    -z attributes   String to insert as td or th attributes
+</span></span><span class=line><span class=cl>    -C attribute    Add cookie, eg. <span class=s1>&#39;Apache=1234. (repeatable)
+</span></span></span><span class=line><span class=cl><span class=s1>    -H attribute    Add Arbitrary header line, eg. &#39;</span>Accept-Encoding: gzip<span class=s1>&#39;
+</span></span></span><span class=line><span class=cl><span class=s1>                    Inserted after all normal header lines. (repeatable)
+</span></span></span><span class=line><span class=cl><span class=s1>    -A attribute    Add Basic WWW Authentication, the attributes
+</span></span></span><span class=line><span class=cl><span class=s1>                    are a colon separated username and password.
+</span></span></span><span class=line><span class=cl><span class=s1>    -P attribute    Add Basic Proxy Authentication, the attributes
+</span></span></span><span class=line><span class=cl><span class=s1>                    are a colon separated username and password.
+</span></span></span><span class=line><span class=cl><span class=s1>    -X proxy:port   Proxyserver and port number to use
+</span></span></span><span class=line><span class=cl><span class=s1>    -V              Print version number and exit
+</span></span></span><span class=line><span class=cl><span class=s1>    -k              Use HTTP KeepAlive feature
+</span></span></span><span class=line><span class=cl><span class=s1>    -d              Do not show percentiles served table.
+</span></span></span><span class=line><span class=cl><span class=s1>    -S              Do not show confidence estimators and warnings.
+</span></span></span><span class=line><span class=cl><span class=s1>    -g filename     Output collected data to gnuplot format file.
+</span></span></span><span class=line><span class=cl><span class=s1>    -e filename     Output CSV file with percentages served
+</span></span></span><span class=line><span class=cl><span class=s1>    -r              Don&#39;</span>t <span class=nb>exit</span> on socket receive errors.
+</span></span><span class=line><span class=cl>    -h              Display usage information <span class=o>(</span>this message<span class=o>)</span>
+</span></span><span class=line><span class=cl>    -Z ciphersuite  Specify SSL/TLS cipher suite <span class=o>(</span>See openssl ciphers<span class=o>)</span>
+</span></span></code></pre></div><h2 id=常见问题>常见问题</h2><h3 id=当并发设置为-250-以上的时候就会出现-apr_socket_recv-connection-refused-111-错误>当并发设置为 250 以上的时候就会出现 apr_socket_recv Connection refused 111 错误</h3><p>这是因为是 linux 网络参数设置。一般 apache 默认最大并发量为 150，可以进入配置文件修改 <code>Threadperchild</code> 等参数值。</p><p>如何调整 Apache 的最大并发量：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>vi /etc/sysctl.conf
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>net.nf_conntrack_max <span class=o>=</span> <span class=m>655360</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>net.netfilter.nf_conntrack_tcp_timeout_established <span class=o>=</span> <span class=m>1200</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>sysctl -p /etc/sysctl.conf
+</span></span></code></pre></div><p>修改后，重新启用 apache ab 进行测试，问题解决。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2019-03-06-http-tools/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2018-10-23-linux-nvm/ class=prev rel=prev title="CentOs 安装 NVM"><i class="fas fa-angle-left fa-fw"></i>CentOs 安装 NVM</a>
+<a href=/posts/2019-06-10-koa2-resource-code-analysis/ class=next rel=next title="koa2 框架源码分析">koa2 框架源码分析<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

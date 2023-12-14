@@ -1,15 +1,1 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Cloud Native - 分类 - Echo</title>
-        <link>http://example.org/categories/cloud-native/</link>
-        <description>Cloud Native - 分类 - Echo</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
-            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Wed, 12 Feb 2020 19:18:55 &#43;0000</lastBuildDate><atom:link href="http://example.org/categories/cloud-native/" rel="self" type="application/rss+xml" /><item>
-    <title>CentOS 上使用 kubeadm 安装 kubernetes</title>
-    <link>http://example.org/posts/2020-02-12-kubeadm/</link>
-    <pubDate>Wed, 12 Feb 2020 19:18:55 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2020-02-12-kubeadm/</guid>
-    <description><![CDATA[<p>使用 kubeadm 安装 kubernetes 集群。</p>]]></description>
-</item></channel>
-</rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Cloud Native - 分类 - Echo</title><link>http://example.org/categories/cloud-native/</link><description>Cloud Native - 分类 - Echo</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor><webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Wed, 12 Feb 2020 19:18:55 +0000</lastBuildDate><atom:link href="http://example.org/categories/cloud-native/" rel="self" type="application/rss+xml"/><item><title>CentOS 上使用 kubeadm 安装 kubernetes</title><link>http://example.org/posts/2020-02-12-kubeadm/</link><pubDate>Wed, 12 Feb 2020 19:18:55 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2020-02-12-kubeadm/</guid><description>&lt;p>使用 kubeadm 安装 kubernetes 集群。&lt;/p></description></item></channel></rss>

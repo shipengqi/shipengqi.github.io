@@ -1,475 +1,179 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Go Code Review Comments（翻译） - Echo</title><meta name="Description" content=""><meta property="og:title" content="Go Code Review Comments（翻译）" />
-<meta property="og:description" content="本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
-考 The Uber Go Style Guide 。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2020-03-11-go-code-review-comments/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2020-03-11T13:54:13+00:00" />
-<meta property="article:modified_time" content="2021-11-14T17:31:01+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="Go Code Review Comments（翻译）"/>
-<meta name="twitter:description" content="本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
-考 The Uber Go Style Guide 。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2020-03-11-go-code-review-comments/" /><link rel="prev" href="http://example.org/posts/2020-02-28-go-profile/" /><link rel="next" href="http://example.org/posts/2020-04-09-go-remote-debug/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Go Code Review Comments（翻译）",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2020-03-11-go-code-review-comments\/"
-        },"genre": "posts","wordcount":  4829 ,
-        "url": "http:\/\/example.org\/posts\/2020-03-11-go-code-review-comments\/","datePublished": "2020-03-11T13:54:13+00:00","dateModified": "2021-11-14T17:31:01+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Go Code Review Comments（翻译）</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/go/"><i class="far fa-folder fa-fw"></i>Go</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-03-11">2020-03-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4829 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 10 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#gofmt">Gofmt</a></li>
-    <li><a href="#comment-sentences">Comment Sentences</a></li>
-    <li><a href="#contexts">Contexts</a></li>
-    <li><a href="#crypto-rand">Crypto Rand</a></li>
-    <li><a href="#declaring-empty-slices">Declaring Empty Slices</a></li>
-    <li><a href="#doc-comments">Doc Comments</a></li>
-    <li><a href="#dont-panic">Don’t Panic</a></li>
-    <li><a href="#error-strings">Error Strings</a></li>
-    <li><a href="#examples">Examples</a></li>
-    <li><a href="#goroutine-lifetimes">Goroutine Lifetimes</a></li>
-    <li><a href="#handle-errors">Handle Errors</a></li>
-    <li><a href="#imports">Imports</a></li>
-    <li><a href="#import-blank">Import Blank</a></li>
-    <li><a href="#import-dot">Import Dot</a></li>
-    <li><a href="#in-band-errors">In-Band Errors</a></li>
-    <li><a href="#indent-error-flow">Indent Error Flow</a></li>
-    <li><a href="#initialisms">Initialisms</a></li>
-    <li><a href="#interfaces">Interfaces</a></li>
-    <li><a href="#line-length">Line Length</a></li>
-    <li><a href="#mixed-caps">Mixed Caps</a></li>
-    <li><a href="#named-result-parameters">Named Result Parameters</a></li>
-    <li><a href="#package-comments">Package Comments</a></li>
-    <li><a href="#package-names">Package Names</a></li>
-    <li><a href="#pass-values">Pass Values</a></li>
-    <li><a href="#receiver-names">Receiver Names</a></li>
-    <li><a href="#receiver-type">Receiver Type</a></li>
-    <li><a href="#useful-test-failures">Useful Test Failures</a></li>
-    <li><a href="#variable-names">Variable Names</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
-考 <a href="https://github.com/uber-go/guide" target="_blank" rel="noopener noreffer">The Uber Go Style Guide</a> 。</p>
-<p>可以看做是对 <a href="https://golang.org/doc/effective_go.html" target="_blank" rel="noopener noreffer">Effective Go</a> 的补充。</p>
-<h2 id="gofmt">Gofmt</h2>
-<p>所有代码在发布前均使用 <code>gofmt</code> 进行修正。</p>
-<p>另一种方法是使用 <a href="https://godoc.org/golang.org/x/tools/cmd/goimports" target="_blank" rel="noopener noreffer">goimports</a> ，这是 <code>gofmt</code> 的一个超集，可以根据需要添加（和删除）导入行。</p>
-<h2 id="comment-sentences">Comment Sentences</h2>
-<p><a href="https://golang.org/doc/effective_go.html#commentary" target="_blank" rel="noopener noreffer">commentary</a> 注释应该是完整的句子，即使这似乎有点多余。这样做，能使注释在转化成 <code>godoc</code> 时有一个不错的格式。注释应该以要描述的对象开头，句号结尾。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Request represents a request to run a command.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">type</span> <span class="nx">Request</span> <span class="kd">struct</span> <span class="p">{</span> <span class="o">...</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Encode writes the JSON encoding of req to w.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Encode</span><span class="p">(</span><span class="nx">w</span> <span class="nx">io</span><span class="p">.</span><span class="nx">Writer</span><span class="p">,</span> <span class="nx">req</span> <span class="o">*</span><span class="nx">Request</span><span class="p">)</span> <span class="p">{</span> <span class="o">...</span>
-</span></span></code></pre></div><h2 id="contexts">Contexts</h2>
-<p><code>context.Context</code> 类型的值（可以是安全凭证、跟踪信息、截止日期和取消信号）可以跨越 API 和进程边界。Go 程序在整个函数调用链中显
-式地将 Contexts 从传入的 RPC 和 HTTP 请求传递到传出的请求。</p>
-<p>Context 所多数作为函数的第一个参数:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">F</span><span class="p">(</span><span class="nx">ctx</span> <span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span> <span class="cm">/* other arguments */</span><span class="p">)</span> <span class="p">{}</span>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Go Code Review Comments（翻译） - Echo</title><meta name=Description content><meta property="og:title" content="Go Code Review Comments（翻译）"><meta property="og:description" content="本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
+考 The Uber Go Style Guide 。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2020-03-11-go-code-review-comments/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-03-11T13:54:13+00:00"><meta property="article:modified_time" content="2021-11-14T17:31:01+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="Go Code Review Comments（翻译）"><meta name=twitter:description content="本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
+考 The Uber Go Style Guide 。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2020-03-11-go-code-review-comments/><link rel=prev href=http://example.org/posts/2020-02-28-go-profile/><link rel=next href=http://example.org/posts/2020-04-09-go-remote-debug/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Go Code Review Comments（翻译）","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2020-03-11-go-code-review-comments\/"},"genre":"posts","wordcount":4829,"url":"http:\/\/example.org\/posts\/2020-03-11-go-code-review-comments\/","datePublished":"2020-03-11T13:54:13+00:00","dateModified":"2021-11-14T17:31:01+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Go Code Review Comments（翻译）</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/go/><i class="far fa-folder fa-fw"></i>Go</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2020-03-11>2020-03-11</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 4829 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 10 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#gofmt>Gofmt</a></li><li><a href=#comment-sentences>Comment Sentences</a></li><li><a href=#contexts>Contexts</a></li><li><a href=#crypto-rand>Crypto Rand</a></li><li><a href=#declaring-empty-slices>Declaring Empty Slices</a></li><li><a href=#doc-comments>Doc Comments</a></li><li><a href=#dont-panic>Don’t Panic</a></li><li><a href=#error-strings>Error Strings</a></li><li><a href=#examples>Examples</a></li><li><a href=#goroutine-lifetimes>Goroutine Lifetimes</a></li><li><a href=#handle-errors>Handle Errors</a></li><li><a href=#imports>Imports</a></li><li><a href=#import-blank>Import Blank</a></li><li><a href=#import-dot>Import Dot</a></li><li><a href=#in-band-errors>In-Band Errors</a></li><li><a href=#indent-error-flow>Indent Error Flow</a></li><li><a href=#initialisms>Initialisms</a></li><li><a href=#interfaces>Interfaces</a></li><li><a href=#line-length>Line Length</a></li><li><a href=#mixed-caps>Mixed Caps</a></li><li><a href=#named-result-parameters>Named Result Parameters</a></li><li><a href=#package-comments>Package Comments</a></li><li><a href=#package-names>Package Names</a></li><li><a href=#pass-values>Pass Values</a></li><li><a href=#receiver-names>Receiver Names</a></li><li><a href=#receiver-type>Receiver Type</a></li><li><a href=#useful-test-failures>Useful Test Failures</a></li><li><a href=#variable-names>Variable Names</a></li></ul></nav></div></div><div class=content id=content><p>本页收集了在 review go 代码时常见的评论。这只是一份常见错误的清单，并不是一个全面的风格指南。全面的风格指南可以参
+考 <a href=https://github.com/uber-go/guide target=_blank rel="noopener noreffer">The Uber Go Style Guide</a> 。</p><p>可以看做是对 <a href=https://golang.org/doc/effective_go.html target=_blank rel="noopener noreffer">Effective Go</a> 的补充。</p><h2 id=gofmt>Gofmt</h2><p>所有代码在发布前均使用 <code>gofmt</code> 进行修正。</p><p>另一种方法是使用 <a href=https://godoc.org/golang.org/x/tools/cmd/goimports target=_blank rel="noopener noreffer">goimports</a> ，这是 <code>gofmt</code> 的一个超集，可以根据需要添加（和删除）导入行。</p><h2 id=comment-sentences>Comment Sentences</h2><p><a href=https://golang.org/doc/effective_go.html#commentary target=_blank rel="noopener noreffer">commentary</a> 注释应该是完整的句子，即使这似乎有点多余。这样做，能使注释在转化成 <code>godoc</code> 时有一个不错的格式。注释应该以要描述的对象开头，句号结尾。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Request represents a request to run a command.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>Request</span> <span class=kd>struct</span> <span class=p>{</span> <span class=o>...</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Encode writes the JSON encoding of req to w.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>Encode</span><span class=p>(</span><span class=nx>w</span> <span class=nx>io</span><span class=p>.</span><span class=nx>Writer</span><span class=p>,</span> <span class=nx>req</span> <span class=o>*</span><span class=nx>Request</span><span class=p>)</span> <span class=p>{</span> <span class=o>...</span>
+</span></span></code></pre></div><h2 id=contexts>Contexts</h2><p><code>context.Context</code> 类型的值（可以是安全凭证、跟踪信息、截止日期和取消信号）可以跨越 API 和进程边界。Go 程序在整个函数调用链中显
+式地将 Contexts 从传入的 RPC 和 HTTP 请求传递到传出的请求。</p><p>Context 所多数作为函数的第一个参数:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>F</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=cm>/* other arguments */</span><span class=p>)</span> <span class=p>{}</span>
 </span></span></code></pre></div><p>不特定于请求的函数可能会使用 <code>context.background()</code>，即使你认为不需要这样做，也最好传递一个上下文。默认的情况是传递一
-个 Context；当有充分的理由可以替代的情况下，才会直接使用 <code>context.Background()</code>。</p>
-<p>不要在结构类型中添加 Context 成员，而是在该类型上的每个需要传递的方法中添加一个 ctx 参数。唯一的例外方法，就是签名必须与标准库或第三
-方库中的接口相匹配时。</p>
-<p>不要创建自定义的 Context 类型，或者在函数签名中使用 Context 以外的接口。</p>
-<p>如果需要传递应用数据，就把它放在参数中，在接收器中，globals 的，或者，如果它真的属于那里，就放在 Context 的值中。</p>
-<p>Contexts 是不可更改的，所以将 ctx 传递给多个调用可以共享相同的 deadline, cancellation signal, credentials, parent trace 等。</p>
-<h2 id="crypto-rand">Crypto Rand</h2>
-<p>不要使用 <code>math/rand</code> 包来生成密钥，即使是一次性密钥。应该使用 <code>crypto/rand</code>：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;crypto/rand&#34;</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// &#34;encoding/base64&#34;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// &#34;encoding/hex&#34;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="s">&#34;fmt&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Key</span><span class="p">()</span> <span class="kt">string</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">buf</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">_</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nx">rand</span><span class="p">.</span><span class="nf">Read</span><span class="p">(</span><span class="nx">buf</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">		<span class="nb">panic</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>  <span class="c1">// out of randomness, should never happen
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="p">}</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Sprintf</span><span class="p">(</span><span class="s">&#34;%x&#34;</span><span class="p">,</span> <span class="nx">buf</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">	<span class="c1">// or hex.EncodeToString(buf)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="c1">// or base64.StdEncoding.EncodeToString(buf)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></div><h2 id="declaring-empty-slices">Declaring Empty Slices</h2>
-<p>声明空的 slice，最好使用</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">t</span> <span class="p">[]</span><span class="kt">string</span>
-</span></span></code></pre></div><p>不要使用：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">t</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">string</span><span class="p">{}</span>
+个 Context；当有充分的理由可以替代的情况下，才会直接使用 <code>context.Background()</code>。</p><p>不要在结构类型中添加 Context 成员，而是在该类型上的每个需要传递的方法中添加一个 ctx 参数。唯一的例外方法，就是签名必须与标准库或第三
+方库中的接口相匹配时。</p><p>不要创建自定义的 Context 类型，或者在函数签名中使用 Context 以外的接口。</p><p>如果需要传递应用数据，就把它放在参数中，在接收器中，globals 的，或者，如果它真的属于那里，就放在 Context 的值中。</p><p>Contexts 是不可更改的，所以将 ctx 传递给多个调用可以共享相同的 deadline, cancellation signal, credentials, parent trace 等。</p><h2 id=crypto-rand>Crypto Rand</h2><p>不要使用 <code>math/rand</code> 包来生成密钥，即使是一次性密钥。应该使用 <code>crypto/rand</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;crypto/rand&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// &#34;encoding/base64&#34;
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// &#34;encoding/hex&#34;
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=s>&#34;fmt&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>Key</span><span class=p>()</span> <span class=kt>string</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>buf</span> <span class=o>:=</span> <span class=nb>make</span><span class=p>([]</span><span class=kt>byte</span><span class=p>,</span> <span class=mi>16</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>_</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>rand</span><span class=p>.</span><span class=nf>Read</span><span class=p>(</span><span class=nx>buf</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nb>panic</span><span class=p>(</span><span class=nx>err</span><span class=p>)</span>  <span class=c1>// out of randomness, should never happen
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Sprintf</span><span class=p>(</span><span class=s>&#34;%x&#34;</span><span class=p>,</span> <span class=nx>buf</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// or hex.EncodeToString(buf)
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=c1>// or base64.StdEncoding.EncodeToString(buf)
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></div><h2 id=declaring-empty-slices>Declaring Empty Slices</h2><p>声明空的 slice，最好使用</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>var</span> <span class=nx>t</span> <span class=p>[]</span><span class=kt>string</span>
+</span></span></code></pre></div><p>不要使用：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=nx>t</span> <span class=o>:=</span> <span class=p>[]</span><span class=kt>string</span><span class=p>{}</span>
 </span></span></code></pre></div><p>前者声明了一个值为 nil 的 slice，有些时候，而后者声明了一个长度为 0 的 non-nil slice。两者使用 <code>len</code> 和 <code>cap</code> 得到的都是零，但是
-应该优先使用前者。因为可能你从没向这个 slice append 元素，使用前者，可以避免内存分配。</p>
-<p>注意，在有些情况下，non-nil slice 是首选的，比如对 JSON 对象进行编码时（nil slice 编码为 null，而 <code>[]string{}</code> 编码为 JSON 数
-组 <code>[]</code>）。</p>
-<p>在设计接口时，要避免区分 nil slice 和 non-nil slice、&ldquo;零长度&rdquo; 切片，因为这可能会导致微妙的编程错误。</p>
-<h2 id="doc-comments">Doc Comments</h2>
-<p>所有顶级的、导出的名称都应该有 doc 注释，不重要的未导出的 <code>type</code> 或 <code>func</code> 声明也应该有 doc 注释。
-有关注释的更多信息，可以参考 <a href="https://golang.org/doc/effective_go.html#commentary" target="_blank" rel="noopener noreffer">commentary</a></p>
-<p>Go 提供两种注释风格，C 的块注释风格 <code>/**/</code>，C++ 的行注释风格 <code>//</code>。块注释主要作为包的注释，但在表达式中或禁用大段代码时也很有用。</p>
-<p>每一个包都应该有包注释，位于文件的顶部，在包名出现之前。如果一个包有多个文件，包注释只需要出现在一个文件的顶部即可。
-包注释应该介绍包，并提供与整个包相关的信息。它将首先出现在 <code>godoc</code> 页面上，并应设置下面的详细文档。</p>
-<p>包注释建议使用块注释风格，如果这个包特别简单，需要的注释很少，也可以选择使用行注释。</p>
-<h2 id="dont-panic">Don’t Panic</h2>
-<p><a href="https://golang.org/doc/effective_go.html#errors" target="_blank" rel="noopener noreffer">errors</a> 尽量不要使用 panic 处理一般的错误。函数应该设计成多返回值，其中包括
-要返回的 error 类型。</p>
-<h2 id="error-strings">Error Strings</h2>
-<p>错误字符串不应该大写（除非以专有名词或缩略语开头），也不应该以标点符号结尾，因为它们通常是在其他上下文之后打印的。也就是说，使
-用 <code>fmt.Errorf(&quot;something bad&quot;)</code> 而不是 <code>fmt.Errorf(&quot;Something bad&quot;)</code>，这样 <code>log.Printf(&quot;Reading %s: %v&quot;, filename, err)</code>
-的格式化就不会在消息中间出现一个大写字母。</p>
-<p>这不适用于日志记录，它是隐式的、面向行的，并且不与其他消息结合在一起。</p>
-<h2 id="examples">Examples</h2>
-<p>当添加一个新的包时，要包含使用示例：一个可运行的例子，或一个简单的测试，演示一个完整的调用。</p>
-<p>更多参考 <a href="https://blog.golang.org/examples" target="_blank" rel="noopener noreffer">testable Example() functions</a> 。</p>
-<h2 id="goroutine-lifetimes">Goroutine Lifetimes</h2>
-<h2 id="handle-errors">Handle Errors</h2>
-<p><a href="https://golang.org/doc/effective_go.html#errors" target="_blank" rel="noopener noreffer">errors</a> 不要将 error 赋值给匿名变量 <code>_</code>。如果一个函数返回 error，一定要检
-查它是否为空，判断函数调用是否成功。如果不为空，就需要处理这个错误，或者 return 给调用者，特殊情况下可以 panic。</p>
-<h2 id="imports">Imports</h2>
-<p>除非导入之间有直接冲突，否则应避免导入别名。
-导入烦人包应该进行分组。同一组的包之间不需要有空行，不同组之间的包需要一个空行。标准库的包应该放在第一组。</p>
-<p><code>goimports</code> 可以直接修正 import 包的规范。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">main</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;fmt&#34;</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;hash/adler32&#34;</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;os&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;appengine/foo&#34;</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;appengine/user&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;github.com/foo/bar&#34;</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;rsc.io/goversion/version&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">)</span>
-</span></span></code></pre></div><h2 id="import-blank">Import Blank</h2>
-<p>只为其副作用而导入的包（使用语法 <code>import _ &quot;pkg&quot;</code>）只应在程序的 <code>main</code> 包中，或在需要它们的测试中导入。</p>
-<h2 id="import-dot">Import Dot</h2>
-<p>在那些由于循环依赖关系而不能成为被测包的一部分的测试中，使用 <code>import . &quot;pkg&quot;</code>。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">foo_test</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="p">(</span>
-</span></span><span class="line"><span class="cl">	<span class="s">&#34;bar/testutil&#34;</span> <span class="c1">// also imports &#34;foo&#34;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="p">.</span> <span class="s">&#34;foo&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">)</span>
+应该优先使用前者。因为可能你从没向这个 slice append 元素，使用前者，可以避免内存分配。</p><p>注意，在有些情况下，non-nil slice 是首选的，比如对 JSON 对象进行编码时（nil slice 编码为 null，而 <code>[]string{}</code> 编码为 JSON 数
+组 <code>[]</code>）。</p><p>在设计接口时，要避免区分 nil slice 和 non-nil slice、&ldquo;零长度&rdquo; 切片，因为这可能会导致微妙的编程错误。</p><h2 id=doc-comments>Doc Comments</h2><p>所有顶级的、导出的名称都应该有 doc 注释，不重要的未导出的 <code>type</code> 或 <code>func</code> 声明也应该有 doc 注释。
+有关注释的更多信息，可以参考 <a href=https://golang.org/doc/effective_go.html#commentary target=_blank rel="noopener noreffer">commentary</a></p><p>Go 提供两种注释风格，C 的块注释风格 <code>/**/</code>，C++ 的行注释风格 <code>//</code>。块注释主要作为包的注释，但在表达式中或禁用大段代码时也很有用。</p><p>每一个包都应该有包注释，位于文件的顶部，在包名出现之前。如果一个包有多个文件，包注释只需要出现在一个文件的顶部即可。
+包注释应该介绍包，并提供与整个包相关的信息。它将首先出现在 <code>godoc</code> 页面上，并应设置下面的详细文档。</p><p>包注释建议使用块注释风格，如果这个包特别简单，需要的注释很少，也可以选择使用行注释。</p><h2 id=dont-panic>Don’t Panic</h2><p><a href=https://golang.org/doc/effective_go.html#errors target=_blank rel="noopener noreffer">errors</a> 尽量不要使用 panic 处理一般的错误。函数应该设计成多返回值，其中包括
+要返回的 error 类型。</p><h2 id=error-strings>Error Strings</h2><p>错误字符串不应该大写（除非以专有名词或缩略语开头），也不应该以标点符号结尾，因为它们通常是在其他上下文之后打印的。也就是说，使
+用 <code>fmt.Errorf("something bad")</code> 而不是 <code>fmt.Errorf("Something bad")</code>，这样 <code>log.Printf("Reading %s: %v", filename, err)</code>
+的格式化就不会在消息中间出现一个大写字母。</p><p>这不适用于日志记录，它是隐式的、面向行的，并且不与其他消息结合在一起。</p><h2 id=examples>Examples</h2><p>当添加一个新的包时，要包含使用示例：一个可运行的例子，或一个简单的测试，演示一个完整的调用。</p><p>更多参考 <a href=https://blog.golang.org/examples target=_blank rel="noopener noreffer">testable Example() functions</a> 。</p><h2 id=goroutine-lifetimes>Goroutine Lifetimes</h2><h2 id=handle-errors>Handle Errors</h2><p><a href=https://golang.org/doc/effective_go.html#errors target=_blank rel="noopener noreffer">errors</a> 不要将 error 赋值给匿名变量 <code>_</code>。如果一个函数返回 error，一定要检
+查它是否为空，判断函数调用是否成功。如果不为空，就需要处理这个错误，或者 return 给调用者，特殊情况下可以 panic。</p><h2 id=imports>Imports</h2><p>除非导入之间有直接冲突，否则应避免导入别名。
+导入烦人包应该进行分组。同一组的包之间不需要有空行，不同组之间的包需要一个空行。标准库的包应该放在第一组。</p><p><code>goimports</code> 可以直接修正 import 包的规范。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>main</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;fmt&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;hash/adler32&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;os&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;appengine/foo&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;appengine/user&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/foo/bar&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;rsc.io/goversion/version&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></div><h2 id=import-blank>Import Blank</h2><p>只为其副作用而导入的包（使用语法 <code>import _ "pkg"</code>）只应在程序的 <code>main</code> 包中，或在需要它们的测试中导入。</p><h2 id=import-dot>Import Dot</h2><p>在那些由于循环依赖关系而不能成为被测包的一部分的测试中，使用 <code>import . "pkg"</code>。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>foo_test</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;bar/testutil&#34;</span> <span class=c1>// also imports &#34;foo&#34;
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=p>.</span> <span class=s>&#34;foo&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
 </span></span></code></pre></div><p>上面的例子，该测试文件不能定义在于 <code>foo</code> 包里面，因为它导入了 <code>bar/testutil</code>，而 <code>bar/testutil</code> import 了 <code>foo</code>，这会造成循环
-引用。</p>
-<p>所以需要将该测试文件定义在 <code>foo_test</code> 包中。使用了 <code>import . &quot;foo&quot;</code> 后，该测试文件内代码能直接调用 <code>foo</code> 里面的函数而不需要显式
-地写上包名。</p>
-<p>但 <code>import .</code> 这个特性，建议只在这种场景下使用，因为它会影响代码的可读性。</p>
-<h2 id="in-band-errors">In-Band Errors</h2>
-<p>在 C 语言和类似的语言中，通常函数会返回像 <code>-1</code> 或 <code>null</code> 来表示错误或结果丢失:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Lookup returns the value for key or &#34;&#34; if there is no mapping for key.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Lookup</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="kt">string</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// Failing to check a for an in-band error value can lead to bugs:
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nf">Parse</span><span class="p">(</span><span class="nf">Lookup</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span>  <span class="c1">// returns &#34;parse failure for value&#34; instead of &#34;no value for key&#34;
+引用。</p><p>所以需要将该测试文件定义在 <code>foo_test</code> 包中。使用了 <code>import . "foo"</code> 后，该测试文件内代码能直接调用 <code>foo</code> 里面的函数而不需要显式
+地写上包名。</p><p>但 <code>import .</code> 这个特性，建议只在这种场景下使用，因为它会影响代码的可读性。</p><h2 id=in-band-errors>In-Band Errors</h2><p>在 C 语言和类似的语言中，通常函数会返回像 <code>-1</code> 或 <code>null</code> 来表示错误或结果丢失:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Lookup returns the value for key or &#34;&#34; if there is no mapping for key.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>Lookup</span><span class=p>(</span><span class=nx>key</span> <span class=kt>string</span><span class=p>)</span> <span class=kt>string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Failing to check a for an in-band error value can lead to bugs:
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nf>Parse</span><span class=p>(</span><span class=nf>Lookup</span><span class=p>(</span><span class=nx>key</span><span class=p>))</span>  <span class=c1>// returns &#34;parse failure for value&#34; instead of &#34;no value for key&#34;
 </span></span></span></code></pre></div><p>Go 提供了更好的结局方案，就是支持返回多个值。一个函数应该返回一个额外的值来表示它的其他返回值是否有效。这个返回值可以是一个 error，也
-可以是一个布尔值。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Lookup returns the value for key or ok=false if there is no mapping for key.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="nf">Lookup</span><span class="p">(</span><span class="nx">key</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="nx">value</span> <span class="kt">string</span><span class="p">,</span> <span class="nx">ok</span> <span class="kt">bool</span><span class="p">)</span>
-</span></span></code></pre></div><p>这样可以防止调用者错误地使用结果：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nf">Parse</span><span class="p">(</span><span class="nf">Lookup</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span>  <span class="c1">// compile-time error
-</span></span></span></code></pre></div><p>并鼓励更健壮，可读性更好的代码:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">value</span><span class="p">,</span> <span class="nx">ok</span> <span class="o">:=</span> <span class="nf">Lookup</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">!</span><span class="nx">ok</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="k">return</span> <span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;no value for %q&#34;</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="nf">Parse</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span>
-</span></span></code></pre></div><h2 id="indent-error-flow">Indent Error Flow</h2>
-<p>优先处理 error，尽可能减少正常逻辑代码的缩进，这有利于提高代码的可读性，便于快速分辨出哪些还是正常逻辑代码，</p>
-<p>bad：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// error handling
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// normal code
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></div><p>good：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// error handling
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span> <span class="c1">// or continue, etc.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// normal code
-</span></span></span></code></pre></div><p>另一种常见的情况，如果我们需要用函数的返回值来初始化某个变量，应该把这个函数调用单独写在一行，例如：</p>
-<p>这是一个不好的代码风格，函数调用，初始化变量x，判断错误是否为空都在同一行，并增加了正常逻辑代码的缩进：</p>
-<p>如果 <code>if</code> 语句有一个初始化语句，例如：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">f</span><span class="p">();</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// error handling
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// use x
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></div><p>应该把函数调用写在单独的一行：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="nx">x</span><span class="p">,</span> <span class="nx">err</span> <span class="o">:=</span> <span class="nf">f</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">err</span> <span class="o">!=</span> <span class="kc">nil</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// error handling
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">return</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// use x
-</span></span></span></code></pre></div><h2 id="initialisms">Initialisms</h2>
-<p>单词的命名，如果是首字母缩写或缩略语的词（如 &ldquo;URL &ldquo;或 &ldquo;NATO&rdquo;）的，那么大小写要一致。例如，&ldquo;URL &ldquo;应该作为 &ldquo;URL &ldquo;或 &ldquo;url&rdquo;
-（如 &ldquo;urlPony&rdquo;，或 &ldquo;URLPony&rdquo;），而不是 &ldquo;Url&rdquo;。例如，<code>ServeHTTP</code> 而不是 <code>ServeHttp</code>。</p>
-<p>这条规则同样适用于 &ldquo;ID&rdquo;，当它是 identifier 的缩写的时候，所以应该是 &ldquo;appID&rdquo; 而不是 &ldquo;appId&rdquo;。</p>
-<h2 id="interfaces">Interfaces</h2>
-<p>Go 的接口一般属于使用这个接口类型的包，而不是实现这个接口的包。实现包返回具体的（通常是指针或结构）类型：这样，可以在不需要大量重构
-的情况下添加新的方法。</p>
-<p>不要为了 &ldquo;mock&rdquo; 在实现包定义接口，设计的 API 应该可以使用 public API 来测试。</p>
-<p>在使用接口之前，不要定义接口：如果没有一个实际的使用示例，很难看出接口是否有必要，更不用说接口应该包含哪些方法了。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">consumer</span>  <span class="c1">// consumer.go
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Thinger</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nf">Thing</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">Foo</span><span class="p">(</span><span class="nx">t</span> <span class="nx">Thinger</span><span class="p">)</span> <span class="kt">string</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">consumer</span> <span class="c1">// consumer_test.go
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">fakeThinger</span> <span class="kd">struct</span><span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="nx">fakeThinger</span><span class="p">)</span> <span class="nf">Thing</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="err">…</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nf">Foo</span><span class="p">(</span><span class="nx">fakeThinger</span><span class="p">{</span><span class="err">…</span><span class="p">})</span> <span class="o">==</span> <span class="s">&#34;x&#34;</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// DO NOT DO IT!!!
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">producer</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Thinger</span> <span class="kd">interface</span> <span class="p">{</span> <span class="nf">Thing</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">defaultThinger</span> <span class="kd">struct</span><span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="nx">defaultThinger</span><span class="p">)</span> <span class="nf">Thing</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewThinger</span><span class="p">()</span> <span class="nx">Thinger</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">defaultThinger</span><span class="p">{</span> <span class="err">…</span> <span class="p">}</span> <span class="p">}</span>
-</span></span></code></pre></div><p>相反，应该返回一个具体的类型，让 consumer 模拟 producer 实现。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">producer</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">type</span> <span class="nx">Thinger</span> <span class="kd">struct</span><span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">t</span> <span class="nx">Thinger</span><span class="p">)</span> <span class="nf">Thing</span><span class="p">()</span> <span class="kt">bool</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">NewThinger</span><span class="p">()</span> <span class="nx">Thinger</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">Thinger</span><span class="p">{</span> <span class="err">…</span> <span class="p">}</span> <span class="p">}</span>
-</span></span></code></pre></div><h2 id="line-length">Line Length</h2>
-<p>在 Golang 中，没有严格限制代码行长度，但是应该尽量避免一行内写过长的代码，以及将长代码进行断行。</p>
-<h2 id="mixed-caps">Mixed Caps</h2>
-<p><a href="https://golang.org/doc/effective_go.html#mixed-caps" target="_blank" rel="noopener noreffer">mixed-caps</a> Go 建议使用驼峰式命名，不建议使用下划线命名。</p>
-<h2 id="named-result-parameters">Named Result Parameters</h2>
-<p>如果给返回值参数命名，例如：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="nf">Parent1</span><span class="p">()</span> <span class="p">(</span><span class="nx">node</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="p">{}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="nf">Parent2</span><span class="p">()</span> <span class="p">(</span><span class="nx">node</span> <span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{}</span>
-</span></span></code></pre></div><p>但是会影响 godoc，建议使用：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="nf">Parent1</span><span class="p">()</span> <span class="o">*</span><span class="nx">Node</span> <span class="p">{}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">n</span> <span class="o">*</span><span class="nx">Node</span><span class="p">)</span> <span class="nf">Parent2</span><span class="p">()</span> <span class="p">(</span><span class="o">*</span><span class="nx">Node</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{}</span>
-</span></span></code></pre></div><p>另一方面，如果一个函数返回两个或三个相同类型的参数，或者如果一个返回结果的含义从上下文中看不清楚，这个时候就可以给返回值参数命名。</p>
-<p>不要为了避免在函数中声明一个变量而给返回值参数命名；这样做是以牺牲不必要的 API 的冗长性为代价，换取了一个小的实现简洁性。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Foo</span><span class="p">)</span> <span class="nf">Location</span><span class="p">()</span> <span class="p">(</span><span class="kt">float64</span><span class="p">,</span> <span class="kt">float64</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span>
-</span></span></code></pre></div><p>上面的代码没有下面的示例可读性好：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Location returns f&#39;s latitude and longitude.
-</span></span></span><span class="line"><span class="cl"><span class="c1">// Negative values mean south and west, respectively.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">func</span> <span class="p">(</span><span class="nx">f</span> <span class="o">*</span><span class="nx">Foo</span><span class="p">)</span> <span class="nf">Location</span><span class="p">()</span> <span class="p">(</span><span class="nx">lat</span><span class="p">,</span> <span class="nx">long</span> <span class="kt">float64</span><span class="p">,</span> <span class="nx">err</span> <span class="kt">error</span><span class="p">)</span>
-</span></span></code></pre></div><p>doc 的清晰度永远比在你的功能中保存一两行更重要。</p>
-<p>最后，在某些情况下，当你需要在 <code>defer</code> 函数中对返回值做一些事情的时候，给返回值命名是有必要的。</p>
-<h2 id="package-comments">Package Comments</h2>
-<p>与 godoc 提供的所有注释一样，包注释必须紧挨着 <code>package</code> 子句，不能出现空行。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Package math provides basic constants and mathematical functions.
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">math</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="cm">/*
-</span></span></span><span class="line"><span class="cl"><span class="cm">Package template implements data-driven templates for generating textual
-</span></span></span><span class="line"><span class="cl"><span class="cm">output such as HTML.
-</span></span></span><span class="line"><span class="cl"><span class="cm">....
-</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
-</span></span><span class="line"><span class="cl"><span class="kn">package</span> <span class="nx">template</span>
+可以是一个布尔值。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Lookup returns the value for key or ok=false if there is no mapping for key.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=nf>Lookup</span><span class=p>(</span><span class=nx>key</span> <span class=kt>string</span><span class=p>)</span> <span class=p>(</span><span class=nx>value</span> <span class=kt>string</span><span class=p>,</span> <span class=nx>ok</span> <span class=kt>bool</span><span class=p>)</span>
+</span></span></code></pre></div><p>这样可以防止调用者错误地使用结果：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=nf>Parse</span><span class=p>(</span><span class=nf>Lookup</span><span class=p>(</span><span class=nx>key</span><span class=p>))</span>  <span class=c1>// compile-time error
+</span></span></span></code></pre></div><p>并鼓励更健壮，可读性更好的代码:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=nx>value</span><span class=p>,</span> <span class=nx>ok</span> <span class=o>:=</span> <span class=nf>Lookup</span><span class=p>(</span><span class=nx>key</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>!</span><span class=nx>ok</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>fmt</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;no value for %q&#34;</span><span class=p>,</span> <span class=nx>key</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>return</span> <span class=nf>Parse</span><span class=p>(</span><span class=nx>value</span><span class=p>)</span>
+</span></span></code></pre></div><h2 id=indent-error-flow>Indent Error Flow</h2><p>优先处理 error，尽可能减少正常逻辑代码的缩进，这有利于提高代码的可读性，便于快速分辨出哪些还是正常逻辑代码，</p><p>bad：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// error handling
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// normal code
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></div><p>good：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// error handling
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>return</span> <span class=c1>// or continue, etc.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c1>// normal code
+</span></span></span></code></pre></div><p>另一种常见的情况，如果我们需要用函数的返回值来初始化某个变量，应该把这个函数调用单独写在一行，例如：</p><p>这是一个不好的代码风格，函数调用，初始化变量x，判断错误是否为空都在同一行，并增加了正常逻辑代码的缩进：</p><p>如果 <code>if</code> 语句有一个初始化语句，例如：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=k>if</span> <span class=nx>x</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>f</span><span class=p>();</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// error handling
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>return</span>
+</span></span><span class=line><span class=cl><span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// use x
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></div><p>应该把函数调用写在单独的一行：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=nx>x</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nf>f</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// error handling
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>return</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c1>// use x
+</span></span></span></code></pre></div><h2 id=initialisms>Initialisms</h2><p>单词的命名，如果是首字母缩写或缩略语的词（如 &ldquo;URL &ldquo;或 &ldquo;NATO&rdquo;）的，那么大小写要一致。例如，&ldquo;URL &ldquo;应该作为 &ldquo;URL &ldquo;或 &ldquo;url&rdquo;
+（如 &ldquo;urlPony&rdquo;，或 &ldquo;URLPony&rdquo;），而不是 &ldquo;Url&rdquo;。例如，<code>ServeHTTP</code> 而不是 <code>ServeHttp</code>。</p><p>这条规则同样适用于 &ldquo;ID&rdquo;，当它是 identifier 的缩写的时候，所以应该是 &ldquo;appID&rdquo; 而不是 &ldquo;appId&rdquo;。</p><h2 id=interfaces>Interfaces</h2><p>Go 的接口一般属于使用这个接口类型的包，而不是实现这个接口的包。实现包返回具体的（通常是指针或结构）类型：这样，可以在不需要大量重构
+的情况下添加新的方法。</p><p>不要为了 &ldquo;mock&rdquo; 在实现包定义接口，设计的 API 应该可以使用 public API 来测试。</p><p>在使用接口之前，不要定义接口：如果没有一个实际的使用示例，很难看出接口是否有必要，更不用说接口应该包含哪些方法了。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>consumer</span>  <span class=c1>// consumer.go
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Thinger</span> <span class=kd>interface</span> <span class=p>{</span> <span class=nf>Thing</span><span class=p>()</span> <span class=kt>bool</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>Foo</span><span class=p>(</span><span class=nx>t</span> <span class=nx>Thinger</span><span class=p>)</span> <span class=kt>string</span> <span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>consumer</span> <span class=c1>// consumer_test.go
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>fakeThinger</span> <span class=kd>struct</span><span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>t</span> <span class=nx>fakeThinger</span><span class=p>)</span> <span class=nf>Thing</span><span class=p>()</span> <span class=kt>bool</span> <span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=err>…</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=nf>Foo</span><span class=p>(</span><span class=nx>fakeThinger</span><span class=p>{</span><span class=err>…</span><span class=p>})</span> <span class=o>==</span> <span class=s>&#34;x&#34;</span> <span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// DO NOT DO IT!!!
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>producer</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Thinger</span> <span class=kd>interface</span> <span class=p>{</span> <span class=nf>Thing</span><span class=p>()</span> <span class=kt>bool</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>defaultThinger</span> <span class=kd>struct</span><span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>t</span> <span class=nx>defaultThinger</span><span class=p>)</span> <span class=nf>Thing</span><span class=p>()</span> <span class=kt>bool</span> <span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>NewThinger</span><span class=p>()</span> <span class=nx>Thinger</span> <span class=p>{</span> <span class=k>return</span> <span class=nx>defaultThinger</span><span class=p>{</span> <span class=err>…</span> <span class=p>}</span> <span class=p>}</span>
+</span></span></code></pre></div><p>相反，应该返回一个具体的类型，让 consumer 模拟 producer 实现。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>producer</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>type</span> <span class=nx>Thinger</span> <span class=kd>struct</span><span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>t</span> <span class=nx>Thinger</span><span class=p>)</span> <span class=nf>Thing</span><span class=p>()</span> <span class=kt>bool</span> <span class=p>{</span> <span class=err>…</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>NewThinger</span><span class=p>()</span> <span class=nx>Thinger</span> <span class=p>{</span> <span class=k>return</span> <span class=nx>Thinger</span><span class=p>{</span> <span class=err>…</span> <span class=p>}</span> <span class=p>}</span>
+</span></span></code></pre></div><h2 id=line-length>Line Length</h2><p>在 Golang 中，没有严格限制代码行长度，但是应该尽量避免一行内写过长的代码，以及将长代码进行断行。</p><h2 id=mixed-caps>Mixed Caps</h2><p><a href=https://golang.org/doc/effective_go.html#mixed-caps target=_blank rel="noopener noreffer">mixed-caps</a> Go 建议使用驼峰式命名，不建议使用下划线命名。</p><h2 id=named-result-parameters>Named Result Parameters</h2><p>如果给返回值参数命名，例如：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>n</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=nf>Parent1</span><span class=p>()</span> <span class=p>(</span><span class=nx>node</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>n</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=nf>Parent2</span><span class=p>()</span> <span class=p>(</span><span class=nx>node</span> <span class=o>*</span><span class=nx>Node</span><span class=p>,</span> <span class=nx>err</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{}</span>
+</span></span></code></pre></div><p>但是会影响 godoc，建议使用：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>n</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=nf>Parent1</span><span class=p>()</span> <span class=o>*</span><span class=nx>Node</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>n</span> <span class=o>*</span><span class=nx>Node</span><span class=p>)</span> <span class=nf>Parent2</span><span class=p>()</span> <span class=p>(</span><span class=o>*</span><span class=nx>Node</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{}</span>
+</span></span></code></pre></div><p>另一方面，如果一个函数返回两个或三个相同类型的参数，或者如果一个返回结果的含义从上下文中看不清楚，这个时候就可以给返回值参数命名。</p><p>不要为了避免在函数中声明一个变量而给返回值参数命名；这样做是以牺牲不必要的 API 的冗长性为代价，换取了一个小的实现简洁性。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>f</span> <span class=o>*</span><span class=nx>Foo</span><span class=p>)</span> <span class=nf>Location</span><span class=p>()</span> <span class=p>(</span><span class=kt>float64</span><span class=p>,</span> <span class=kt>float64</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span>
+</span></span></code></pre></div><p>上面的代码没有下面的示例可读性好：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Location returns f&#39;s latitude and longitude.
+</span></span></span><span class=line><span class=cl><span class=c1>// Negative values mean south and west, respectively.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>f</span> <span class=o>*</span><span class=nx>Foo</span><span class=p>)</span> <span class=nf>Location</span><span class=p>()</span> <span class=p>(</span><span class=nx>lat</span><span class=p>,</span> <span class=nx>long</span> <span class=kt>float64</span><span class=p>,</span> <span class=nx>err</span> <span class=kt>error</span><span class=p>)</span>
+</span></span></code></pre></div><p>doc 的清晰度永远比在你的功能中保存一两行更重要。</p><p>最后，在某些情况下，当你需要在 <code>defer</code> 函数中对返回值做一些事情的时候，给返回值命名是有必要的。</p><h2 id=package-comments>Package Comments</h2><p>与 godoc 提供的所有注释一样，包注释必须紧挨着 <code>package</code> 子句，不能出现空行。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Package math provides basic constants and mathematical functions.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>math</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=cm>/*
+</span></span></span><span class=line><span class=cl><span class=cm>Package template implements data-driven templates for generating textual
+</span></span></span><span class=line><span class=cl><span class=cm>output such as HTML.
+</span></span></span><span class=line><span class=cl><span class=cm>....
+</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
+</span></span><span class=line><span class=cl><span class=kn>package</span> <span class=nx>template</span>
 </span></span></code></pre></div><p>对于 <code>package main</code> 的注释，注释可以放在二进制名之后(如果在前面，可以大写)，例如，对于 <code>seedgen</code> 目录中的一
-个 <code>package main</code>，可以这样写:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Binary seedgen ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
-</span></span></code></pre></div><p>或者</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Command seedgen ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
-</span></span></code></pre></div><p>或者</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Program seedgen ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
-</span></span></code></pre></div><p>或者</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// The seedgen command ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
-</span></span></code></pre></div><p>或者</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// The seedgen program ...
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
-</span></span></code></pre></div><p>或者</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Seedgen ..
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kn">package</span> <span class="nx">main</span>
+个 <code>package main</code>，可以这样写:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Binary seedgen ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>main</span>
+</span></span></code></pre></div><p>或者</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Command seedgen ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>main</span>
+</span></span></code></pre></div><p>或者</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Program seedgen ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>main</span>
+</span></span></code></pre></div><p>或者</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// The seedgen command ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>main</span>
+</span></span></code></pre></div><p>或者</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// The seedgen program ...
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>main</span>
+</span></span></code></pre></div><p>或者</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=c1>// Seedgen ..
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kn>package</span> <span class=nx>main</span>
 </span></span></code></pre></div><p>注意，以小写单词开始的句子包注释是不接受得，因为这些都是公开可见的，应该用正确的英文书写，包括将句子的第一个单词大写。当二进制名称
-是第一个单词时，即使它与命令行调用的拼写不完全一致，也需要大写。</p>
-<p>有关注释的更多信息，可以参考 <a href="https://golang.org/doc/effective_go.html#commentary" target="_blank" rel="noopener noreffer">commentary</a></p>
-<h2 id="package-names">Package Names</h2>
-<p>包名应该是全小写单词，不要使用下划线；包名应该尽可能简短。</p>
-<h2 id="pass-values">Pass Values</h2>
-<p>不要为了节省几个字节而传递指针作为函数参数。如果一个函数在整个过程中只把参数 <code>x</code> 作为 <code>*x</code>，那么这个参数不应该是一个指针。</p>
-<p>除非要传递的是一个庞大的结构体或者可预知在将来会变得非常庞大的结构体，这个时候可以使用指针传递。</p>
-<h2 id="receiver-names">Receiver Names</h2>
-<p>结构体函数中，接收器的命名不应该采用 &ldquo;me&rdquo;，&ldquo;this&rdquo;，&ldquo;self&rdquo; 等通用的名字，而应该采用简短的 1 或 2 个字符（例如 &ldquo;Client&rdquo; 的接收器命名
-为 &ldquo;c&rdquo; 或 &ldquo;cl&rdquo;）并且能反映出结构体名的命名风格。</p>
-<p>这个名字不需要像方法参数那样具有描述性，因为它的作用是显而易见的。它应该很简短，因为它可能会出现在该类型的每个方法的每一行中；并且
-要保持一致：如果在一个方法中称接收方为 &ldquo;c&rdquo;，不要在另一个方法中称它为 &ldquo;cl&rdquo;。</p>
-<h2 id="receiver-type">Receiver Type</h2>
-<p>接收器的类型应该选择值还是指针？</p>
-<p>如果有疑问，那就使用指针。</p>
-<p>但有时使用值接收器也是有意义的，通常是为了效率，例如对于一个小的不变的结构体或基本类型的值，使用值接收器。</p>
-<p>一些有用的建议：</p>
-<ul>
-<li>如果接收器是一个 <code>map</code>, <code>chan</code>, <code>func</code>, 不要使用指针，因为它们本身就是引用类型。</li>
-<li>如果接收器是 <code>slice</code>，而这个方法不会对 <code>slice</code> 进行重新切片或者重新分配空间，不要使用指针。</li>
-<li>如果方法需要修改接收器，那么必须使用指针。</li>
-<li>如果接收器是一个结构体，并且包含了 <code>sync.Mutex</code> 或者类似的用于同步的成员。那么必须使用指针，避免成员拷贝。</li>
-<li>如果接收器类型是一个很大的结构体，或者是一个大数组，建议使用指针来提高性能。</li>
-<li>如果接收器是结构体，数组或 <code>slice</code>，并且其中的元素是指针，并且方法内部可能修改这些元素，那么建议使用指针。这能使方法的语义更加明确。</li>
-<li>如果接收器是小型结构体，小数组，并且不需要修改里面的元素，里面的元素又是一些基础类型，建议使用值。</li>
-</ul>
-<h2 id="useful-test-failures">Useful Test Failures</h2>
-<p>测试失败时，应该提供有用的信息（输入是什么，实际得到了什么，以及预期的结果）来说明出现了什么错误。
-一个典型的示例：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">if</span> <span class="nx">got</span> <span class="o">!=</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">want</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">	<span class="nx">t</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;Foo(%q) = %d; want %d&#34;</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">in</span><span class="p">,</span> <span class="nx">got</span><span class="p">,</span> <span class="nx">tt</span><span class="p">.</span><span class="nx">want</span><span class="p">)</span> <span class="c1">// or Fatalf, if test can&#39;t test anything more past this point
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></div><p>注意，这里的顺序是 <code>实际 != 预期</code>，输出信息也应该使用这个顺序。有些测试框架鼓励倒着写。而 Go 并不是。</p>
-<p>如果测试用例比较多，可以写一个 <a href="https://github.com/golang/go/wiki/TableDrivenTests" target="_blank" rel="noopener noreffer">table-driven test</a> 。</p>
-<p>另一个消除失败测试的常用技巧，用不同的 TestFoo 函数包装每个调用者。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestSingleValue</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span> <span class="p">{</span> <span class="nf">testHelper</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="mi">80</span><span class="p">})</span> <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="kd">func</span> <span class="nf">TestNoValues</span><span class="p">(</span><span class="nx">t</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">T</span><span class="p">)</span>    <span class="p">{</span> <span class="nf">testHelper</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{})</span> <span class="p">}</span>
-</span></span></code></pre></div><p>总之，任何情况下，你都应该给将来调试你的代码的人一个有用的错误信息。</p>
-<h2 id="variable-names">Variable Names</h2>
-<p>Go 中的变量名是简短的，局部变量更是如此。例如用 <code>c</code> 来替代 <code>lineCount</code>。用 <code>i</code> 来代替 <code>sliceIndex</code>。</p>
-<p>基本规则：<strong>名字离它的声明越远，描述性越强</strong>。例如方法的接收器，常见的变量，如循环索引，可以是一个字母 &ldquo;i&rdquo;。但是特殊的变量和全局变
-量可以使用有更多的描述性的长命名。</p></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-11-14&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/7610456fcf511f1605e3c699ab1e7de381363913" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 7610456fcf511f1605e3c699ab1e7de381363913: add external links">
-                                    <i class="fas fa-hashtag fa-fw"></i>7610456</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2020-03-11-go-code-review-comments/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav"><a href="/posts/2020-02-28-go-profile/" class="prev" rel="prev" title="Go 如何做性能分析"><i class="fas fa-angle-left fa-fw"></i>Go 如何做性能分析</a>
-            <a href="/posts/2020-04-09-go-remote-debug/" class="next" rel="next" title="Golang Remote Debug with Delve">Golang Remote Debug with Delve<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+是第一个单词时，即使它与命令行调用的拼写不完全一致，也需要大写。</p><p>有关注释的更多信息，可以参考 <a href=https://golang.org/doc/effective_go.html#commentary target=_blank rel="noopener noreffer">commentary</a></p><h2 id=package-names>Package Names</h2><p>包名应该是全小写单词，不要使用下划线；包名应该尽可能简短。</p><h2 id=pass-values>Pass Values</h2><p>不要为了节省几个字节而传递指针作为函数参数。如果一个函数在整个过程中只把参数 <code>x</code> 作为 <code>*x</code>，那么这个参数不应该是一个指针。</p><p>除非要传递的是一个庞大的结构体或者可预知在将来会变得非常庞大的结构体，这个时候可以使用指针传递。</p><h2 id=receiver-names>Receiver Names</h2><p>结构体函数中，接收器的命名不应该采用 &ldquo;me&rdquo;，&ldquo;this&rdquo;，&ldquo;self&rdquo; 等通用的名字，而应该采用简短的 1 或 2 个字符（例如 &ldquo;Client&rdquo; 的接收器命名
+为 &ldquo;c&rdquo; 或 &ldquo;cl&rdquo;）并且能反映出结构体名的命名风格。</p><p>这个名字不需要像方法参数那样具有描述性，因为它的作用是显而易见的。它应该很简短，因为它可能会出现在该类型的每个方法的每一行中；并且
+要保持一致：如果在一个方法中称接收方为 &ldquo;c&rdquo;，不要在另一个方法中称它为 &ldquo;cl&rdquo;。</p><h2 id=receiver-type>Receiver Type</h2><p>接收器的类型应该选择值还是指针？</p><p>如果有疑问，那就使用指针。</p><p>但有时使用值接收器也是有意义的，通常是为了效率，例如对于一个小的不变的结构体或基本类型的值，使用值接收器。</p><p>一些有用的建议：</p><ul><li>如果接收器是一个 <code>map</code>, <code>chan</code>, <code>func</code>, 不要使用指针，因为它们本身就是引用类型。</li><li>如果接收器是 <code>slice</code>，而这个方法不会对 <code>slice</code> 进行重新切片或者重新分配空间，不要使用指针。</li><li>如果方法需要修改接收器，那么必须使用指针。</li><li>如果接收器是一个结构体，并且包含了 <code>sync.Mutex</code> 或者类似的用于同步的成员。那么必须使用指针，避免成员拷贝。</li><li>如果接收器类型是一个很大的结构体，或者是一个大数组，建议使用指针来提高性能。</li><li>如果接收器是结构体，数组或 <code>slice</code>，并且其中的元素是指针，并且方法内部可能修改这些元素，那么建议使用指针。这能使方法的语义更加明确。</li><li>如果接收器是小型结构体，小数组，并且不需要修改里面的元素，里面的元素又是一些基础类型，建议使用值。</li></ul><h2 id=useful-test-failures>Useful Test Failures</h2><p>测试失败时，应该提供有用的信息（输入是什么，实际得到了什么，以及预期的结果）来说明出现了什么错误。
+一个典型的示例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=k>if</span> <span class=nx>got</span> <span class=o>!=</span> <span class=nx>tt</span><span class=p>.</span><span class=nx>want</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>t</span><span class=p>.</span><span class=nf>Errorf</span><span class=p>(</span><span class=s>&#34;Foo(%q) = %d; want %d&#34;</span><span class=p>,</span> <span class=nx>tt</span><span class=p>.</span><span class=nx>in</span><span class=p>,</span> <span class=nx>got</span><span class=p>,</span> <span class=nx>tt</span><span class=p>.</span><span class=nx>want</span><span class=p>)</span> <span class=c1>// or Fatalf, if test can&#39;t test anything more past this point
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></div><p>注意，这里的顺序是 <code>实际 != 预期</code>，输出信息也应该使用这个顺序。有些测试框架鼓励倒着写。而 Go 并不是。</p><p>如果测试用例比较多，可以写一个 <a href=https://github.com/golang/go/wiki/TableDrivenTests target=_blank rel="noopener noreffer">table-driven test</a> 。</p><p>另一个消除失败测试的常用技巧，用不同的 TestFoo 函数包装每个调用者。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kd>func</span> <span class=nf>TestSingleValue</span><span class=p>(</span><span class=nx>t</span> <span class=o>*</span><span class=nx>testing</span><span class=p>.</span><span class=nx>T</span><span class=p>)</span> <span class=p>{</span> <span class=nf>testHelper</span><span class=p>(</span><span class=nx>t</span><span class=p>,</span> <span class=p>[]</span><span class=kt>int</span><span class=p>{</span><span class=mi>80</span><span class=p>})</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>TestNoValues</span><span class=p>(</span><span class=nx>t</span> <span class=o>*</span><span class=nx>testing</span><span class=p>.</span><span class=nx>T</span><span class=p>)</span>    <span class=p>{</span> <span class=nf>testHelper</span><span class=p>(</span><span class=nx>t</span><span class=p>,</span> <span class=p>[]</span><span class=kt>int</span><span class=p>{})</span> <span class=p>}</span>
+</span></span></code></pre></div><p>总之，任何情况下，你都应该给将来调试你的代码的人一个有用的错误信息。</p><h2 id=variable-names>Variable Names</h2><p>Go 中的变量名是简短的，局部变量更是如此。例如用 <code>c</code> 来替代 <code>lineCount</code>。用 <code>i</code> 来代替 <code>sliceIndex</code>。</p><p>基本规则：<strong>名字离它的声明越远，描述性越强</strong>。例如方法的接收器，常见的变量，如循环索引，可以是一个字母 &ldquo;i&rdquo;。但是特殊的变量和全局变
+量可以使用有更多的描述性的长命名。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-11-14&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/7610456fcf511f1605e3c699ab1e7de381363913 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 7610456fcf511f1605e3c699ab1e7de381363913: add external links">
+<i class="fas fa-hashtag fa-fw"></i>7610456</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2020-03-11-go-code-review-comments/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2020-02-28-go-profile/ class=prev rel=prev title="Go 如何做性能分析"><i class="fas fa-angle-left fa-fw"></i>Go 如何做性能分析</a>
+<a href=/posts/2020-04-09-go-remote-debug/ class=next rel=next title="Golang Remote Debug with Delve">Golang Remote Debug with Delve<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

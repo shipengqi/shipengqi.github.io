@@ -1,56 +1,7 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
-    <channel>
-        <title>Javascript - 分类 - Echo</title>
-        <link>http://example.org/categories/javascript/</link>
-        <description>Javascript - 分类 - Echo</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor>
-            <webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Tue, 03 Oct 2017 15:23:07 &#43;0000</lastBuildDate><atom:link href="http://example.org/categories/javascript/" rel="self" type="application/rss+xml" /><item>
-    <title>ESlint 入门</title>
-    <link>http://example.org/posts/2017-10-13-eslint-introduction/</link>
-    <pubDate>Tue, 03 Oct 2017 15:23:07 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-10-13-eslint-introduction/</guid>
-    <description><![CDATA[<p>ESLint 是 JavaScript 的代码检查工具，使用它可以避免低级错误和统一代码的风格。ESlint 被设计为是完全可配置的，这意味着你可以关闭每一个规则，只
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Javascript - 分类 - Echo</title><link>http://example.org/categories/javascript/</link><description>Javascript - 分类 - Echo</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>pooky.shipengqi@gmail.com (shipengqi)</managingEditor><webMaster>pooky.shipengqi@gmail.com (shipengqi)</webMaster><lastBuildDate>Tue, 03 Oct 2017 15:23:07 +0000</lastBuildDate><atom:link href="http://example.org/categories/javascript/" rel="self" type="application/rss+xml"/><item><title>ESlint 入门</title><link>http://example.org/posts/2017-10-13-eslint-introduction/</link><pubDate>Tue, 03 Oct 2017 15:23:07 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-10-13-eslint-introduction/</guid><description><![CDATA[<p>ESLint 是 JavaScript 的代码检查工具，使用它可以避免低级错误和统一代码的风格。ESlint 被设计为是完全可配置的，这意味着你可以关闭每一个规则，只
 运行基本语法验证，或混合和匹配绑定的规则和自定义规则，以让 ESLint 更适合于你的项目。</p>
-<p><a href="http://eslint.cn/" target="_blank" rel="noopener noreffer">ESLint 中文文档</a> 。</p>]]></description>
-</item><item>
-    <title>Javascript 原型链</title>
-    <link>http://example.org/posts/2017-06-09-js-prototype-chain/</link>
-    <pubDate>Fri, 09 Jun 2017 22:21:23 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-06-09-js-prototype-chain/</guid>
-    <description><![CDATA[<p>每一个 Javascript 对象(null 除外)都和另一个对象相关联，即原型，每一个对象都从原型继承属性。</p>]]></description>
-</item><item>
-    <title>Javascript 继承</title>
-    <link>http://example.org/posts/2017-05-29-js-extend/</link>
-    <pubDate>Mon, 29 May 2017 21:25:05 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-05-29-js-extend/</guid>
-    <description><![CDATA[<p>Javascript 实现继承的 5 种方式。</p>]]></description>
-</item><item>
-    <title>JavaScript 中的 apply、call、bind 方法</title>
-    <link>http://example.org/posts/2017-05-20-js-apply-call-bind/</link>
-    <pubDate>Sat, 20 May 2017 19:54:43 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-05-20-js-apply-call-bind/</guid>
-    <description><![CDATA[<p>JavaScript 中的 <code>apply</code>、<code>call</code>、<code>bind</code> 方法都可以改变函数的 <code>this</code> 的作用域。</p>]]></description>
-</item><item>
-    <title>Javascript 中的类方法、构造方法、原型方法</title>
-    <link>http://example.org/posts/2017-03-29-js-methods/</link>
-    <pubDate>Wed, 29 Mar 2017 23:16:13 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-03-29-js-methods/</guid>
-    <description><![CDATA[<p>javascript 中的类方法、构造方法、原型方法的对比</p>]]></description>
-</item><item>
-    <title>JavaScript 的闭包</title>
-    <link>http://example.org/posts/2017-03-19-js-closure/</link>
-    <pubDate>Sun, 19 Mar 2017 23:26:21 &#43;0000</pubDate>
-    <author>作者</author>
-    <guid>http://example.org/posts/2017-03-19-js-closure/</guid>
-    <description><![CDATA[<p>JavaScript 的闭包有两个用途：</p>
+<p><a href="http://eslint.cn/" target="_blank" rel="noopener noreffer">ESLint 中文文档</a> 。</p>]]></description></item><item><title>Javascript 原型链</title><link>http://example.org/posts/2017-06-09-js-prototype-chain/</link><pubDate>Fri, 09 Jun 2017 22:21:23 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-06-09-js-prototype-chain/</guid><description>&lt;p>每一个 Javascript 对象(null 除外)都和另一个对象相关联，即原型，每一个对象都从原型继承属性。&lt;/p></description></item><item><title>Javascript 继承</title><link>http://example.org/posts/2017-05-29-js-extend/</link><pubDate>Mon, 29 May 2017 21:25:05 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-05-29-js-extend/</guid><description>&lt;p>Javascript 实现继承的 5 种方式。&lt;/p></description></item><item><title>JavaScript 中的 apply、call、bind 方法</title><link>http://example.org/posts/2017-05-20-js-apply-call-bind/</link><pubDate>Sat, 20 May 2017 19:54:43 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-05-20-js-apply-call-bind/</guid><description><![CDATA[<p>JavaScript 中的 <code>apply</code>、<code>call</code>、<code>bind</code> 方法都可以改变函数的 <code>this</code> 的作用域。</p>]]></description></item><item><title>Javascript 中的类方法、构造方法、原型方法</title><link>http://example.org/posts/2017-03-29-js-methods/</link><pubDate>Wed, 29 Mar 2017 23:16:13 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-03-29-js-methods/</guid><description>&lt;p>javascript 中的类方法、构造方法、原型方法的对比&lt;/p></description></item><item><title>JavaScript 的闭包</title><link>http://example.org/posts/2017-03-19-js-closure/</link><pubDate>Sun, 19 Mar 2017 23:26:21 +0000</pubDate><author>作者</author><guid>http://example.org/posts/2017-03-19-js-closure/</guid><description><![CDATA[<p>JavaScript 的闭包有两个用途：</p>
 <ol>
 <li>访问函数内部的变量。</li>
 <li>让变量的值在作用域内保持不变。</li>
-</ol>]]></description>
-</item></channel>
-</rss>
+</ol>]]></description></item></channel></rss>

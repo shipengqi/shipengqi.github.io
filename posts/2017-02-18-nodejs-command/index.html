@@ -1,606 +1,326 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="robots" content="noodp" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-        <title>Node.js 命令行实现 - Echo</title><meta name="Description" content=""><meta property="og:title" content="Node.js 命令行实现" />
-<meta property="og:description" content="使用 Node.js 实现命令行。" />
-<meta property="og:type" content="article" />
-<meta property="og:url" content="http://example.org/posts/2017-02-18-nodejs-command/" /><meta property="og:image" content="http://example.org/logo.png"/><meta property="article:section" content="posts" />
-<meta property="article:published_time" content="2017-02-18T20:27:28+00:00" />
-<meta property="article:modified_time" content="2021-03-04T12:13:55+08:00" />
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:image" content="http://example.org/logo.png"/>
-
-<meta name="twitter:title" content="Node.js 命令行实现"/>
-<meta name="twitter:description" content="使用 Node.js 实现命令行。"/>
-<meta name="application-name" content="Echo">
-<meta name="apple-mobile-web-app-title" content="Echo"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://example.org/posts/2017-02-18-nodejs-command/" /><link rel="next" href="http://example.org/posts/2017-03-19-js-closure/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "BlogPosting",
-        "headline": "Node.js 命令行实现",
-        "inLanguage": "zh-CN",
-        "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": "http:\/\/example.org\/posts\/2017-02-18-nodejs-command\/"
-        },"genre": "posts","wordcount":  2548 ,
-        "url": "http:\/\/example.org\/posts\/2017-02-18-nodejs-command\/","datePublished": "2017-02-18T20:27:28+00:00","dateModified": "2021-03-04T12:13:55+08:00","publisher": {
-            "@type": "Organization",
-            "name": "shipengqi"},"author": {
-                "@type": "Person",
-                "name": "shipengqi"
-            },"description": ""
-    }
-    </script></head>
-    <body header-desktop="fixed" header-mobile="auto"><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('auto' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : 'auto' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
-
-        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
-    <div class="header-wrapper">
-        <div class="header-title">
-            <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-        </div>
-        <div class="menu">
-            <div class="menu-inner"><a class="menu-item" href="/posts/"> Posts </a><a class="menu-item" href="/categories/"> Categories </a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" rel="noopener noreffer" target="_blank"> Go Learning </a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i>  </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-desktop">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                    <i class="fas fa-adjust fa-fw"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-</header><header class="mobile" id="header-mobile">
-    <div class="header-container">
-        <div class="header-wrapper">
-            <div class="header-title">
-                <a href="/" title="Echo"><span class="header-title-pre"><img src='/favicon-32x32.png' style='vertical-align: sub;margin-right: 8px;'></span>Echo</a>
-            </div>
-            <div class="menu-toggle" id="menu-toggle-mobile">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="menu" id="menu-mobile"><div class="search-wrapper">
-                    <div class="search mobile" id="search-mobile">
-                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
-                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
-                            <i class="fas fa-search fa-fw"></i>
-                        </a>
-                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
-                            <i class="fas fa-times-circle fa-fw"></i>
-                        </a>
-                        <span class="search-button search-loading" id="search-loading-mobile">
-                            <i class="fas fa-spinner fa-fw fa-spin"></i>
-                        </span>
-                    </div>
-                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
-                        取消
-                    </a>
-                </div><a class="menu-item" href="/posts/" title="">Posts</a><a class="menu-item" href="/categories/" title="">Categories</a><a class="menu-item" href="https://shipengqi.github.io/golang-learn" title="" rel="noopener noreffer" target="_blank">Go Learning</a><a class="menu-item" href="https://github.com/shipengqi/shipengqi.github.io" title="GitHub" rel="noopener noreffer" target="_blank"><i class='fab fa-github fa-fw'></i></a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
-                <i class="fas fa-adjust fa-fw"></i>
-            </a></div>
-    </div>
-</header>
-<div class="search-dropdown desktop">
-    <div id="search-dropdown-desktop"></div>
-</div>
-<div class="search-dropdown mobile">
-    <div id="search-dropdown-mobile"></div>
-</div>
-<main class="main">
-                <div class="container"><div class="toc" id="toc-auto">
-            <h2 class="toc-title">目录</h2>
-            <div class="toc-content" id="toc-content-auto"></div>
-        </div><article class="page single"><h1 class="single-title animated flipInX">Node.js 命令行实现</h1><div class="post-meta">
-            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class="post-category">收录于 <a href="/categories/node.js/"><i class="far fa-folder fa-fw"></i>Node.js</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2017-02-18">2017-02-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2548 字&nbsp;
-                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div>
-        </div><div class="details toc" id="toc-static"  kept="">
-                <div class="details-summary toc-title">
-                    <span>目录</span>
-                    <span><i class="details-icon fas fa-angle-right"></i></span>
-                </div>
-                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
-  <ul>
-    <li><a href="#命令行参数处理">命令行参数处理</a>
-      <ul>
-        <li><a href="#yargs">yargs</a></li>
-        <li><a href="#commander">commander</a></li>
-        <li><a href="#argparse">argparse</a></li>
-      </ul>
-    </li>
-    <li><a href="#shelljs">shell.js</a>
-      <ul>
-        <li><a href="#安装">安装</a></li>
-        <li><a href="#使用">使用</a></li>
-        <li><a href="#exec">exec</a></li>
-      </ul>
-    </li>
-    <li><a href="#命令行交互">命令行交互</a></li>
-    <li><a href="#隐式调用-node-程序">隐式调用 node 程序</a></li>
-  </ul>
-</nav></div>
-            </div><div class="content" id="content"><p>使用 Node.js 实现命令行。</p>
-<h2 id="命令行参数处理">命令行参数处理</h2>
-<h3 id="yargs">yargs</h3>
-<h4 id="简单模式">简单模式</h4>
-<p>只需要引入 yargs，就能读取命令行参数，不需要写任何的配置</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env node
-</span></span></span><span class="line"><span class="cl"><span class="ch"></span><span class="kd">var</span> <span class="nx">argv</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">).</span><span class="nx">argv</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;hello &#39;</span><span class="p">,</span> <span class="nx">argv</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ hello --name<span class="o">=</span>tom
-</span></span><span class="line"><span class="cl">hello tom
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">$ hello --name tom
-</span></span><span class="line"><span class="cl">hello tom
-</span></span></code></pre></div><p>简单模式还能读取短变量如 <code>-x 4</code> 相当于 <code>argv.x = 4</code></p>
-<p>简单模式还能读取布尔类型 <code>-s</code> 相当于 <code>argv.s = true</code></p>
-<p>简单模式还能读取非 <code>-</code> 开始的变量，这种类型的变量保存在 <code>argv._</code> 数组里面</p>
-<h4 id="count-统计变量出现的次数">count 统计变量出现的次数</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">argv</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">count</span><span class="p">(</span><span class="s1">&#39;num&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">alias</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;num&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">argv</span><span class="p">;</span>
-</span></span></code></pre></div><p>统计 <code>num</code> 参数出现的次数，缩写 <code>-n</code> 也会统计进去</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">node count.js -n
-</span></span><span class="line"><span class="cl">node count.js -nn
-</span></span><span class="line"><span class="cl">node count.js -n --num
-</span></span></code></pre></div><h4 id="demand-default-describe">demand default describe</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">argv</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">demand</span><span class="p">([</span><span class="s1">&#39;n&#39;</span><span class="p">])</span> <span class="c1">//是否必选
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">.</span><span class="k">default</span><span class="p">({</span><span class="nx">n</span><span class="o">:</span> <span class="s1">&#39;tom&#39;</span><span class="p">})</span> <span class="c1">//默认值
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">.</span><span class="nx">describe</span><span class="p">({</span><span class="nx">n</span><span class="o">:</span> <span class="s1">&#39;your name&#39;</span><span class="p">})</span> <span class="c1">//提示
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="p">.</span><span class="nx">argv</span><span class="p">;</span>
-</span></span></code></pre></div><p><code>n</code> 参数不可省略，默认值为 <code>tom</code>，并给出一行提示</p>
-<h4 id="options-将所有配置写进一个对象">options 将所有配置写进一个对象</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">argv</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">alias</span> <span class="o">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">demand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="s1">&#39;tom&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">describe</span><span class="o">:</span> <span class="s1">&#39;your name&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;string&#39;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">})</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">argv</span><span class="p">;</span>
-</span></span></code></pre></div><h4 id="boolean-方法指定参数返回布尔值">boolean 方法指定参数返回布尔值</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">argv</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="kr">boolean</span><span class="p">([</span><span class="s1">&#39;l&#39;</span><span class="p">])</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">argv</span><span class="p">;</span>
-</span></span></code></pre></div><h4 id="帮助信息">帮助信息</h4>
-<ul>
-<li>usage：用法格式</li>
-<li>example：提供例子</li>
-<li>help：显示帮助信息</li>
-<li>epilog：出现在帮助信息的结尾</li>
-</ul>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">argv</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">alias</span> <span class="o">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">demand</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="s1">&#39;tom&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">describe</span><span class="o">:</span> <span class="s1">&#39;your name&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;string&#39;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">})</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">usage</span><span class="p">(</span><span class="s1">&#39;Usage: hello [options]&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">example</span><span class="p">(</span><span class="s1">&#39;hello -n tom&#39;</span><span class="p">,</span> <span class="s1">&#39;say hello to Tom&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">help</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">alias</span><span class="p">(</span><span class="s1">&#39;h&#39;</span><span class="p">,</span> <span class="s1">&#39;help&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">epilog</span><span class="p">(</span><span class="s1">&#39;epilog 2017&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">argv</span><span class="p">;</span>
-</span></span></code></pre></div><p>结果</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ hello -h
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Usage: hello <span class="o">[</span>options<span class="o">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Options:
-</span></span><span class="line"><span class="cl">  -f, --name  your name <span class="o">[</span>string<span class="o">]</span> <span class="o">[</span>required<span class="o">]</span> <span class="o">[</span>default: <span class="s2">&#34;tom&#34;</span><span class="o">]</span>
-</span></span><span class="line"><span class="cl">  -h, --help  Show <span class="nb">help</span> <span class="o">[</span>boolean<span class="o">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Examples:
-</span></span><span class="line"><span class="cl">  hello -n tom  say hello to Tom
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">epilog <span class="m">2017</span>
-</span></span></code></pre></div><h4 id="设置子命令-command">设置子命令 <code>command()</code></h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="p">[</span><span class="nx">builder</span><span class="p">],</span> <span class="p">[</span><span class="nx">handler</span><span class="p">])</span>
-</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="nx">module</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="nx">cmd</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="p">[</span><span class="nx">module</span><span class="p">])</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">//.command(cmd, desc, [builder], [handler])
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">yargs</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">command</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">    <span class="s1">&#39;get&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="s1">&#39;get incident&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="p">(</span><span class="nx">yargs</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="k">return</span> <span class="nx">yargs</span><span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;u&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">alias</span><span class="o">:</span> <span class="s1">&#39;url&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">describe</span><span class="o">:</span> <span class="s1">&#39;the url get incident&#39;</span>
-</span></span><span class="line"><span class="cl">      <span class="p">})</span>
-</span></span><span class="line"><span class="cl">    <span class="p">},</span>
-</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="p">(</span><span class="nx">argv</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">argv</span><span class="p">.</span><span class="nx">url</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">  <span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">help</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">argv</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">//.command(module) test.js
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">exports</span><span class="p">.</span><span class="nx">command</span> <span class="o">=</span> <span class="s1">&#39;get&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">describe</span> <span class="o">=</span> <span class="s1">&#39;get incident&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">builder</span> <span class="o">=</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="s1">&#39;tom&#39;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">exports</span><span class="p">.</span><span class="nx">handler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">argv</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="c1">//console.log(argv)
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">yargs</span><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;drafts/test&#39;</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">help</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">argv</span>
-</span></span></code></pre></div><h4 id="commanddir">commandDir</h4>
-<p>如果有大量的命令都使用上面的 <code>command(module)</code> 来开发的话，这些模块都有相同的结构，yargs 提供了 <code>commandDir</code> 接口,简化这些命令的引入过
-程，把这个过程自动化.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;yargs&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">commandDir</span><span class="p">(</span><span class="s1">&#39;commands&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">demand</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">help</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">locale</span><span class="p">(</span><span class="s1">&#39;en&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">showHelpOnFail</span><span class="p">(</span><span class="kc">true</span><span class="p">,</span> <span class="s1">&#39;Specify --help for available options&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">  <span class="p">.</span><span class="nx">argv</span>
-</span></span></code></pre></div><blockquote>
-<p><code>commandDir</code> 默认加载目录下第一级的文件，递归加载: <code>commandDir('pit', {recurse: true})</code></p>
-</blockquote>
-<h3 id="commander">commander</h3>
-<p><code>commander</code> 是从 Ruby 下同名项目移植过来的，<a href="http://tj.github.io/commander.js/" target="_blank" rel="noopener noreffer">官方文档</a> 。</p>
-<h4 id="commander-特性">commander 特性</h4>
-<ul>
-<li>自记录代码</li>
-<li>自动生成 help</li>
-<li>合并短参数（“ABC”==“-A-B-C”）</li>
-<li>默认选项</li>
-<li>强制选项​​</li>
-<li>命令解析</li>
-<li>提示符</li>
-</ul>
-<h4 id="example">example</h4>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="err">\\</span><span class="nx">example</span> <span class="nx">test</span><span class="p">.</span><span class="nx">js</span> <span class="nx">file</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">commander</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;commander&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">commander</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="s1">&#39;1.0.0&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">usage</span><span class="p">(</span><span class="s1">&#39;[options] [value ...]&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-l, --langu&#39;</span><span class="p">,</span> <span class="s1">&#39;langueage&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">commander</span><span class="p">.</span><span class="nx">langu</span> <span class="o">==</span> <span class="s1">&#39;zh-cn&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Chinese website!&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">commander</span><span class="p">.</span><span class="nx">langu</span> <span class="o">==</span> <span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;English website!&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>启动 test.js 时,接受一个 <code>-l</code> 的参数</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nv">$node</span> test.js -l en
-</span></span></code></pre></div><h4 id="commander-api">commander API</h4>
-<ul>
-<li><code>Option()</code>: 初始化自定义参数对象，设置“关键字”和“描述”</li>
-<li><code>Command()</code>: 初始化命令行参数对象，直接获得命令行输入</li>
-<li><code>Command#command()</code>: 定义一个命令名字</li>
-<li><code>Command#action()</code>: 注册一个 <code>callback</code> 函数</li>
-<li><code>Command#option()</code>: 定义参数，需要设置“关键字”和“描述”，关键字包括“简写”和“全写”两部分，以<code>,</code>，<code>|</code>，<code>空格</code> 做分隔。</li>
-<li><code>Command#parse()</code>: 解析命令行参数 <code>argv</code></li>
-<li><code>Command#description()</code>: 设置 <code>description</code> 值</li>
-<li><code>Command#usage()</code>: 设置 <code>usage</code> 值</li>
-<li><code>Command#version()</code>: 指定当前应用程序的一个版本号</li>
-</ul>
-<h4 id="参数解析">参数解析</h4>
-<p>1.使用 <code>option()</code> 方法自定义参数；
-2.使用 <code>parse()</code> 方法解析用户从命令行输入的参数。</p>
-<p>上面的例子中： <code>parse()</code> 方法对 <code>option()</code> 方法定义的参数进行赋值，然后将剩下的参数（未定义的参数）赋值给 commander 对象的 <code>args</code> 属性
-(<code>program.args</code>)，<code>program.args</code>是一个数组。</p>
-<h4 id="commanddescription-和-action"><code>command()</code>、<code>description()</code> 和 <code>action()</code></h4>
-<p><code>command()</code>方法有点复杂，最常用的方法是和 <code>action()</code> 联合起来用：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">program</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;commander&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="s1">&#39;0.0.1&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-C, --chdir &lt;path&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;change the working directory&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-c, --config &lt;path&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;set config path. defaults to ./deploy.conf&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-T, --no-tests&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore test hook&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">)</span> <span class="c1">// 定义命令
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s1">&#39;run remote setup commands&#39;</span><span class="p">)</span> <span class="c1">// 对命令参数的描述信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// setup命令触发时调用
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;setup&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;exec &lt;cmd&gt;&#39;</span><span class="p">)</span> <span class="c1">// 定义命令，参数可以用 &lt;&gt; 或 [] 修饰
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s1">&#39;run the given remote command&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// exec 触发时调用，参数和定义的参数顺序一致
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">cmd</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;exec &#34;%s&#34;&#39;</span><span class="p">,</span> <span class="nx">cmd</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;init&#39;</span><span class="p">)</span> <span class="c1">// 定义命令，参数可以用 &lt;&gt; 或 [] 修饰
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="nx">description</span><span class="p">(</span><span class="s1">&#39;run the given remote command&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">option</span><span class="p">(</span><span class="s1">&#39;-y, --yes&#39;</span><span class="p">,</span> <span class="s1">&#39;without prompt&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// options 是 init 命令的参数对象、是 action 回调方法的最后一个参数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;init param &#34;%s&#34;&#39;</span><span class="p">,</span><span class="nx">options</span><span class="p">.</span><span class="nx">yes</span> <span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">);</span>
-</span></span></code></pre></div><h5 id="可变参数">可变参数</h5>
-<p>一个命令的最后一个参数可以是可变参数, 并且只能是最后一个参数。可变参数需要在参数名后面追加 <code>...</code>：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">program</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;commander&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="s1">&#39;0.0.1&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">&#39;rmdir &lt;dir&gt; [otherDirs...]&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="nx">action</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">dir</span><span class="p">,</span> <span class="nx">otherDirs</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;rmdir %s&#39;</span><span class="p">,</span> <span class="nx">dir</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">otherDirs</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">           <span class="c1">//otherDirs是一个数组
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="nx">otherDirs</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">oDir</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;rmdir %s&#39;</span><span class="p">,</span> <span class="nx">oDir</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="p">});</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">program</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">);</span>
-</span></span></code></pre></div><h4 id="commander-帮助信息">commander 帮助信息</h4>
-<p>默认情况下，commander 会根据 <code>option()</code> 方法的参数为你帮你实现 <code>--help</code> 参数，当用户在命令行使用 <code>-h</code> 或 <code>--help</code> 参数时，将自动打印
-出帮助信息。也支持自定义帮助信息：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">commander</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;help&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// 自定义帮助信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;       # website langueage &#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;       $ ./app.js -l \&#34;a string zh-cn or en \&#34; &#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="err">#</span> <span class="nx">or</span>
-</span></span><span class="line"><span class="cl"><span class="nx">commander</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;--help&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span> <span class="c1">// 自定义帮助信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;  Examples:&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;    $ custom-help --help&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;    $ custom-help -h&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h5 id="主动打印帮助信息">主动打印帮助信息</h5>
-<p>两种情况：</p>
-<ol>
-<li>打印帮助信息，然后等待用户继续输入信息，不结束当前进程—— <code>program.outputHelp()</code></li>
-<li>打印帮助信息，并立即结束当前进程—— <code>program.help()</code></li>
-</ol>
-<p><code>.outputHelp()</code> 方法和 <code>.help()</code> 方法都可以带一个参数——一个回调方法，打印信息在显示到命令行之前会先传入这个方法，你可以在方法里面做必要
-的信息处理，比如改变文本颜色。</p>
-<h3 id="argparse">argparse</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="err">\\</span><span class="nx">example</span> <span class="nx">test</span><span class="p">.</span><span class="nx">js</span> <span class="nx">file</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">import</span> <span class="p">{</span><span class="nx">ArgumentParser</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;argparse&#39;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">parser</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ArgumentParser</span><span class="p">({</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">version</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s2">&#34;../package.json&#34;</span><span class="p">).</span><span class="nx">version</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">addHelp</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">description</span><span class="o">:</span> <span class="s2">&#34;Storage Server&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">parser</span><span class="p">.</span><span class="nx">addArgument</span><span class="p">([</span><span class="s2">&#34;-rpc&#34;</span><span class="p">,</span><span class="s2">&#34;--rpcPort&#34;</span><span class="p">],</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">required</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">help</span><span class="o">:</span> <span class="s2">&#34;rpc port&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">dest</span><span class="o">:</span> <span class="s2">&#34;rpcPort&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">parser</span><span class="p">.</span><span class="nx">addArgument</span><span class="p">(</span><span class="s2">&#34;--isLocal&#34;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">dest</span><span class="o">:</span> <span class="s2">&#34;isLocal&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">help</span><span class="o">:</span> <span class="s2">&#34;is publish from office network&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">defaultValue</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">action</span><span class="o">:</span> <span class="s2">&#34;storeTrue&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">argument</span> <span class="o">=</span> <span class="nx">parser</span><span class="p">.</span><span class="nx">parseArgs</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">argument</span><span class="p">.</span><span class="nx">rpcPort</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">dir</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ ./test.js -h
-</span></span><span class="line"><span class="cl">usage: example.js <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-rpc<span class="o">]</span> <span class="o">[</span>--isLocal<span class="o">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Storage Server
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Optional arguments:
-</span></span><span class="line"><span class="cl">  -h, --help        Show this <span class="nb">help</span> message and exit.
-</span></span><span class="line"><span class="cl">  -v, --version     Show program<span class="err">&#39;</span>s version number and exit.
-</span></span><span class="line"><span class="cl">  -rpc, --rpcPort   rpc port
-</span></span><span class="line"><span class="cl"> --isLocal          is publish from office network
-</span></span></code></pre></div><h2 id="shelljs">shell.js</h2>
-<p><code>shelljs</code> 模块重新包装了 <code>child_process</code>,调用系统命令更加简单。<a href="http://documentup.com/shelljs/shelljs" target="_blank" rel="noopener noreffer">官方文档</a> 。</p>
-<h3 id="安装">安装</h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm install shelljs --save
-</span></span></code></pre></div><h3 id="使用">使用</h3>
-<p><code>shelljs</code> 绝大部分命令都是对文件和文件夹的操作。看个例子：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">shell</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;shelljs&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 判定 git 命令是否可用
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">shell</span><span class="p">.</span><span class="nx">which</span><span class="p">(</span><span class="s1">&#39;git&#39;</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"> <span class="c1">// 向命令行打印git命令不可用的提示信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">shell</span><span class="p">.</span><span class="nx">echo</span><span class="p">(</span><span class="s1">&#39;Sorry, this script requires git&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 退出当前进程
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">shell</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 先删除 &#39;out/Release&#39; 目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">shell</span><span class="p">.</span><span class="nx">rm</span><span class="p">(</span><span class="s1">&#39;-rf&#39;</span><span class="p">,</span> <span class="s1">&#39;out/Release&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// 拷贝文件到 &#39;out/Release&#39; 目录
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">shell</span><span class="p">.</span><span class="nx">cp</span><span class="p">(</span><span class="s1">&#39;-R&#39;</span><span class="p">,</span> <span class="s1">&#39;stuff/&#39;</span><span class="p">,</span> <span class="s1">&#39;out/Release&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 切换当前工作目录到 &#39;lib&#39;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">shell</span><span class="p">.</span><span class="nx">cd</span><span class="p">(</span><span class="s1">&#39;lib&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// shell.ls(&#39;*.js&#39;) 返回值是一个包含所有 js 文件路径的数组
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">shell</span><span class="p">.</span><span class="nx">ls</span><span class="p">(</span><span class="s1">&#39;*.js&#39;</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="p">{</span><span class="c1">//遍历数组
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span> <span class="c1">// sed 命令用于文件内容的替换，这里是对每个文件都执行如下 3 步操作，更改版本信息
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nx">shell</span><span class="p">.</span><span class="nx">sed</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;BUILD_VERSION&#39;</span><span class="p">,</span> <span class="s1">&#39;v0.1.2&#39;</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">shell</span><span class="p">.</span><span class="nx">sed</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="sr">/^.*REMOVE_THIS_LINE.*$/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">shell</span><span class="p">.</span><span class="nx">sed</span><span class="p">(</span><span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="sr">/.*REPLACE_LINE_WITH_MACRO.*\n/</span><span class="p">,</span> <span class="nx">shell</span><span class="p">.</span><span class="nx">cat</span><span class="p">(</span><span class="s1">&#39;macro.js&#39;</span><span class="p">),</span> <span class="nx">file</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="c1">// 切换当前工作目录到上一层
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">shell</span><span class="p">.</span><span class="nx">cd</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 同步执行 git 命令提交代码
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">if</span> <span class="p">(</span><span class="nx">shell</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="s1">&#39;git commit -am &#34;Auto-commit&#34;&#39;</span><span class="p">).</span><span class="nx">code</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">shell</span><span class="p">.</span><span class="nx">echo</span><span class="p">(</span><span class="s1">&#39;Error: Git commit failed&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">shell</span><span class="p">.</span><span class="nx">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><p>上面的例子展示了一个可发布版本提交到 <code>git</code> 仓库的过程。</p>
-<h3 id="exec">exec</h3>
-<ul>
-<li>exec(command [, options] [, callback])
-<ul>
-<li><code>command &lt;String&gt;</code>: 要在命令行执行的完整命令</li>
-<li><code>options &lt;Object&gt;</code>: 可选参数，<code>JSON</code> 对象
-<ul>
-<li><code>async</code>: 异步执行.如果你提供了回调方法，这个值就一定为 <code>true</code>，无论你怎么设置</li>
-<li><code>silent</code>: 打印信息不输出到命令控制台</li>
-<li>Node.js 的 <code>child_process.exec()</code> 方法的其他参数都可以用</li>
-</ul>
-</li>
-<li><code>callback:&lt;Function&gt;</code>: 当进程终止时调用，并带上输出。
-<ul>
-<li><code>error &lt;Error&gt;</code></li>
-<li><code>stdout &lt;String&gt; | &lt;Buffer&gt;</code></li>
-<li><code>stderr &lt;String&gt; | &lt;Buffer&gt;</code>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta http-equiv=x-ua-compatible content="IE=edge, chrome=1"><title>Node.js 命令行实现 - Echo</title><meta name=Description content><meta property="og:title" content="Node.js 命令行实现"><meta property="og:description" content="使用 Node.js 实现命令行。"><meta property="og:type" content="article"><meta property="og:url" content="http://example.org/posts/2017-02-18-nodejs-command/"><meta property="og:image" content="http://example.org/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-02-18T20:27:28+00:00"><meta property="article:modified_time" content="2021-03-04T12:13:55+08:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="http://example.org/logo.png"><meta name=twitter:title content="Node.js 命令行实现"><meta name=twitter:description content="使用 Node.js 实现命令行。"><meta name=application-name content="Echo"><meta name=apple-mobile-web-app-title content="Echo"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=http://example.org/posts/2017-02-18-nodejs-command/><link rel=next href=http://example.org/posts/2017-03-19-js-closure/><link rel=stylesheet href=/lib/normalize/normalize.min.css><link rel=stylesheet href=/css/style.min.css><link rel=stylesheet href=/lib/fontawesome-free/all.min.css><link rel=stylesheet href=/lib/animate/animate.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Node.js 命令行实现","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"http:\/\/example.org\/posts\/2017-02-18-nodejs-command\/"},"genre":"posts","wordcount":2548,"url":"http:\/\/example.org\/posts\/2017-02-18-nodejs-command\/","datePublished":"2017-02-18T20:27:28+00:00","dateModified":"2021-03-04T12:13:55+08:00","publisher":{"@type":"Organization","name":"shipengqi"},"author":{"@type":"Person","name":"shipengqi"},"description":""}</script></head><body header-desktop=fixed header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu><div class=menu-inner><a class=menu-item href=/posts/>Posts </a><a class=menu-item href=/categories/>Categories </a><a class=menu-item href=https://shipengqi.github.io/golang-learn rel="noopener noreffer" target=_blank>Go Learning </a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i> </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin"></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw"></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title=Echo><span class=header-title-pre><img src=/favicon-32x32.png style=vertical-align:sub;margin-right:8px></span>Echo</a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw"></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw"></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin"></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/posts/ title>Posts</a><a class=menu-item href=/categories/ title>Categories</a><a class=menu-item href=https://shipengqi.github.io/golang-learn title rel="noopener noreffer" target=_blank>Go Learning</a><a class=menu-item href=https://github.com/shipengqi/shipengqi.github.io title=GitHub rel="noopener noreffer" target=_blank><i class='fab fa-github fa-fw'></i></a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw"></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animated flipInX">Node.js 命令行实现</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw"></i>shipengqi</a></span>&nbsp;<span class=post-category>收录于 <a href=/categories/node.js/><i class="far fa-folder fa-fw"></i>Node.js</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime=2017-02-18>2017-02-18</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 2548 字&nbsp;
+<i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 6 分钟&nbsp;</div></div><div class="details toc" id=toc-static kept><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right"></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#命令行参数处理>命令行参数处理</a><ul><li><a href=#yargs>yargs</a></li><li><a href=#commander>commander</a></li><li><a href=#argparse>argparse</a></li></ul></li><li><a href=#shelljs>shell.js</a><ul><li><a href=#安装>安装</a></li><li><a href=#使用>使用</a></li><li><a href=#exec>exec</a></li></ul></li><li><a href=#命令行交互>命令行交互</a></li><li><a href=#隐式调用-node-程序>隐式调用 node 程序</a></li></ul></nav></div></div><div class=content id=content><p>使用 Node.js 实现命令行。</p><h2 id=命令行参数处理>命令行参数处理</h2><h3 id=yargs>yargs</h3><h4 id=简单模式>简单模式</h4><p>只需要引入 yargs，就能读取命令行参数，不需要写任何的配置</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=ch>#!/usr/bin/env node
+</span></span></span><span class=line><span class=cl><span class=ch></span><span class=kd>var</span> <span class=nx>argv</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>).</span><span class=nx>argv</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;hello &#39;</span><span class=p>,</span> <span class=nx>argv</span><span class=p>.</span><span class=nx>name</span><span class=p>);</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ hello --name<span class=o>=</span>tom
+</span></span><span class=line><span class=cl>hello tom
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ hello --name tom
+</span></span><span class=line><span class=cl>hello tom
+</span></span></code></pre></div><p>简单模式还能读取短变量如 <code>-x 4</code> 相当于 <code>argv.x = 4</code></p><p>简单模式还能读取布尔类型 <code>-s</code> 相当于 <code>argv.s = true</code></p><p>简单模式还能读取非 <code>-</code> 开始的变量，这种类型的变量保存在 <code>argv._</code> 数组里面</p><h4 id=count-统计变量出现的次数>count 统计变量出现的次数</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>argv</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>count</span><span class=p>(</span><span class=s1>&#39;num&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>alias</span><span class=p>(</span><span class=s1>&#39;n&#39;</span><span class=p>,</span> <span class=s1>&#39;num&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>argv</span><span class=p>;</span>
+</span></span></code></pre></div><p>统计 <code>num</code> 参数出现的次数，缩写 <code>-n</code> 也会统计进去</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>node count.js -n
+</span></span><span class=line><span class=cl>node count.js -nn
+</span></span><span class=line><span class=cl>node count.js -n --num
+</span></span></code></pre></div><h4 id=demand-default-describe>demand default describe</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>argv</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>demand</span><span class=p>([</span><span class=s1>&#39;n&#39;</span><span class=p>])</span> <span class=c1>//是否必选
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>.</span><span class=k>default</span><span class=p>({</span><span class=nx>n</span><span class=o>:</span> <span class=s1>&#39;tom&#39;</span><span class=p>})</span> <span class=c1>//默认值
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>.</span><span class=nx>describe</span><span class=p>({</span><span class=nx>n</span><span class=o>:</span> <span class=s1>&#39;your name&#39;</span><span class=p>})</span> <span class=c1>//提示
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=p>.</span><span class=nx>argv</span><span class=p>;</span>
+</span></span></code></pre></div><p><code>n</code> 参数不可省略，默认值为 <code>tom</code>，并给出一行提示</p><h4 id=options-将所有配置写进一个对象>options 将所有配置写进一个对象</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>argv</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;n&#39;</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>alias</span> <span class=o>:</span> <span class=s1>&#39;name&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>demand</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span> <span class=s1>&#39;tom&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>describe</span><span class=o>:</span> <span class=s1>&#39;your name&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>type</span><span class=o>:</span> <span class=s1>&#39;string&#39;</span>
+</span></span><span class=line><span class=cl>  <span class=p>})</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>argv</span><span class=p>;</span>
+</span></span></code></pre></div><h4 id=boolean-方法指定参数返回布尔值>boolean 方法指定参数返回布尔值</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>argv</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=kr>boolean</span><span class=p>([</span><span class=s1>&#39;l&#39;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>argv</span><span class=p>;</span>
+</span></span></code></pre></div><h4 id=帮助信息>帮助信息</h4><ul><li>usage：用法格式</li><li>example：提供例子</li><li>help：显示帮助信息</li><li>epilog：出现在帮助信息的结尾</li></ul><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kd>var</span> <span class=nx>argv</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;f&#39;</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>alias</span> <span class=o>:</span> <span class=s1>&#39;name&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>demand</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span> <span class=s1>&#39;tom&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>describe</span><span class=o>:</span> <span class=s1>&#39;your name&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>type</span><span class=o>:</span> <span class=s1>&#39;string&#39;</span>
+</span></span><span class=line><span class=cl>  <span class=p>})</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>usage</span><span class=p>(</span><span class=s1>&#39;Usage: hello [options]&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>example</span><span class=p>(</span><span class=s1>&#39;hello -n tom&#39;</span><span class=p>,</span> <span class=s1>&#39;say hello to Tom&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>help</span><span class=p>(</span><span class=s1>&#39;h&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>alias</span><span class=p>(</span><span class=s1>&#39;h&#39;</span><span class=p>,</span> <span class=s1>&#39;help&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>epilog</span><span class=p>(</span><span class=s1>&#39;epilog 2017&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>argv</span><span class=p>;</span>
+</span></span></code></pre></div><p>结果</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ hello -h
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Usage: hello <span class=o>[</span>options<span class=o>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Options:
+</span></span><span class=line><span class=cl>  -f, --name  your name <span class=o>[</span>string<span class=o>]</span> <span class=o>[</span>required<span class=o>]</span> <span class=o>[</span>default: <span class=s2>&#34;tom&#34;</span><span class=o>]</span>
+</span></span><span class=line><span class=cl>  -h, --help  Show <span class=nb>help</span> <span class=o>[</span>boolean<span class=o>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Examples:
+</span></span><span class=line><span class=cl>  hello -n tom  say hello to Tom
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>epilog <span class=m>2017</span>
+</span></span></code></pre></div><h4 id=设置子命令-command>设置子命令 <code>command()</code></h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=nx>cmd</span><span class=p>,</span> <span class=nx>desc</span><span class=p>,</span> <span class=p>[</span><span class=nx>builder</span><span class=p>],</span> <span class=p>[</span><span class=nx>handler</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=nx>module</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=nx>cmd</span><span class=p>,</span> <span class=nx>desc</span><span class=p>,</span> <span class=p>[</span><span class=nx>module</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>//.command(cmd, desc, [builder], [handler])
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>yargs</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>command</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;get&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;get incident&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=kd>function</span> <span class=p>(</span><span class=nx>yargs</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>yargs</span><span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;u&#39;</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>alias</span><span class=o>:</span> <span class=s1>&#39;url&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=nx>describe</span><span class=o>:</span> <span class=s1>&#39;the url get incident&#39;</span>
+</span></span><span class=line><span class=cl>      <span class=p>})</span>
+</span></span><span class=line><span class=cl>    <span class=p>},</span>
+</span></span><span class=line><span class=cl>    <span class=kd>function</span> <span class=p>(</span><span class=nx>argv</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>argv</span><span class=p>.</span><span class=nx>url</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>help</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>argv</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>//.command(module) test.js
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>exports</span><span class=p>.</span><span class=nx>command</span> <span class=o>=</span> <span class=s1>&#39;get&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>describe</span> <span class=o>=</span> <span class=s1>&#39;get incident&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>builder</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>default</span><span class=o>:</span> <span class=s1>&#39;tom&#39;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>exports</span><span class=p>.</span><span class=nx>handler</span> <span class=o>=</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>argv</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=c1>//console.log(argv)
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>yargs</span><span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=nx>require</span><span class=p>(</span><span class=s1>&#39;drafts/test&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>help</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>argv</span>
+</span></span></code></pre></div><h4 id=commanddir>commandDir</h4><p>如果有大量的命令都使用上面的 <code>command(module)</code> 来开发的话，这些模块都有相同的结构，yargs 提供了 <code>commandDir</code> 接口,简化这些命令的引入过
+程，把这个过程自动化.</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>require</span><span class=p>(</span><span class=s1>&#39;yargs&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>commandDir</span><span class=p>(</span><span class=s1>&#39;commands&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>demand</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>help</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>locale</span><span class=p>(</span><span class=s1>&#39;en&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>showHelpOnFail</span><span class=p>(</span><span class=kc>true</span><span class=p>,</span> <span class=s1>&#39;Specify --help for available options&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>argv</span>
+</span></span></code></pre></div><blockquote><p><code>commandDir</code> 默认加载目录下第一级的文件，递归加载: <code>commandDir('pit', {recurse: true})</code></p></blockquote><h3 id=commander>commander</h3><p><code>commander</code> 是从 Ruby 下同名项目移植过来的，<a href=http://tj.github.io/commander.js/ target=_blank rel="noopener noreffer">官方文档</a> 。</p><h4 id=commander-特性>commander 特性</h4><ul><li>自记录代码</li><li>自动生成 help</li><li>合并短参数（“ABC”==“-A-B-C”）</li><li>默认选项</li><li>强制选项​​</li><li>命令解析</li><li>提示符</li></ul><h4 id=example>example</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=err>\\</span><span class=nx>example</span> <span class=nx>test</span><span class=p>.</span><span class=nx>js</span> <span class=nx>file</span><span class=o>:</span>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>commander</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;commander&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>commander</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>version</span><span class=p>(</span><span class=s1>&#39;1.0.0&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>usage</span><span class=p>(</span><span class=s1>&#39;[options] [value ...]&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;-l, --langu&#39;</span><span class=p>,</span> <span class=s1>&#39;langueage&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>parse</span><span class=p>(</span><span class=nx>process</span><span class=p>.</span><span class=nx>argv</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>commander</span><span class=p>.</span><span class=nx>langu</span> <span class=o>==</span> <span class=s1>&#39;zh-cn&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;Chinese website!&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span><span class=k>else</span> <span class=k>if</span><span class=p>(</span><span class=nx>commander</span><span class=p>.</span><span class=nx>langu</span> <span class=o>==</span> <span class=s1>&#39;en&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;English website!&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>启动 test.js 时,接受一个 <code>-l</code> 的参数</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nv>$node</span> test.js -l en
+</span></span></code></pre></div><h4 id=commander-api>commander API</h4><ul><li><code>Option()</code>: 初始化自定义参数对象，设置“关键字”和“描述”</li><li><code>Command()</code>: 初始化命令行参数对象，直接获得命令行输入</li><li><code>Command#command()</code>: 定义一个命令名字</li><li><code>Command#action()</code>: 注册一个 <code>callback</code> 函数</li><li><code>Command#option()</code>: 定义参数，需要设置“关键字”和“描述”，关键字包括“简写”和“全写”两部分，以<code>,</code>，<code>|</code>，<code>空格</code> 做分隔。</li><li><code>Command#parse()</code>: 解析命令行参数 <code>argv</code></li><li><code>Command#description()</code>: 设置 <code>description</code> 值</li><li><code>Command#usage()</code>: 设置 <code>usage</code> 值</li><li><code>Command#version()</code>: 指定当前应用程序的一个版本号</li></ul><h4 id=参数解析>参数解析</h4><p>1.使用 <code>option()</code> 方法自定义参数；
+2.使用 <code>parse()</code> 方法解析用户从命令行输入的参数。</p><p>上面的例子中： <code>parse()</code> 方法对 <code>option()</code> 方法定义的参数进行赋值，然后将剩下的参数（未定义的参数）赋值给 commander 对象的 <code>args</code> 属性
+(<code>program.args</code>)，<code>program.args</code>是一个数组。</p><h4 id=commanddescription-和-action><code>command()</code>、<code>description()</code> 和 <code>action()</code></h4><p><code>command()</code>方法有点复杂，最常用的方法是和 <code>action()</code> 联合起来用：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=kd>var</span> <span class=nx>program</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;commander&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>version</span><span class=p>(</span><span class=s1>&#39;0.0.1&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;-C, --chdir &lt;path&gt;&#39;</span><span class=p>,</span> <span class=s1>&#39;change the working directory&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;-c, --config &lt;path&gt;&#39;</span><span class=p>,</span> <span class=s1>&#39;set config path. defaults to ./deploy.conf&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;-T, --no-tests&#39;</span><span class=p>,</span> <span class=s1>&#39;ignore test hook&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=s1>&#39;setup&#39;</span><span class=p>)</span> <span class=c1>// 定义命令
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>.</span><span class=nx>description</span><span class=p>(</span><span class=s1>&#39;run remote setup commands&#39;</span><span class=p>)</span> <span class=c1>// 对命令参数的描述信息
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>.</span><span class=nx>action</span><span class=p>(</span><span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=c1>// setup命令触发时调用
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;setup&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=s1>&#39;exec &lt;cmd&gt;&#39;</span><span class=p>)</span> <span class=c1>// 定义命令，参数可以用 &lt;&gt; 或 [] 修饰
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>.</span><span class=nx>description</span><span class=p>(</span><span class=s1>&#39;run the given remote command&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// exec 触发时调用，参数和定义的参数顺序一致
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>.</span><span class=nx>action</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>cmd</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;exec &#34;%s&#34;&#39;</span><span class=p>,</span> <span class=nx>cmd</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=s1>&#39;init&#39;</span><span class=p>)</span> <span class=c1>// 定义命令，参数可以用 &lt;&gt; 或 [] 修饰
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>.</span><span class=nx>description</span><span class=p>(</span><span class=s1>&#39;run the given remote command&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>option</span><span class=p>(</span><span class=s1>&#39;-y, --yes&#39;</span><span class=p>,</span> <span class=s1>&#39;without prompt&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// options 是 init 命令的参数对象、是 action 回调方法的最后一个参数
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>.</span><span class=nx>action</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>options</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;init param &#34;%s&#34;&#39;</span><span class=p>,</span><span class=nx>options</span><span class=p>.</span><span class=nx>yes</span> <span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span><span class=p>.</span><span class=nx>parse</span><span class=p>(</span><span class=nx>process</span><span class=p>.</span><span class=nx>argv</span><span class=p>);</span>
+</span></span></code></pre></div><h5 id=可变参数>可变参数</h5><p>一个命令的最后一个参数可以是可变参数, 并且只能是最后一个参数。可变参数需要在参数名后面追加 <code>...</code>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=kd>var</span> <span class=nx>program</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;commander&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>version</span><span class=p>(</span><span class=s1>&#39;0.0.1&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>command</span><span class=p>(</span><span class=s1>&#39;rmdir &lt;dir&gt; [otherDirs...]&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>action</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>dir</span><span class=p>,</span> <span class=nx>otherDirs</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;rmdir %s&#39;</span><span class=p>,</span> <span class=nx>dir</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>otherDirs</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>           <span class=c1>//otherDirs是一个数组
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=nx>otherDirs</span><span class=p>.</span><span class=nx>forEach</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>oDir</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;rmdir %s&#39;</span><span class=p>,</span> <span class=nx>oDir</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=p>});</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>program</span><span class=p>.</span><span class=nx>parse</span><span class=p>(</span><span class=nx>process</span><span class=p>.</span><span class=nx>argv</span><span class=p>);</span>
+</span></span></code></pre></div><h4 id=commander-帮助信息>commander 帮助信息</h4><p>默认情况下，commander 会根据 <code>option()</code> 方法的参数为你帮你实现 <code>--help</code> 参数，当用户在命令行使用 <code>-h</code> 或 <code>--help</code> 参数时，将自动打印
+出帮助信息。也支持自定义帮助信息：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=nx>commander</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;help&#39;</span><span class=p>,</span> <span class=kd>function</span><span class=p>()</span> <span class=p>{</span> <span class=c1>// 自定义帮助信息
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;       # website langueage &#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;       $ ./app.js -l \&#34;a string zh-cn or en \&#34; &#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>#</span> <span class=nx>or</span>
+</span></span><span class=line><span class=cl><span class=nx>commander</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;--help&#39;</span><span class=p>,</span> <span class=kd>function</span><span class=p>(){</span> <span class=c1>// 自定义帮助信息
+</span></span></span><span class=line><span class=cl><span class=c1></span>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;  Examples:&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;    $ custom-help --help&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;    $ custom-help -h&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><h5 id=主动打印帮助信息>主动打印帮助信息</h5><p>两种情况：</p><ol><li>打印帮助信息，然后等待用户继续输入信息，不结束当前进程—— <code>program.outputHelp()</code></li><li>打印帮助信息，并立即结束当前进程—— <code>program.help()</code></li></ol><p><code>.outputHelp()</code> 方法和 <code>.help()</code> 方法都可以带一个参数——一个回调方法，打印信息在显示到命令行之前会先传入这个方法，你可以在方法里面做必要
+的信息处理，比如改变文本颜色。</p><h3 id=argparse>argparse</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=err>\\</span><span class=nx>example</span> <span class=nx>test</span><span class=p>.</span><span class=nx>js</span> <span class=nx>file</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>import</span> <span class=p>{</span><span class=nx>ArgumentParser</span><span class=p>}</span> <span class=nx>from</span> <span class=s1>&#39;argparse&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>parser</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ArgumentParser</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>    <span class=nx>version</span><span class=o>:</span> <span class=nx>require</span><span class=p>(</span><span class=s2>&#34;../package.json&#34;</span><span class=p>).</span><span class=nx>version</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>addHelp</span><span class=o>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>description</span><span class=o>:</span> <span class=s2>&#34;Storage Server&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>parser</span><span class=p>.</span><span class=nx>addArgument</span><span class=p>([</span><span class=s2>&#34;-rpc&#34;</span><span class=p>,</span><span class=s2>&#34;--rpcPort&#34;</span><span class=p>],</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>required</span><span class=o>:</span> <span class=kc>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>help</span><span class=o>:</span> <span class=s2>&#34;rpc port&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>dest</span><span class=o>:</span> <span class=s2>&#34;rpcPort&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>parser</span><span class=p>.</span><span class=nx>addArgument</span><span class=p>(</span><span class=s2>&#34;--isLocal&#34;</span><span class=p>,</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>dest</span><span class=o>:</span> <span class=s2>&#34;isLocal&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>help</span><span class=o>:</span> <span class=s2>&#34;is publish from office network&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>defaultValue</span><span class=o>:</span> <span class=kc>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>action</span><span class=o>:</span> <span class=s2>&#34;storeTrue&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>argument</span> <span class=o>=</span> <span class=nx>parser</span><span class=p>.</span><span class=nx>parseArgs</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=nx>argument</span><span class=p>.</span><span class=nx>rpcPort</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>dir</span><span class=p>(</span><span class=nx>args</span><span class=p>);</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ ./test.js -h
+</span></span><span class=line><span class=cl>usage: example.js <span class=o>[</span>-h<span class=o>]</span> <span class=o>[</span>-rpc<span class=o>]</span> <span class=o>[</span>--isLocal<span class=o>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Storage Server
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Optional arguments:
+</span></span><span class=line><span class=cl>  -h, --help        Show this <span class=nb>help</span> message and exit.
+</span></span><span class=line><span class=cl>  -v, --version     Show program<span class=err>&#39;</span>s version number and exit.
+</span></span><span class=line><span class=cl>  -rpc, --rpcPort   rpc port
+</span></span><span class=line><span class=cl> --isLocal          is publish from office network
+</span></span></code></pre></div><h2 id=shelljs>shell.js</h2><p><code>shelljs</code> 模块重新包装了 <code>child_process</code>,调用系统命令更加简单。<a href=http://documentup.com/shelljs/shelljs target=_blank rel="noopener noreffer">官方文档</a> 。</p><h3 id=安装>安装</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl>npm install shelljs --save
+</span></span></code></pre></div><h3 id=使用>使用</h3><p><code>shelljs</code> 绝大部分命令都是对文件和文件夹的操作。看个例子：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=kd>var</span> <span class=nx>shell</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;shelljs&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 判定 git 命令是否可用
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>shell</span><span class=p>.</span><span class=nx>which</span><span class=p>(</span><span class=s1>&#39;git&#39;</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl> <span class=c1>// 向命令行打印git命令不可用的提示信息
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>shell</span><span class=p>.</span><span class=nx>echo</span><span class=p>(</span><span class=s1>&#39;Sorry, this script requires git&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 退出当前进程
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>shell</span><span class=p>.</span><span class=nx>exit</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 先删除 &#39;out/Release&#39; 目录
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>shell</span><span class=p>.</span><span class=nx>rm</span><span class=p>(</span><span class=s1>&#39;-rf&#39;</span><span class=p>,</span> <span class=s1>&#39;out/Release&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// 拷贝文件到 &#39;out/Release&#39; 目录
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>shell</span><span class=p>.</span><span class=nx>cp</span><span class=p>(</span><span class=s1>&#39;-R&#39;</span><span class=p>,</span> <span class=s1>&#39;stuff/&#39;</span><span class=p>,</span> <span class=s1>&#39;out/Release&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 切换当前工作目录到 &#39;lib&#39;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>shell</span><span class=p>.</span><span class=nx>cd</span><span class=p>(</span><span class=s1>&#39;lib&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// shell.ls(&#39;*.js&#39;) 返回值是一个包含所有 js 文件路径的数组
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>shell</span><span class=p>.</span><span class=nx>ls</span><span class=p>(</span><span class=s1>&#39;*.js&#39;</span><span class=p>).</span><span class=nx>forEach</span><span class=p>(</span><span class=kd>function</span><span class=p>(</span><span class=nx>file</span><span class=p>)</span> <span class=p>{</span><span class=c1>//遍历数组
+</span></span></span><span class=line><span class=cl><span class=c1></span> <span class=c1>// sed 命令用于文件内容的替换，这里是对每个文件都执行如下 3 步操作，更改版本信息
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nx>shell</span><span class=p>.</span><span class=nx>sed</span><span class=p>(</span><span class=s1>&#39;-i&#39;</span><span class=p>,</span> <span class=s1>&#39;BUILD_VERSION&#39;</span><span class=p>,</span> <span class=s1>&#39;v0.1.2&#39;</span><span class=p>,</span> <span class=nx>file</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>shell</span><span class=p>.</span><span class=nx>sed</span><span class=p>(</span><span class=s1>&#39;-i&#39;</span><span class=p>,</span> <span class=sr>/^.*REMOVE_THIS_LINE.*$/</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=nx>file</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>shell</span><span class=p>.</span><span class=nx>sed</span><span class=p>(</span><span class=s1>&#39;-i&#39;</span><span class=p>,</span> <span class=sr>/.*REPLACE_LINE_WITH_MACRO.*\n/</span><span class=p>,</span> <span class=nx>shell</span><span class=p>.</span><span class=nx>cat</span><span class=p>(</span><span class=s1>&#39;macro.js&#39;</span><span class=p>),</span> <span class=nx>file</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=c1>// 切换当前工作目录到上一层
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>shell</span><span class=p>.</span><span class=nx>cd</span><span class=p>(</span><span class=s1>&#39;..&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 同步执行 git 命令提交代码
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>if</span> <span class=p>(</span><span class=nx>shell</span><span class=p>.</span><span class=nx>exec</span><span class=p>(</span><span class=s1>&#39;git commit -am &#34;Auto-commit&#34;&#39;</span><span class=p>).</span><span class=nx>code</span> <span class=o>!==</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>shell</span><span class=p>.</span><span class=nx>echo</span><span class=p>(</span><span class=s1>&#39;Error: Git commit failed&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nx>shell</span><span class=p>.</span><span class=nx>exit</span><span class=p>(</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>上面的例子展示了一个可发布版本提交到 <code>git</code> 仓库的过程。</p><h3 id=exec>exec</h3><ul><li>exec(command [, options] [, callback])<ul><li><code>command &lt;String></code>: 要在命令行执行的完整命令</li><li><code>options &lt;Object></code>: 可选参数，<code>JSON</code> 对象<ul><li><code>async</code>: 异步执行.如果你提供了回调方法，这个值就一定为 <code>true</code>，无论你怎么设置</li><li><code>silent</code>: 打印信息不输出到命令控制台</li><li>Node.js 的 <code>child_process.exec()</code> 方法的其他参数都可以用</li></ul></li><li><code>callback:&lt;Function></code>: 当进程终止时调用，并带上输出。<ul><li><code>error &lt;Error></code></li><li><code>stdout &lt;String> | &lt;Buffer></code></li><li><code>stderr &lt;String> | &lt;Buffer></code>
 返回值：同步模式下，将返回一个 <code>ShellString</code>（shelljs v0.6.xf 返回一个形如 <code>{ code:..., stdout:... , stderr:... }</code> 的对象；
-异步模式下，将返回一个 <code>child_process</code> 的对象</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p><code>exec()</code>同步方法的实现会占用大量 CPU，所以<strong>建议使用异步模式</strong>。</p>
-</blockquote>
-<p>例：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">version</span> <span class="o">=</span> <span class="nx">exec</span><span class="p">(</span><span class="s1">&#39;node --version&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">silent</span><span class="o">:</span><span class="kc">true</span><span class="p">}).</span><span class="nx">stdout</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">child</span> <span class="o">=</span> <span class="nx">exec</span><span class="p">(</span><span class="s1">&#39;some_long_running_process&#39;</span><span class="p">,</span> <span class="p">{</span><span class="kr">async</span><span class="o">:</span><span class="kc">true</span><span class="p">});</span>
-</span></span><span class="line"><span class="cl"><span class="nx">child</span><span class="p">.</span><span class="nx">stdout</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="cm">/* ... do something with data ... */</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nx">exec</span><span class="p">(</span><span class="s1">&#39;some_long_running_process&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="nx">stdout</span><span class="p">,</span> <span class="nx">stderr</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Exit code:&#39;</span><span class="p">,</span> <span class="nx">code</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Program output:&#39;</span><span class="p">,</span> <span class="nx">stdout</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Program stderr:&#39;</span><span class="p">,</span> <span class="nx">stderr</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h2 id="命令行交互">命令行交互</h2>
-<p>命令行交互可以使用 <a href="https://github.com/flatiron/prompt" target="_blank" rel="noopener noreffer">prompt</a> 实现。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">prompt</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;prompt&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kd">var</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="nx">properties</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">name</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">pattern</span><span class="o">:</span> <span class="sr">/^[a-zA-Z\s\-]+$/</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">message</span><span class="o">:</span> <span class="s1">&#39;Name must be only letters, spaces, or dashes&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">  <span class="p">},</span>
-</span></span><span class="line"><span class="cl">  <span class="nx">password</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nx">hidden</span><span class="o">:</span> <span class="kc">true</span>
-</span></span><span class="line"><span class="cl">  <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">};</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">//
-</span></span></span><span class="line"><span class="cl"><span class="c1">// Start the prompt
-</span></span></span><span class="line"><span class="cl"><span class="c1">//
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">prompt</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">//
-</span></span></span><span class="line"><span class="cl"><span class="c1">// Get two properties from the user: email, password
-</span></span></span><span class="line"><span class="cl"><span class="c1">//
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">prompt</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">schema</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl"><span class="c1">//
-</span></span></span><span class="line"><span class="cl"><span class="c1">// Log the results.
-</span></span></span><span class="line"><span class="cl"><span class="c1">//
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Command-line input received:&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;  name: &#39;</span> <span class="o">+</span> <span class="nx">result</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;  password: &#39;</span> <span class="o">+</span> <span class="nx">result</span><span class="p">.</span><span class="nx">password</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h2 id="隐式调用-node-程序">隐式调用 node 程序</h2>
-<p>在执行 node 程序的时候都是使用 <code>node filePath</code>(比如，<code>node run.js</code>)的形式。如何像 npm，git 一样直接调用？</p>
-<ol>
-<li>在你要运行的脚本文件头添加 <code>#!/usr/bin/env node</code>，例如：</li>
-</ol>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env node
-</span></span></span><span class="line"><span class="cl"><span class="ch"></span>
-</span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Hello,world!&#39;</span><span class="p">);</span>
-</span></span></code></pre></div><p>它的作用是指定脚本文件的执行程序 node。做完上面的修改，可以直接 <code>./&lt;file&gt;</code> 了。</p>
-<ol start="2">
-<li>如果想要一个全局的命令，在 <code>package.json</code> 中加入一个字段 <code>bin</code>，注意：</li>
-</ol>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl">  <span class="s2">&#34;bin&#34;</span><span class="o">:</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;myCmd&#34;</span><span class="o">:</span><span class="s2">&#34;&lt;file path&gt;&#34;</span>
-</span></span><span class="line"><span class="cl">  <span class="p">},</span>
-</span></span></code></pre></div><p>myCmd 就是你命令的名字，如果是准备发布的模块，一般是会使用模块名称。</p>
-<ol start="3">
-<li>在当前工作目录下执行 <code>npm link</code>，把模块链接的本地 npm 仓库，然后就可以全局调用 myCmd 了。</li>
-</ol></div><div class="post-footer" id="post-footer">
-    <div class="post-info">
-        <div class="post-info-line">
-            <div class="post-info-mod">
-                <span>更新于 2021-03-04&nbsp;<a class="git-hash" href="https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963" target="_blank" title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
-                                    <i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span>
-            </div>
-            <div class="post-info-license"></div>
-        </div>
-        <div class="post-info-line">
-            <div class="post-info-md"><span>
-                            <a class="link-to-markdown" href="/posts/2017-02-18-nodejs-command/index.md" target="_blank">阅读原始文档</a>
-                        </span></div>
-            <div class="post-info-share">
-                <span></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="post-info-more">
-        <section class="post-tags"></section>
-        <section>
-            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
-        </section>
-    </div>
-
-    <div class="post-nav">
-            <a href="/posts/2017-03-19-js-closure/" class="next" rel="next" title="JavaScript 的闭包">JavaScript 的闭包<i class="fas fa-angle-right fa-fw"></i></a></div>
-</div>
-</article></div>
-            </main><footer class="footer">
-        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
-                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2017 - 2023</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank">shipengqi</a></span>&nbsp;|&nbsp;<span class="license"><a rel="license external nofollow noopener noreffer" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span></div>
-        </div>
-    </footer></div>
-
-        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
-                <i class="fas fa-arrow-up fa-fw"></i>
-            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
-                <i class="fas fa-comment fa-fw"></i>
-            </a>
-        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
-</html>
+异步模式下，将返回一个 <code>child_process</code> 的对象</li></ul></li></ul></li></ul><blockquote><p><code>exec()</code>同步方法的实现会占用大量 CPU，所以<strong>建议使用异步模式</strong>。</p></blockquote><p>例：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=kd>var</span> <span class=nx>version</span> <span class=o>=</span> <span class=nx>exec</span><span class=p>(</span><span class=s1>&#39;node --version&#39;</span><span class=p>,</span> <span class=p>{</span><span class=nx>silent</span><span class=o>:</span><span class=kc>true</span><span class=p>}).</span><span class=nx>stdout</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>child</span> <span class=o>=</span> <span class=nx>exec</span><span class=p>(</span><span class=s1>&#39;some_long_running_process&#39;</span><span class=p>,</span> <span class=p>{</span><span class=kr>async</span><span class=o>:</span><span class=kc>true</span><span class=p>});</span>
+</span></span><span class=line><span class=cl><span class=nx>child</span><span class=p>.</span><span class=nx>stdout</span><span class=p>.</span><span class=nx>on</span><span class=p>(</span><span class=s1>&#39;data&#39;</span><span class=p>,</span> <span class=kd>function</span><span class=p>(</span><span class=nx>data</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=cm>/* ... do something with data ... */</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>exec</span><span class=p>(</span><span class=s1>&#39;some_long_running_process&#39;</span><span class=p>,</span> <span class=kd>function</span><span class=p>(</span><span class=nx>code</span><span class=p>,</span> <span class=nx>stdout</span><span class=p>,</span> <span class=nx>stderr</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;Exit code:&#39;</span><span class=p>,</span> <span class=nx>code</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;Program output:&#39;</span><span class=p>,</span> <span class=nx>stdout</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;Program stderr:&#39;</span><span class=p>,</span> <span class=nx>stderr</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><h2 id=命令行交互>命令行交互</h2><p>命令行交互可以使用 <a href=https://github.com/flatiron/prompt target=_blank rel="noopener noreffer">prompt</a> 实现。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=kr>const</span> <span class=nx>prompt</span> <span class=o>=</span> <span class=nx>require</span><span class=p>(</span><span class=s1>&#39;prompt&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>schema</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=nx>properties</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>name</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>pattern</span><span class=o>:</span> <span class=sr>/^[a-zA-Z\s\-]+$/</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>message</span><span class=o>:</span> <span class=s1>&#39;Name must be only letters, spaces, or dashes&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>required</span><span class=o>:</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=nx>password</span><span class=o>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>hidden</span><span class=o>:</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>};</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1>// Start the prompt
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>prompt</span><span class=p>.</span><span class=nx>start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1>// Get two properties from the user: email, password
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>prompt</span><span class=p>.</span><span class=nx>get</span><span class=p>(</span><span class=nx>schema</span><span class=p>,</span> <span class=kd>function</span> <span class=p>(</span><span class=nx>err</span><span class=p>,</span> <span class=nx>result</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1>// Log the results.
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;Command-line input received:&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;  name: &#39;</span> <span class=o>+</span> <span class=nx>result</span><span class=p>.</span><span class=nx>name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;  password: &#39;</span> <span class=o>+</span> <span class=nx>result</span><span class=p>.</span><span class=nx>password</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>});</span>
+</span></span></code></pre></div><h2 id=隐式调用-node-程序>隐式调用 node 程序</h2><p>在执行 node 程序的时候都是使用 <code>node filePath</code>(比如，<code>node run.js</code>)的形式。如何像 npm，git 一样直接调用？</p><ol><li>在你要运行的脚本文件头添加 <code>#!/usr/bin/env node</code>，例如：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl><span class=ch>#!/usr/bin/env node
+</span></span></span><span class=line><span class=cl><span class=ch></span>
+</span></span><span class=line><span class=cl><span class=nx>console</span><span class=p>.</span><span class=nx>log</span><span class=p>(</span><span class=s1>&#39;Hello,world!&#39;</span><span class=p>);</span>
+</span></span></code></pre></div><p>它的作用是指定脚本文件的执行程序 node。做完上面的修改，可以直接 <code>./&lt;file></code> 了。</p><ol start=2><li>如果想要一个全局的命令，在 <code>package.json</code> 中加入一个字段 <code>bin</code>，注意：</li></ol><div class=highlight><pre tabindex=0 class=chroma><code class=language-js data-lang=js><span class=line><span class=cl>  <span class=s2>&#34;bin&#34;</span><span class=o>:</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;myCmd&#34;</span><span class=o>:</span><span class=s2>&#34;&lt;file path&gt;&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span></code></pre></div><p>myCmd 就是你命令的名字，如果是准备发布的模块，一般是会使用模块名称。</p><ol start=3><li>在当前工作目录下执行 <code>npm link</code>，把模块链接的本地 npm 仓库，然后就可以全局调用 myCmd 了。</li></ol></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-03-04&nbsp;<a class=git-hash href=https://github.com/shipengqi/shipengqi.github.io/commit/8cbeec8afa0c7d27e00fd8d7ce896d422f4af963 target=_blank title="commit by shipengqi(pooky.shipengqi@gmail.com) 8cbeec8afa0c7d27e00fd8d7ce896d422f4af963: Migrate/hugo (#2)">
+<i class="fas fa-hashtag fa-fw"></i>8cbeec8</a></span></div><div class=post-info-license></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/posts/2017-02-18-nodejs-command/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/posts/2017-03-19-js-closure/ class=next rel=next title="JavaScript 的闭包">JavaScript 的闭包<i class="fas fa-angle-right fa-fw"></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.119.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a></div><div class=footer-line><i class="far fa-copyright fa-fw"></i><span itemprop=copyrightYear>2017 - 2023</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>shipengqi</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw"></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw"></i></a></div><script type=text/javascript src=/lib/smooth-scroll/smooth-scroll.min.js></script><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:10},comment:{},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
